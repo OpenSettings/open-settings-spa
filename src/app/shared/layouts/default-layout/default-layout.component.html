@@ -1,0 +1,89 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #snav class="sidebar" opened="true" mode="side" [style.width]="menuOpened ? '175px' : '58px'" disableClose="true">
+    <mat-nav-list class="nav-list mat-toolbar mat-primary menu pb-0">
+      <div class="d-flex nav-list-content">
+        <button mat-icon-button (click)="toggleMenu()">
+          <mat-icon fontIcon="menu"></mat-icon>
+        </button>
+        <p class="nav-list-menu">Menu</p>
+      </div>
+    </mat-nav-list>
+    <mat-nav-list>
+      <mat-list-item [routerLink]="ROUTES.base"routerLinkActive="nav-item-active" [routerLinkActiveOptions]="{ exact: true }" matTooltip="Apps" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}"> Apps
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+      </mat-list-item>
+      <mat-list-item [routerLink]="ROUTES.groups" routerLinkActive="nav-item-active" matTooltip="Groups" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}" *ngIf="isProvider"> Groups
+        <mat-icon matListItemIcon>workspaces</mat-icon>
+      </mat-list-item>
+      <mat-list-item [routerLink]="ROUTES.identifiers" routerLinkActive="nav-item-active" matTooltip="Identifiers" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}" *ngIf="isProvider"> Identifiers
+        <mat-icon matListItemIcon>local_library</mat-icon>
+      </mat-list-item>
+      <mat-list-item [routerLink]="ROUTES.tags" routerLinkActive="nav-item-active" matTooltip="Tags" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}" *ngIf="isProvider"> Tags
+        <mat-icon matListItemIcon>tag</mat-icon>
+      </mat-list-item>
+    </mat-nav-list>
+
+    <div class="spacer"></div>
+
+    <mat-divider></mat-divider>
+    <mat-nav-list>
+      <mat-list-item *ngIf="license?.edition === 100" [routerLink]="ROUTES.sponsors" routerLinkActive="nav-item-active" matTooltip="Sponsors" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}"> Sponsors
+        <mat-icon matListItemIcon fontIcon="favorite"></mat-icon>
+      </mat-list-item>
+      <a *ngIf="bugReport.isActive && bugReport.url" [href]="bugReport.url" target="_blank" class="text-decoration-none">
+        <mat-list-item matTooltip="Bug report" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}"> Bug report
+          <mat-icon matListItemIcon fontIcon="bug_report"></mat-icon>
+        </mat-list-item>
+      </a>
+      <mat-list-item [routerLink]="ROUTES.about" routerLinkActive="nav-item-active" matTooltip="About" matTooltipPosition="right" matTooltipDisabled="{{menuOpened}}"> About
+        <mat-icon matListItemIcon>info</mat-icon>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content [style.margin-left]="menuOpened ? '175px' : '58px'">
+    <mat-toolbar color="primary" class="toolbar">
+      <span class="ml-1">{{ documentTitle }}</span>
+      <span class="subtitle">
+        <span>{{ subtitle }}</span>
+        <span class="edition">{{license?.editionStringRepresentation}} Edition
+          <ng-container *ngIf="license?.referenceId; else upgrade">
+            <button mat-icon-button matTooltip="Info" (click)="viewLicense()">
+              <mat-icon>info</mat-icon>
+            </button>
+          </ng-container>
+          
+          <ng-template #upgrade>
+            <button mat-icon-button matTooltip="Upgrade" (click)="upgradeLicense()">
+              <mat-icon>arrow_circle_up</mat-icon>
+            </button>
+          </ng-template>
+          
+        </span>
+      </span>
+      <span class="spacer"></span>
+      <app-account-menu></app-account-menu>
+    </mat-toolbar>
+
+    <div class="pt-2">
+      <router-outlet></router-outlet>
+      <p class="brand-watermark" *ngIf="license?.holder">{{license?.holder}}</p>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+ <!-- Account Menu Dropdown -->
+ <!-- <mat-menu #accountMenu="matMenu">
+  <button mat-menu-item disabled>
+    <div class="account-info">
+      <div class="username">Oğulcan TURAN</div>
+      <small>ismetogulcanturan&#64;gmail.com</small>
+    </div>
+  </button>
+  <mat-divider></mat-divider>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu> -->

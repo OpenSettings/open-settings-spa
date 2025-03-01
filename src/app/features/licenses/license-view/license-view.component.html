@@ -1,0 +1,52 @@
+<div class="loading-container" *ngIf="isLoading">
+    <div class="mat-bg-primary position-absolute rounded-circle app-icon-animation"><img class="app-icon bg-white"></div>
+    <div class="loading-spinner"></div>
+</div>
+
+<h2 mat-dialog-title>
+    License Information
+    <mat-icon class="position-absolute t-4 ml-2" matTooltip="Only active license will be shown here. If multiple licenses added, the highest edition with the longest expiry date takes precedence.">info</mat-icon>
+    <button class="position-absolute r-0 t-0" mat-icon-button mat-dialog-close matTooltip="Close"
+        matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<mat-dialog-content *ngIf="license">
+    <table class="custom-mat-table" *ngIf="license">
+        <tbody>
+            <tr *ngIf="license.holder">
+                <td class="custom-mat-cell key-cell">Holder:</td>
+                <td class="custom-mat-cell">{{license.holder}}</td>
+            </tr>
+
+            <tr *ngIf="license.referenceId">
+                <td class="custom-mat-cell key-cell">Reference Id:</td>
+                <td class="custom-mat-cell">{{license.referenceId}}</td>
+            </tr>
+
+            <tr *ngIf="license.edition">
+                <td class="custom-mat-cell key-cell">Edition:</td>
+                <td class="custom-mat-cell">{{license.editionStringRepresentation}}</td>
+            </tr>
+
+            <tr *ngIf="license.issuedAt">
+                <td class="custom-mat-cell key-cell">Activated On:</td>
+                <td class="custom-mat-cell">{{license.issuedAt | date: 'dd-MM-yyyy HH:mm'}}</td>
+            </tr>
+
+            <tr *ngIf="license.expiryDate">
+                <td class="custom-mat-cell key-cell">Expiry Date:</td>
+                <td class="custom-mat-cell">{{license.expiryDate | date: 'dd-MM-yyyy HH:mm'}}</td>
+            </tr>
+
+            <tr>
+                <td class="custom-mat-cell key-cell">Status:</td>
+                <td class="custom-mat-cell">{{license.isExpired ? 'Inactive' : 'Active'}}</td>
+            </tr>
+        </tbody>
+    </table>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button color="primary" (click)="upgradeLicense()">{{license?.edition === 500 ? 'Re-new' : 'Upgrade'}}</button>
+    <button mat-button color="warn" *ngIf="license?.referenceId" (click)="deleteLicense()">Delete</button>
+</mat-dialog-actions>

@@ -1,0 +1,129 @@
+<div class="d-flex border-bottom">
+    <div class="dialog-title">Create a new app</div>
+    <span></span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="toggleFullScreen()"
+        [matTooltip]="isFullScreen ? 'Exit full screen' : 'Enter full screen'" matTooltipPosition="above">
+        <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+    <button mat-icon-button mat-dialog-close matToolTip="Close" matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Client Name</mat-label>
+            <input matInput formControlName="clientName" />
+            <mat-hint>This name should match the project name specified in the project settings and must be unique (also
+                known as the startup project), e.g., "Provider.Api".</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Client Id</mat-label>
+            <input matInput formControlName="clientId" />
+            <button color="primary" type="button" matSuffix mat-icon-button matTooltip="Random"
+                matTooltipPosition="below" (click)="generateGuid('clientId')">
+                <mat-icon>casino</mat-icon>
+            </button>
+            <button color="primary" type="button" matSuffix mat-icon-button matTooltip="Copy" matTooltipPosition="below"
+                (click)="copyToClipboard('clientId')" *ngIf="isConnectionSecure">
+                <mat-icon>content_copy</mat-icon>
+            </button>
+            <mat-error *ngIf="form.get('clientId')?.hasError('invalidGuid')" class="mb-2">Invalid GUID. Please use the
+                format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Client Secret</mat-label>
+            <input matInput formControlName="clientSecret" />
+            <mat-hint>Save it somewhere secure.</mat-hint>
+            <button color="primary" type="button" matSuffix mat-icon-button matTooltip="Random"
+                matTooltipPosition="below" (click)="generateGuid('clientSecret')">
+                <mat-icon>casino</mat-icon>
+            </button>
+            <button color="primary" type="button" matSuffix mat-icon-button matTooltip="Copy" matTooltipPosition="below"
+                (click)="copyToClipboard('clientSecret')" *ngIf="isConnectionSecure">
+                <mat-icon>content_copy</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-error *ngIf="form.get('clientSecret')?.hasError('invalidGuid')" class="mb-2">Invalid GUID. Please use the
+            format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.</mat-error>
+        <mat-accordion multi>
+            <mat-expansion-panel expanded="false">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Others</mat-panel-title>
+                    <mat-panel-description>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <mat-form-field appearance="fill">
+                    <mat-label>Group</mat-label>
+                    <input matInput formControlName="groupName" [maxLength]="50" [matAutocomplete]="groupAuto"
+                        (focus)="onAppGroupFieldFocus()">
+                    <mat-error>Please provide a valid value</mat-error>
+                    <button mat-icon-button matSuffix *ngIf="form.get('groupName')?.value"
+                        (click)="form.get('groupName')?.setValue('')" type="button"><mat-icon
+                            fontIcon="clear"></mat-icon></button>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Display Name</mat-label>
+                    <textarea matInput formControlName="displayName" [maxLength]="250"></textarea>
+                    <mat-error>Please provide a valid value</mat-error>
+                </mat-form-field>
+                <!-- <mat-form-field>
+                    <mat-label>Slug</mat-label>
+                    <textarea matInput formControlName="slug" [maxLength]="250"></textarea>
+                    <mat-error>Please provide a valid value</mat-error>
+                </mat-form-field> -->
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description" [maxLength]="250"></textarea>
+                    <mat-error>Please provide a valid value</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Image Url</mat-label>
+                    <input matInput formControlName="imageUrl">
+                    <mat-error>Please provide a valid value</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>WikiUrl</mat-label>
+                    <input matInput formControlName="wikiUrl">
+                    <mat-error>Please provide a valid value</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Tags</mat-label>
+                    <mat-chip-grid #chipGrid>
+                        @for (tag of tags; track tag) {
+                        <mat-chip-row (removed)="deleteTag(tag.name)">
+                            {{tag.name}}
+                            <button matChipRemove>
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </mat-chip-row>
+                        }
+                    </mat-chip-grid>
+                    <input #tagSearchInput placeholder="New tag... (press 'Enter' to add)" [matChipInputFor]="chipGrid"
+                        formControlName="tagSearch" (matChipInputTokenEnd)="onTagEntered($event)"
+                        [matAutocomplete]="auto" (focus)="onAppTagFieldFocus()" />
+                </mat-form-field>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-raised-button color="primary" [disabled]="form.invalid" class="ml-3">
+            Create
+        </button>
+    </mat-dialog-actions>
+</form>
+
+<mat-autocomplete #groupAuto="matAutocomplete">
+    <mat-option *ngFor="let option of filteredGroups$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>
+
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+    <mat-option *ngFor="let option of filteredTags$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>

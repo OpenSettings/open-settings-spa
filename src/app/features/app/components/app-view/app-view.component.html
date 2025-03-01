@@ -1,0 +1,74 @@
+<div class="d-flex border-bottom">
+  <div class="dialog-title">{{data.clientName}}</div>
+  <span></span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="toggleFullScreen()"
+    [matTooltip]="isFullScreen ? 'Exit full screen' : 'Enter full screen'" matTooltipPosition="above">
+    <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <button mat-icon-button mat-dialog-close matTooltip="Close" matTooltipPosition="above">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-form-field class="custom-form-field">
+  <mat-label>Select the identifier <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+    matTooltip="The identifier can be used to distinguish between different environments, such as Production, Development, etc."></mat-icon></mat-label>
+  <mat-select [(value)]="selectedIdentifierId">
+    <mat-option class="custom-option" *ngFor="let identifier of identifiers" [value]="identifier.id"
+      (onSelectionChange)="onIdentifierChanged($event)">
+      <span>{{identifier.name}}</span>
+      <span class="spacer"></span>
+      <span>
+        <button mat-icon-button (click)="moveSortOrder(identifier.id, $event, false)"
+          *ngIf="appData.identifierInfo.mappingMinSortOrder !== identifier.mappingSortOrder" matTooltip="Up" matTooltipPosition="left"><mat-icon
+            fontIcon="arrow_upward"></mat-icon></button>
+        <button mat-icon-button (click)="moveSortOrder(identifier.id, $event, true)" matTooltip="Down" matTooltipPosition="left"
+          *ngIf="appData.identifierInfo.mappingMaxSortOrder !== identifier.mappingSortOrder"><mat-icon fontIcon="arrow_downward"></mat-icon></button>
+      </span>
+      <button color="warn" mat-icon-button matTooltip="Delete" matTooltipPosition="right"
+        (click)="deleteIdentifier(identifier.id, $event)">
+        <mat-icon fontIcon="delete"></mat-icon>
+      </button>
+    </mat-option>
+    <mat-option [routerLink]="['./apps', data.appSlug, 'new']" queryParamsHandling="merge">New identifier mapping
+      <mat-icon>add_circle</mat-icon>
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-tab-group [(selectedIndex)]="this.tabIndex" animationDuration="0ms"
+  (selectedTabChange)="onTabChange($event.index)">
+  <mat-tab label="Settings" [disabled]="!settingListComponentData || !isLoaded">
+    <mat-dialog-content class="p-0">
+      <setting-list *ngIf="settingListComponentData" [data]="settingListComponentData"
+        (copySettingToIdentifierEmitter)="copySettingToIdentifierEmitted($event)"
+        (settingDeleteEmitter)="onSettingDeleteEmitted($event)"
+        (fetchLatestEmitter)="fetchLatestEmitted($event)"
+        >
+      </setting-list>
+    </mat-dialog-content>
+  </mat-tab>
+  <mat-tab label="Instances" [disabled]="!(appInstanceListComponentData?.instances?.length ?? 0 > 0) || !isLoaded">
+    <mat-dialog-content class="p-0">
+      <instance-list *ngIf="appInstanceListComponentData" [data]="appInstanceListComponentData" (instanceDeleteEmitter)="onInstanceDeleted($event)">
+      </instance-list>
+    </mat-dialog-content>
+  </mat-tab>
+  <mat-tab label="Configuration" [disabled]="!isLoaded">
+    <mat-dialog-content class="p-0">
+      <configuration-update *ngIf="configurationUpdateComponentData" [data]="configurationUpdateComponentData" (configUpdateEmitter)="onConfigUpdateEmitted($event)"></configuration-update>
+    </mat-dialog-content>
+  </mat-tab>
+</mat-tab-group>
+
+<!-- <mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="addIdentifier()">
+    <mat-icon>add_circle</mat-icon>
+    <span>Add a new identifier</span>
+  </button>
+</mat-menu> -->
+
+<!-- <button mat-fab color="primary" [matMenuTriggerFor]="menu">
+  <mat-icon>more_vert</mat-icon>
+</button> -->

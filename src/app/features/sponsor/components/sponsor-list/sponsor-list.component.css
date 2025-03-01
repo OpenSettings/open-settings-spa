@@ -1,0 +1,60 @@
+.card-item {
+    flex-basis: calc(16.2% - 4px);
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+}
+
+.card-image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.card-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.62);
+    color: white;
+    text-align: center;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.card-link {
+    position: absolute;
+    right: 5px;
+    top: 5px
+}
+
+.past-sponsor {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+::ng-deep .border-bottom-1 .mdc-notched-outline__leading,
+::ng-deep .border-bottom-1 .mdc-notched-outline__notch,
+::ng-deep .border-bottom-1 .mdc-notched-outline__trailing {
+    border-bottom: 1px inset !important;
+    border: 0px;
+    border-radius: 0 !important;
+}
+
+::ng-deep .border-none .mdc-notched-outline__leading,
+::ng-deep .border-none .mdc-notched-outline__notch,
+::ng-deep .border-none .mdc-notched-outline__trailing {
+    border-bottom: 0px !important;
+    border: 0px;
+    border-radius: 0 !important;
+}

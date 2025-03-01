@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+$professional-primary: mat.define-palette(mat.$orange-palette, 500, 300, 700);
+$professional-accent: mat.define-palette(mat.$blue-palette, 600, 300, 800);
+
+$professional-dark-theme: mat.define-dark-theme((
+ color: (
+   primary: $professional-primary,
+   accent: $professional-accent
+ )));
+
+$professional-light-theme: mat.define-light-theme((
+ color: (
+   primary: $professional-primary,
+   accent: $professional-accent
+ ),
+ typography: mat.define-typography-config(),
+ density: 0,
+));
+
+.professional-theme {
+    @include mat.all-component-themes($professional-light-theme);
+}
+
+.professional-theme .mat-toolbar.mat-primary {
+  --mat-toolbar-container-text-color: #fff !important;
+}
+
+.professional-theme.dark-theme {
+    @include mat.all-component-colors($professional-dark-theme);
+}

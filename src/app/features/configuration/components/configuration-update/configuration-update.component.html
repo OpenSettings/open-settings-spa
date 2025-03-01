@@ -1,0 +1,247 @@
+<div class="loading-container" *ngIf="isLoading">
+    <div class="mat-bg-primary position-absolute rounded-circle app-icon-animation"><img class="app-icon bg-white"></div>
+    <div class="loading-spinner"></div>
+</div>
+
+<form [formGroup]="form">
+
+    <mat-form-field appearance="fill">
+        <mat-label>Registration Mode <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+            matTooltip="Specifies how single settings file ( separate setting files should be configured its own setting or setting class ) can be registered and resolved within the service. Supports resolving via configuration options or as a singleton service."></mat-icon></mat-label>
+        <mat-select formControlName="registrationMode" (selectionChange)="onSelectionChange($event)" #selectRef>
+            <mat-option class="custom-option" [value]="1">
+                <span>Configure</span>
+                <span class="spacer"></span>
+                <button color="accent" mat-icon-button matTooltipPosition="left"
+                    matTooltip="Settings can be resolved through configuration options interfaces, such as IOptions<T>, IOptionsSnapshot<T> and IOptionsMonitor<T>.">
+                    <mat-icon matIconPosition="right" fontIcon="info"></mat-icon>
+                </button>
+            </mat-option>
+            <mat-option class="custom-option" [value]="2">
+                <span>Singleton</span>
+                <span class="spacer"></span>
+                <button color="accent" mat-icon-button matTooltipPosition="left"
+                    matTooltip="Settings can be resolved directly through its own class as a singleton instance.">
+                    <mat-icon matIconPosition="right" fontIcon="info"></mat-icon>
+                </button>
+            </mat-option>
+            <mat-option class="custom-option" [value]="3">
+                <span>Both</span>
+                <span class="spacer"></span>
+                <button color="accent" mat-icon-button matTooltipPosition="left"
+                    matTooltip="Settings can be resolved both through singleton instances and through configuration options interfaces.">
+                    <mat-icon matIconPosition="right" fontIcon="info"></mat-icon>
+                </button>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="d-flex px-3">
+        <div class="mb-2 mr-3 d-flex align-items-center">
+            <span class="field-label-text">Allow Anonymous Access</span>
+            <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                matTooltip="Indicates whether anonymous access is allowed. When disabled, its typically forces to pre-registration of the app or user."></mat-icon>
+            <mat-slide-toggle labelPosition="before" formControlName="allowAnonymousAccess"
+                (change)="onToggleChange($event, 'allowAnonymousAccess')"></mat-slide-toggle>
+        </div>
+        <div class="mb-2 mr-3 d-flex align-items-center">
+            <span class="field-label-text">Store In Separate File (global)</span>
+            <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                [matTooltip]="'Indicates whether the settings should be stored in a separate file \'settings-generated.*.json\'. If not, it will be stored in the default \'settings-generated.json\' file.'"></mat-icon>
+            <mat-slide-toggle labelPosition="before" formControlName="storeInSeparateFile"
+                (change)="onToggleChange($event, 'storeInSeparateFile')"></mat-slide-toggle>
+        </div>
+        <div class="mb-2 d-flex align-items-center">
+            <span class="field-label-text">Ignore On File Change (global)</span>
+            <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                matTooltip="Indicates whether changes to the file should be ignored when the file is modified."></mat-icon>
+            <mat-slide-toggle labelPosition="before" formControlName="ignoreOnFileChange"
+                (change)="onToggleChange($event, 'ignoreOnFileChange')"></mat-slide-toggle>
+        </div>
+    </div>
+
+    <mat-accordion multi="true">
+        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Consumer Settings
+                <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info" matTooltip="It is only used when the instance is running in consumer mode."></mat-icon>
+            </mat-panel-title>
+            <mat-panel-description>
+                <span class="spacer"></span>
+                <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveConsumerSettings($event)">
+                    <mat-icon>save</mat-icon>
+                </button>
+            </mat-panel-description>
+        </mat-expansion-panel-header>    
+
+        <mat-accordion multi="true" formGroupName="consumer">
+            <mat-expansion-panel expanded="false" formGroupName="pollingSettingsWorker">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Polling Settings Worker
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <span class="spacer"></span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="Represents a worker that handles polling for the latest settings within a specified period."></mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div class="mb-2 mr-3 d-flex align-items-center">
+                    <span class="field-label-text">Is Active</span>
+                    <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="Indicates whether anonymous access is allowed. Changes require a restart."></mat-icon>
+                    <mat-slide-toggle labelPosition="before" formControlName="isActive"></mat-slide-toggle>
+                </div>
+                <mat-form-field>
+                    <mat-label>Starts In <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="The time span to wait before starting the polling."></mat-icon></mat-label>
+                    <input matInput formControlName="startsIn">
+                    <mat-hint>Format: HH:mm:ss</mat-hint>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Period <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="The time span between polling period."></mat-icon></mat-label>
+                    <input matInput formControlName="period">
+                    <mat-hint>Format: HH:mm:ss</mat-hint>
+                </mat-form-field>
+
+            </mat-expansion-panel>
+
+            <mat-expansion-panel expanded="false">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Others
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <mat-form-field>
+                    <mat-label>Request Encodings</mat-label>
+                    <mat-select formControlName="requestEncodings" multiple>
+                        <mat-option [value]="0">
+                            <span>None</span>
+                        </mat-option>
+                        <mat-option [value]="1">
+                            <span>Snappy</span>
+                        </mat-option>
+                        <mat-option [value]="2">
+                            <span>Deflate</span>
+                        </mat-option>
+                        <mat-option [value]="3">
+                            <span>Gzip</span>
+                        </mat-option>
+                        <mat-option [value]="4">
+                            <span>Zstd</span>
+                        </mat-option>
+                        <mat-option [value]="5">
+                            <span>Brotli</span>
+                        </mat-option>
+                    </mat-select>
+                    <mat-hint>The consumer can request its desired encodings, but the ultimate decision is made by the provider.</mat-hint>
+                </mat-form-field>
+
+                <div class="mb-2 mr-3 d-flex align-items-center">
+                    <span class="field-label-text">Is Redis Active</span>
+                    <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="The flag indicates whether Redis is active for the consumer configuration. Redis connection details sent by the provider."></mat-icon>
+                    <mat-slide-toggle labelPosition="before" formControlName="isRedisActive"></mat-slide-toggle>
+                </div>
+                
+            </mat-expansion-panel>
+
+        </mat-accordion>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel expanded="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Provider Settings
+                    <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info" matTooltip="It is only used when the instance is running in provider mode."></mat-icon>
+                </mat-panel-title>
+                <mat-panel-description>
+                    <span class="spacer"></span>
+                    <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveProviderSettings($event)">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-accordion multi="true" formGroupName="provider">
+                <mat-expansion-panel expanded="false" formGroupName="redis">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Redis Settings
+                        </mat-panel-title>
+                       
+                    </mat-expansion-panel-header>
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">Is Active</span>
+                        <mat-slide-toggle labelPosition="before" formControlName="isActive"></mat-slide-toggle>
+                    </div>
+                    <mat-form-field>
+                        <mat-label>Configuration <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The configuration string for Redis."></mat-icon></mat-label>
+                        <input matInput formControlName="configuration">
+                        <mat-hint>e.g. localhost:6379,password=******,abortConnect=false</mat-hint>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Channel <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The channel used to send or receive messages related to settings such as notifiying data change."></mat-icon></mat-label>
+                        <input matInput formControlName="channel">
+                    </mat-form-field>
+                </mat-expansion-panel>
+                <mat-expansion-panel expanded="false">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Others
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field>
+                        <mat-label>Compression Type <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Defines which compression type is applied when storing the setting data."></mat-icon></mat-label>
+                        <mat-select formControlName="compressionType">
+                            <mat-option class="custom-option" [value]="0">
+                                <span>None</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="1">
+                                <span>Snappy</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="2">
+                                <span>Deflate</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="3">
+                                <span>Gzip</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="4">
+                                <span>Zstd</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="5">
+                                <span>Brotli</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Compression Level <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Defines which compression level is applied when storing the setting data."></mat-icon></mat-label>
+                        <mat-select formControlName="compressionLevel">
+                            <mat-option class="custom-option" [value]="0">
+                                <span>Optimal</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="1">
+                                <span>Fastest</span>
+                            </mat-option>
+                            <mat-option class="custom-option" [value]="2">
+                                <span>NoCompression</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+        </mat-expansion-panel>
+    </mat-accordion>
+
+</form>

@@ -1,0 +1,85 @@
+<div class="d-flex border-bottom">
+    <div class="dialog-title">Create > {{data.clientName}}</div>
+    <div class="dialog-subtitle">{{this.data.identifierName}}</div>
+    <span></span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="toggleFullScreen()"
+        [matTooltip]="isFullScreen ? 'Exit full screen' : 'Enter full screen'" matTooltipPosition="above">
+        <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+    <button mat-icon-button mat-dialog-close matToolTip="Close" matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<form [formGroup]="form" (ngSubmit)="add()">
+    <mat-dialog-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Class Namespace</mat-label>
+            <input matInput formControlName="classNamespace" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Class Name</mat-label>
+            <input matInput formControlName="className" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Class Full Name</mat-label>
+            <input matInput formControlName="classFullName" />
+        </mat-form-field>
+
+        <div class="d-flex">
+            <mat-form-field appearance="fill">
+                <mat-label>Computed Identifier <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                    matTooltip="The computer identifier is either provided directly as a GUID or is computed based on the class full name (or other string identifier) using an MD5 hash of the UTF-8 bytes of the string. This allows each setting to have a unique identifier."></mat-icon></mat-label>
+                <input matInput formControlName="computedIdentifier" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Computed Identifier Preview</mat-label>
+                <input matInput [value]="computedIdentifierPreview" disabled />
+                <button type="button" matSuffix mat-icon-button matTooltip="Copy" matTooltipPosition="below"
+                    (click)="copyToClipboard(computedIdentifierPreview)" [disabled]="!computedIdentifierPreview" *ngIf="isConnectionSecure">
+                    <mat-icon>content_copy</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+
+        <mat-accordion multi>
+            <mat-expansion-panel expanded="">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Data (Json)</mat-panel-title>
+                    <mat-panel-description>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div class="d-flex">
+                    <span class="spacer"></span>
+                    <button type="button" mat-button matTooltip="Download" color="primary" (click)="download()">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                    <button type="button" mat-button matTooltip="Upload" color="primary" (click)="fileInput.click()">
+                        <mat-icon>upload</mat-icon>
+                        <input class="d-none" type="file" #fileInput accept=".json,.txt" (change)="upload($event)">
+                    </button>
+                    <button type="button" mat-button matTooltip="Copy" color="primary"
+                        (click)="copyToClipboard(this.form.get('data')?.value)" *ngIf="isConnectionSecure">
+                        <mat-icon>content_copy</mat-icon>
+                    </button>
+                </div>
+
+                <json-editor formControlName="data" [theme]="theme" (invalidData)="invalidData($event)">
+                </json-editor>
+                <!-- <mat-form-field appearance="fill" class="custom-form-field">
+                    <mat-label></mat-label>
+                    <textarea matInput formControlName="data" #textarea></textarea>
+                </mat-form-field>
+                <mat-error *ngIf="form.get('data')?.hasError('invalidJson')" class="mb-1">Invalid JSON format.</mat-error> -->
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button class="ml-3" mat-raised-button color="primary" [disabled]="form.invalid || jsonInvalid">
+            Add
+        </button>
+    </mat-dialog-actions>
+</form>

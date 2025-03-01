@@ -1,0 +1,98 @@
+<div class="px-3">
+    <div class="title mb-3">
+        <h1>Sponsors</h1>
+    </div>
+
+    <div class="d-flex">
+        <mat-form-field appearance="outline" class="w-25 mr-2 border-bottom-1">
+            <mat-label>Filter by status</mat-label>
+            <mat-select [(ngModel)]="selectedStatusFilter" #filterSelect (ngModelChange)="reloadData()">
+                <mat-option [value]="1">Current sponsors</mat-option>
+                <mat-option [value]="0" *ngIf="hasPastSponsors">Past sponsors</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-25 mr-2 border-bottom-1">
+            <mat-label>Filter by version</mat-label>
+            <mat-select [(ngModel)]="selectedVersionFilter" #filterSelect (ngModelChange)="filterSponsorsVersion()">
+                <mat-option [value]="1" [disabled]="failedToFetchLatestVersion">{{ failedToFetchLatestVersion ? 'Latest (failed to fetch)' : 'Latest'}}</mat-option>
+                <mat-option [value]="0">{{ 'v' + this.packVersion }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-25 mr-2 border-bottom-1">
+            <mat-label>Filter by class</mat-label>
+            <mat-select [(ngModel)]="selectedClassFilter" #filterSelect (ngModelChange)="reloadData()">
+                <mat-option *ngFor="let class of this.selectedRawResponseData.classIdMappings | keyvalue"
+                    [value]="class.key">{{class.value.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <button class="mt-2" mat-stroked-button color="primary" (click)="clearFilter()"
+            *ngIf="selectedStatusFilter !== null || (selectedVersionFilter === 0 && !failedToFetchLatestVersion) || selectedClassFilter !== null">
+            <mat-icon>clear</mat-icon>
+            Clear filter
+        </button>
+        <span class="spacer"></span>
+        <button mat-icon-button matTooltip="Expand All" (click)="expandAll()"><mat-icon>expand_more</mat-icon></button>
+        <button mat-icon-button matTooltip="Collapse All"
+            (click)="collapseAll()"><mat-icon>expand_less</mat-icon></button>
+    </div>
+
+    <mat-accordion multi *ngIf="hasAnySponsors; else noSponsors">
+        <mat-expansion-panel *ngFor="let entry of filteredSponsors | keyvalue" expanded="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <span *ngIf="selectedRawResponseData.classIdMappings[entry.key] as mapping"
+                        style="display: inline-flex; align-items: center;">
+                        <mat-icon class="mr-2" svgIcon="{{mapping.iconName}}" *ngIf="mapping.svgIconDef; else matIcon"></mat-icon>
+                        <ng-template #matIcon>
+                            <mat-icon class="mr-2">{{ mapping.iconName !== '' ? mapping.iconName : 'coffee' }}</mat-icon>
+                        </ng-template>| {{ mapping.name }}
+                    </span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="card-container">
+                <mat-card class="card-item mb-2" appearance="outlined" *ngFor="let sponsor of entry.value" 
+                    [ngClass]="{'past-sponsor': !sponsor.isActive}">
+                    <div class="card-image-container">
+                        <img mat-card-image [src]="sponsor.imageUrl" [alt]="sponsor.name + ' IMG'">
+                        <div class="card-overlay">
+                            <mat-card-content style="padding:8px;">
+                                {{sponsor.name}}
+                                <a class="card-link" *ngIf="sponsor.url && sponsor.isActive" [href]="sponsor.url" (click)="confirmationRequiredToOpenLink(sponsor.url, $event)" target="_blank">
+                                    <mat-icon fontIcon="open_in_new"></mat-icon>
+                                </a>
+                            </mat-card-content>
+                        </div>
+                    </div>
+                    <mat-icon *ngIf="sponsor.isActive" class="position-absolute t-0 r-0 p-1" [matTooltip]="'From ' + (sponsor.createdOn | date:'mediumDate')" matTooltipPosition="above">info</mat-icon>
+                </mat-card>
+            </div>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+
+    <ng-template #noSponsors>
+            <button *ngIf="this.selectedStatusFilter !== 0" color="" [disabled] mat-fab extended matIconSuffix class="position-fixed b-0 r-0 mr-3 mb-3 l-0" (click)="matMenuTrigger?.openMenu()">
+                We currently don't have any sponsors{{this.selectedClassFilter === null ? '' : ' for this category'}}, but that's okay! Our mission goes beyond this. <mat-icon matIconSuffix fontIcon="mood"></mat-icon>
+            </button>
+      </ng-template>
+
+</div>
+
+<button mat-fab extended class="position-fixed b-0 r-0 mr-3 mb-3" color="primary" matTooltip="Become a sponsor"
+        [matMenuTriggerFor]="selectedRawResponseData.becomeSponsorLinks.length > 1 ? sponsorMenu : null"
+        (click)="selectedRawResponseData.becomeSponsorLinks.length === 1 && openLink(selectedRawResponseData.becomeSponsorLinks[0].url)">
+    Sponsor
+    <mat-icon>favorite</mat-icon>
+</button>
+
+<mat-menu #sponsorMenu="matMenu">
+    <a mat-menu-item *ngFor="let link of selectedRawResponseData.becomeSponsorLinks" [href]="link.url" target="_blank">
+        <span>{{ link.name }}</span>
+        <mat-icon svgIcon="{{link.iconName}}" *ngIf="link.svgIconDef; else matIcon"></mat-icon>
+        <ng-template #matIcon>
+            <mat-icon>{{ link.iconName !== '' ? link.iconName : 'favorite' }}</mat-icon>
+        </ng-template>
+    </a>
+</mat-menu>
+
+<mat-progress-bar  *ngIf="isLoading" mode="indeterminate"  class="position-fixed l-0 b-0"></mat-progress-bar>

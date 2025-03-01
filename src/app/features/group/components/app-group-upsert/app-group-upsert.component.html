@@ -1,0 +1,30 @@
+<form [formGroup]="myForm">
+    <h2 mat-dialog-title>{{title}}</h2>
+    <mat-dialog-content class="pb-0">
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" [maxLength]="50">
+            <button mat-icon-button matSuffix *ngIf="myForm.get('name')?.value"
+                (click)="myForm.get('name')?.setValue('')" type="button"><mat-icon fontIcon="clear"></mat-icon></button>
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Position</mat-label>
+            <mat-select formControlName="position" (selectionChange)="onPositionChange()">
+                <mat-option [value]="-1">Manual</mat-option>
+                <mat-option [value]="setSortOrderPositions.Top">Top</mat-option>
+                <mat-option [value]="setSortOrderPositions.Bottom">Bottom</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field [ngClass]="isManualSortOrder ? '' : 'collapse d-none'" appearance="fill">
+            <mat-label>Sort Order</mat-label>
+            <input matInput formControlName="sortOrder" type="number">
+            <mat-error>Please provide a valid value</mat-error>
+            <mat-hint>Lower values will appear first in the list.</mat-hint>
+        </mat-form-field>
+        <div class="mt-1">
+            <button class="mr-1" mat-button color="accent" mat-dialog-close>Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="myForm.invalid" (click)="onSubmit()">Save</button>
+        </div>
+    </mat-dialog-content>
+</form>

@@ -1,0 +1,48 @@
+<div class="d-flex mb-2 pb-2 border-bottom">
+    <mat-card-header>
+        <mat-card-title>Copy '{{model.className}}' to</mat-card-title>
+    </mat-card-header>
+    <span></span>
+    <span class="spacer"></span>
+    <button mat-icon-button matToolTip="Close" matTooltipPosition="above" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-card-content class="mt-2">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill" (click)="getApps()">
+            <mat-label>Target client name</mat-label>
+            <mat-select formControlName="targetAppId" #appSelect>
+                <mat-option *ngFor="let app of apps" [value]="app.id">{{ app.client.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Target identifier name</mat-label>
+            <input type="text" matInput formControlName="identifierName" [maxLength]="50"
+                [matAutocomplete]="groupAuto" (focus)="onFieldFocus()">
+            <button type="button" mat-icon-button matSuffix *ngIf="myForm.get('identifierName')!.value"
+                (click)="clear()" matTooltip="clear">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <button mat-icon-button matSuffix [disabled]="myForm.invalid" type="submit" color="primary">
+                <mat-icon>check_circle</mat-icon>
+            </button>
+            <mat-error *ngIf="myForm.get('identifierName')?.hasError('identifierExists')">Setting already
+                exists.</mat-error>
+            <mat-hint>If identifier missing, will be created along with the mapping.</mat-hint>
+        </mat-form-field>
+    </form>
+</mat-card-content>
+
+<mat-autocomplete #groupAuto="matAutocomplete">
+    <mat-option (click)="$event.stopPropagation()">
+        <mat-button-toggle-group [(ngModel)]="appFilterType" (click)="$event.stopPropagation()" (change)="identifierFilterChanged()">
+            <mat-button-toggle value="1">Mapped</mat-button-toggle>
+            <mat-button-toggle value="0">Unmapped</mat-button-toggle>
+            <mat-button-toggle value="">All</mat-button-toggle>
+          </mat-button-toggle-group>
+    </mat-option>
+    <mat-option *ngFor="let option of filteredAppIdentifiers$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>

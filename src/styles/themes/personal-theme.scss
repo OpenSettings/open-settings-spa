@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+$personal-primary: mat.define-palette(mat.$blue-palette);
+$personal-accent: mat.define-palette(mat.$purple-palette);
+
+$personal-dark-theme: mat.define-dark-theme((
+ color: (
+   primary: $personal-primary,
+   accent: $personal-accent
+ )));
+
+$personal-light-theme: mat.define-light-theme((
+ color: (
+   primary: $personal-primary,
+   accent: $personal-accent
+ ),
+ typography: mat.define-typography-config(),
+ density: 0,
+));
+
+.personal-theme {
+    @include mat.all-component-themes($personal-light-theme);
+}
+
+.personal-theme .mat-toolbar.mat-primary{
+  --mat-toolbar-container-text-color: #fff !important;
+}
+
+.personal-theme.dark-theme {
+    @include mat.all-component-colors($personal-dark-theme);
+}

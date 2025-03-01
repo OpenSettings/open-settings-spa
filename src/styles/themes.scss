@@ -1,0 +1,38 @@
+@use '@angular/material' as mat;
+@include mat.core();
+
+$my-neutral: mat.define-palette(mat.$gray-palette);
+$my-info: mat.define-palette(mat.$blue-palette);
+$my-success: mat.define-palette(mat.$green-palette);
+$my-warn: mat.define-palette(mat.$yellow-palette, 700);
+$my-error: mat.define-palette(mat.$red-palette, 900);
+$my-accent:mat.define-palette(mat.$pink-palette, 300);
+
+body {
+  --neutral: #{mat.get-color-from-palette($my-neutral)};
+  --info: #{mat.get-color-from-palette($my-info)};
+  --accent: #{mat.get-color-from-palette($my-accent)};
+  --success: #{mat.get-color-from-palette($my-success)};
+  --warn: #{mat.get-color-from-palette($my-warn)};
+  --error: #{mat.get-color-from-palette($my-error)};
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  z-index: 5;
+  background: var(--mat-sidenav-container-background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--mat-sidenav-scrim-color);
+  border-radius: 10px;
+  border: 4px solid var(--mat-sidenav-container-background-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border: 3px solid var(--mat-sidenav-container-background-color);
+  background-color: var(--mat-sidenav-scrim-color);
+}

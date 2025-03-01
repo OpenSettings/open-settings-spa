@@ -1,0 +1,36 @@
+<div class="login-container">
+    <mat-card class="login-card">
+        <mat-card-title class="login-title">{{ selectedLogin ? 'Basic Authentication' : 'Please choose your preferred login'}}</mat-card-title>
+        <mat-divider></mat-divider>
+
+        <div class="mt-2" *ngIf="!selectedLogin else basicLogin">
+            <button class="w-100" mat-raised-button color="primary" (click)="selectLogin('basic')"><mat-icon>vpn_key</mat-icon>Basic</button>
+            <button class="w-100 mt-2" mat-raised-button color="accent" (click)="handleOauth()"><mat-icon>enhanced_encryption</mat-icon>OAuth</button>
+        </div>
+    </mat-card>
+    <div class="position-absolute b-0 p-2 text-muted">v{{packVersion}}</div>
+</div>
+
+<ng-template #basicLogin>
+    <mat-card-content class="mt-2" *ngIf="selectedLogin">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <mat-form-field class="mb-1" appearance="outline">
+                <mat-label>Client Id:</mat-label>
+                <input matInput type="text" formControlName="clientId">
+                <mat-error *ngIf="form.get('clientId')?.hasError('invalidGuid')" class="text-align-start">Invalid GUID.</mat-error>
+            </mat-form-field>
+    
+            <mat-form-field class="mb-1" appearance="outline">
+                <mat-label>Client Secret:</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="clientSecret">
+                <button mat-icon-button matSuffix (click)="togglePasswordVisibility()">
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+                <mat-error *ngIf="form.get('clientSecret')?.hasError('invalidGuid')">Invalid GUID.</mat-error>
+            </mat-form-field>
+
+            <button type="submit" mat-raised-button color="primary" class="w-100" [disabled]="form.invalid">Login</button>
+            <button mat-stroked-button color="warn" class="w-100 mt-2" (click)="reset()" *ngIf="providerInfo?.oAuth2?.isActive">Back</button>
+        </form>
+    </mat-card-content>
+</ng-template>

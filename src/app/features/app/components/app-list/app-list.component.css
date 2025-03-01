@@ -1,0 +1,59 @@
+.card-item-three {
+    flex-basis: calc(33.33% - 8px);
+}
+
+.card-item-two {
+    flex-basis: calc(50% - 8px);
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.card-footer {
+    margin-top: auto;
+}
+
+::ng-deep .border-bottom-1 .mdc-notched-outline__leading,
+::ng-deep .border-bottom-1 .mdc-notched-outline__notch,
+::ng-deep .border-bottom-1 .mdc-notched-outline__trailing {
+    border-bottom: 1px inset !important;
+    border: 0px;
+    border-radius: 0 !important;
+}
+
+::ng-deep .border-none .mdc-notched-outline__leading,
+::ng-deep .border-none .mdc-notched-outline__notch,
+::ng-deep .border-none .mdc-notched-outline__trailing {
+    border-bottom: 0px !important;
+    border: 0px;
+    border-radius: 0 !important;
+}
+
+.d-flex-wrapper {
+    height: auto;
+    min-height: 82px;
+}
+
+.mat-mdc-card-avatar{
+    padding: 1px;
+}
+
+.card-subtitle-client-id {
+    font-style: 13px;
+}
+
+.card-subtitle-client-id > span{
+    font-style: 12px;
+}
+
+.list-content-copy {
+    scale: 0.65;
+    position: absolute;
+    top: -16px;
+    left: -11px;
+  }
+  

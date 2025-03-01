@@ -1,0 +1,57 @@
+<div class="d-flex border-bottom">
+  <div class="dialog-title">Histories > {{data.clientName}}</div>
+  <div class="dialog-subtitle">{{data.identifierName}} - {{this.data.className}}</div>
+  <span></span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="toggleFullScreen()"
+    [matTooltip]="isFullScreen ? 'Exit full screen' : 'Enter full screen'" matTooltipPosition="above">
+    <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <button mat-icon-button mat-dialog-close matTooltip="Close" matTooltipPosition="above">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-form-field class="custom-form-field">
+  <mat-label>Version</mat-label>
+  <mat-select [(ngModel)]="selectedVersion" (selectionChange)="onVersionSelected()" #versionSelection>
+    <mat-option *ngFor="let history of this.data.model" [value]="history.version"
+      [disabled]="history.version === data.currentVersion">v{{history.version}} -
+      {{history.createdOn}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<ng-container *ngIf="isSelected">
+  <div class="d-flex">
+    <button mat-button matTooltip="Restore" color="primary" (click)="restore()" [disabled]="!isRestoreButtonEnabled">
+      <mat-icon iconPositionEnd>restore</mat-icon>
+    </button>
+    <span class="spacer"></span>
+    <button mat-button matTooltip="Download" color="primary" (click)="download()">
+      <mat-icon>download</mat-icon>
+    </button>
+    <button mat-button matTooltip="Copy" color="primary" (click)="copyToClipboard()" *ngIf="isConnectionSecure">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+  </div>
+
+  <mat-accordion>
+    <div class="loading-container" *ngIf="selectedVersionToLoading[selectedVersion]">
+      <div class="mat-bg-primary position-absolute rounded-circle app-icon-animation"><img class="app-icon bg-white"></div>
+      <div class="loading-spinner"></div>
+    </div>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>View Data</mat-panel-title>
+      </mat-expansion-panel-header>
+      <json-editor [readonly]="true" [(ngModel)]="selectedData.parsedData" [theme]="theme"></json-editor>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Compare Data</mat-panel-title>
+      </mat-expansion-panel-header>
+      <json-diff-editor [modifiedData]="selectedData.parsedData" [originalData]="data.currentParsedData"
+        [sideBySide]="true" [theme]="theme"></json-diff-editor>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-container>

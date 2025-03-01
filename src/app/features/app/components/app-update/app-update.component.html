@@ -1,0 +1,74 @@
+<form [formGroup]="myForm">
+    <h2 mat-dialog-title>Update - {{model.clientName}}</h2>
+    <mat-dialog-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Display Name</mat-label>
+            <input matInput formControlName="displayName" [maxLength]="50">
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Client Name</mat-label>
+            <input matInput formControlName="clientName" [maxLength]="50">
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Slug</mat-label>
+            <input matInput formControlName="slug" [maxLength]="50">
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Group</mat-label>
+            <input matInput formControlName="groupName" [maxLength]="50" [matAutocomplete]="groupAuto"
+                (focus)="onAppGroupFieldFocus()">
+            <button mat-icon-button matSuffix *ngIf="myForm.get('groupName')?.value" (click)="myForm.get('groupName')?.setValue('')" type="button"><mat-icon fontIcon="clear"></mat-icon></button>
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" [maxLength]="250"></textarea>
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Image Url</mat-label>
+            <input matInput formControlName="imageUrl">
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Wiki Url</mat-label>
+            <input matInput formControlName="wikiUrl">
+            <mat-error>Please provide a valid value</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #chipGrid>
+                @for (tag of tags; track tag) {
+                <mat-chip-row (removed)="deleteTag(tag.name)">
+                    {{tag.name}}
+                    <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip-row>
+                }
+            </mat-chip-grid>
+            <input #tagSearchInput placeholder="New tag... (press 'Enter' to add)" [matChipInputFor]="chipGrid"
+                formControlName="tagSearch" (matChipInputTokenEnd)="onTagEntered($event)" [matAutocomplete]="auto"
+                (focus)="onAppTagFieldFocus()" />
+        </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions class="modal-footer">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="primary" [disabled]="myForm.invalid" (click)="onSubmit()">Save</button>
+    </mat-dialog-actions>
+</form>
+
+<mat-autocomplete #groupAuto="matAutocomplete">
+    <mat-option *ngFor="let option of filteredGroups$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>
+
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="onTagSelected($event)">
+    <mat-option *ngFor="let option of filteredTags$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>

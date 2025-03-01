@@ -1,0 +1,33 @@
+<div class="loading-container" *ngIf="isLoading">
+    <div class="mat-bg-primary position-absolute rounded-circle app-icon-animation"><img class="app-icon bg-white"></div>
+    <div class="loading-spinner"></div>
+</div>
+
+<h2 mat-dialog-title>
+    {{actionName}} OpenSettings
+    <button class="position-absolute r-0 t-0" mat-icon-button mat-dialog-close matTooltip="Close" matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+<mat-dialog-content>
+    <p>Please enter your license below:</p>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>License Key</mat-label>
+        <input [type]="hideLicenseKey ? 'password' : 'text'" matInput #licenseInput="ngModel" [(ngModel)]="licenseKey" required>
+        <button mat-icon-button matSuffix matTooltip="Upload" color="primary" (click)="fileInput.click()">
+            <mat-icon>upload</mat-icon>
+            <input class="d-none" type="file" #fileInput accept=".txt,.key" (change)="upload($event)">
+        </button>
+        <button mat-icon-button matSuffix (click)="toggleLicenseKeyVisibility()">
+            <mat-icon>{{ hideLicenseKey ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>A restart may be required for full changes to take effect.</mat-hint>
+        <mat-error *ngIf="licenseInput.invalid">License key is required</mat-error>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <a mat-button *ngIf="licenseLink.isActive && licenseLink.url" [href]="licenseLink.url"  target="_blank">
+        <span>Get a License</span>
+      </a>
+    <button type="submit" mat-flat-button color="primary" [disabled]="!licenseKey" (click)="upgradeLicense(licenseKey)">{{actionName}}</button>
+</mat-dialog-actions>

@@ -1,0 +1,8 @@
+.card-title {
+    font-size: var(--mat-expansion-header-text-size);
+}
+
+
+::ng-deep .mat-mdc-card-header .mat-mdc-card-header-text {
+    width: 100% !important;
+}

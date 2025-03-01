@@ -1,0 +1,133 @@
+<button mat-icon-button [matMenuTriggerFor]="menu"
+  [matBadge]="(notificationCounts.notOpened) > 9 ? '9+': notificationCounts.notOpened"
+  [matBadgeHidden]="notificationCounts.notOpened == 0" matBadgePosition="before" matBadgeColor="primary">
+  <img *ngIf="false; else showInitials" class="rounded-circle account-menu-mini-image" src="favicon.ico">
+  <ng-template #showInitials>
+    <div
+      class="account-menu-mini-image initials-circle d-flex rounded-circle align-items-center justify-content-center text-bold text-uppercase">
+      {{initials || 'U' | truncate: 2}}</div>
+  </ng-template>
+</button>
+
+<mat-menu class="mat-menu" #menu="matMenu" [ngSwitch]="selectedMenu">
+  <ng-container *ngSwitchDefault>
+    <span class="px-2 pb-2 border-bottom d-flex menu" (click)="$event.stopPropagation()">
+      <div class="d-grid">
+        <img *ngIf="false; else showInitials" class="rounded-circle border" src="favicon.ico" height="40" width="40">
+      </div>
+      <div class="d-flex flex-direction-column pl-2 break-word">
+        <span class="user-title">{{ displayName || 'Unknown' }}</span>
+        <span class="user-subtitle">{{ email || userId}}</span>
+      </div>
+    </span>
+    <div class="border-bottom">
+      <!-- <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button> -->
+
+      <button mat-menu-item (click)="changeMenu('notifications')">
+        <mat-icon>notifications</mat-icon>
+        <span>Notifications <span
+            *ngIf="notificationCounts.notOpened > 0">({{notificationCounts.notOpened}})</span></span>
+        <mat-icon class="mat-icon-right">chevron_right</mat-icon>
+      </button>
+
+      <button *ngIf="isAuthenticated" mat-menu-item (click)="logout()">
+        <mat-icon>remove_moderator</mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+
+    <div>
+      <button mat-menu-item (click)="changeMenu('theme')" *ngIf="themeInfo">
+        <mat-icon>contrast</mat-icon>
+        <span>Theme: {{themeInfo.name}}</span>
+        <mat-icon class="mat-icon-right">chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="(docs.isActive && docs.url) || (help.isActive && help.url) || (feedback.isActive && feedback.url)" class="border-top">
+      <a mat-menu-item *ngIf="docs.isActive && docs.url" [href]="docs.url" target="_blank">
+        <mat-icon>description</mat-icon>
+        <span>Docs</span>
+      </a>
+
+      <a mat-menu-item *ngIf="help.isActive && help.url" [href]="help.url" target="_blank">
+        <mat-icon>help</mat-icon>
+        <span>Help</span>
+      </a>
+
+      <a mat-menu-item *ngIf="feedback.isActive && feedback.url" [href]="feedback.url" target="_blank">
+        <mat-icon>feedback</mat-icon>
+        <span>Feedback</span>
+      </a>
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'theme'">
+    <div class="px-2 pb-1 border-bottom d-flex align-items-center" (click)="$event.stopPropagation()">
+      <button mat-icon-button (click)="returnMenu('menu')">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="ml-1 me-3">Select your theme prefence</span>
+    </div>
+    <button mat-menu-item *ngFor="let theme of themes" (click)="selectTheme($event, theme.preference)"
+      [matTooltip]="theme.tooltip" matTooltipPosition="left">
+      <mat-icon class="ml-1"
+        [color]="themeInfo!.preference === theme.preference ? 'primary': ''">{{themeInfo!.preference ===
+        theme.preference ? 'check' : theme.icon}}</mat-icon>
+      <span>{{theme.name}}</span>
+    </button>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'notifications'">
+    <div class="px-2 pb-1 border-bottom d-flex align-items-center" (click)="$event.stopPropagation()">
+      <button mat-icon-button (click)="returnMenu('menu')">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="ml-1 me-3">Notifications</span>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="notification-item">
+      <mat-card class="notification-card" style="box-shadow: none">
+        <mat-card-content>
+          <div class="notification-message">No notifications found.</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+     
+    <ng-container *ngFor="let notification of notifications" class="notification-item" >
+      <div *ngIf="!notification.isDismissed" class="notification-item" [ngClass]="{
+        'neutral': notification.type === 1,
+        'info': notification.type === 2,
+        'accent': notification.type === 3,
+        'success': notification.type === 4 || notification.type === 7,
+        'warn': notification.type === 5 || notification.type === 8 || notification.type === 9,
+        'error': notification.type === 6,
+        'not-viewed': !notification.isViewed
+      }" (click)="$event.stopPropagation()">
+        <mat-card (click)="markNotificationAsViewed(notification, $event)" class="notification-card" [style.cursor]="notification.isViewed ? 'unset' : 'pointer'">
+          <mat-card-header class="notification-header">
+            <mat-card-title class="notification-title">
+              {{notification.title}}
+            </mat-card-title>
+            <button class="icon-mini notification-dismiss" mat-icon-button (click)="markNotificationAsDismissed(notification, $event)">
+              <mat-icon>close</mat-icon>
+            </button>
+            <div class="new-indicator" [ngClass]="{'show': !notification.isOpened}">new</div>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="notification-message" [innerHTML]="notification.message"></div>
+            <div class="notification-bottom text-neutral">
+              <span>{{ formatTimestamp(notification.createdOn) }}</span>
+              <span class="font-style-italic">{{notification.creatorName ? '- ' + notification.creatorName : ''}}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-container>
+  </ng-container>
+
+</mat-menu>

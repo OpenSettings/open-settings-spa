@@ -1,0 +1,78 @@
+<div class="d-flex min-height-50">
+    <div *ngIf="multiSelectionEnabled">
+    <button mat-icon-button matTooltip="Expand All" (click)="expandAll()"
+        [disabled]="!data.settingDataList.length"><mat-icon>expand_more</mat-icon></button>
+    <button mat-icon-button matTooltip="Collapse All" (click)="collapseAll()"
+        [disabled]="!data.settingDataList.length"><mat-icon>expand_less</mat-icon></button>
+    </div>
+    <mat-slide-toggle class="d-flex ml-2" [(ngModel)]="multiSelectionEnabled" (change)="onToggleMultiSelection($event)">Multi selection</mat-slide-toggle>
+    <span class="spacer"></span>
+    <button mat-icon-button matTooltip="Add setting" matTooltipPosition="above" [routerLink]="['./apps', data.slug, data.selectedAppIdentifierId, 'settings', 'new']" queryParamsHandling="merge"
+        [disabled]="!data.selectedAppIdentifierId">
+        <mat-icon>add</mat-icon>
+    </button>
+</div>
+
+<mat-accordion [multi]="multiSelectionEnabled" *ngIf="data.settingDataList.length else noData;">
+    <mat-expansion-panel #expansionPanel (opened)="onPanelExpanded(settingData)" (closed)="onPanelClosed(settingData)" *ngFor="let settingData of data.settingDataList; let i = index">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <span matTooltip="Name">{{ settingData.className }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+                <span matTooltip="Version">v{{ settingData.version }}</span>
+                <span class="spacer"></span>
+                <span class="fs-x-small pr-3" matTooltip="Computed Identifier">{{ settingData.computedIdentifier }}</span>
+                <span class="fs-x-small pr-1" matTooltip="Namespace">{{ settingData.classNamespace }}</span>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'update']" queryParamsHandling="merge">
+                        <mat-icon>edit</mat-icon> Edit
+                    </button>
+                    <button mat-menu-item (click)="deleteSetting(settingData)">
+                        <mat-icon>delete</mat-icon> Delete
+                    </button>
+                </mat-menu>
+                <button mat-icon-button class="icon-mini" [matMenuTriggerFor]="menu"
+                    (click)="$event.stopPropagation()"><mat-icon>more_vert</mat-icon></button>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="d-flex">
+            <button mat-button matTooltip="Save" color="primary" (click)="saveFormData(settingData)"
+                [disabled]="buttons[settingData.settingId]">
+                <mat-icon>save</mat-icon>
+            </button>
+            <span class="spacer"></span>
+            <button mat-button matTooltip="Copy setting to" color="primary" [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'copyTo']" queryParamsHandling="merge">
+                <mat-icon>send</mat-icon>
+            </button>
+            <button mat-button matTooltip="Download" color="primary"
+                (click)="download(settingData.tempData, settingData.className, settingData.classFullName)">
+                <mat-icon>download</mat-icon>
+            </button>
+            <button mat-button matTooltip="Upload" color="primary" (click)="fileInput.click()">
+                <mat-icon>upload</mat-icon>
+                <input class="d-none" type="file" #fileInput accept=".json,.txt" (change)="upload($event, settingData)">
+            </button>
+            <button mat-button matTooltip="Copy" color="primary" (click)="copyToClipboard(settingData.tempData)" *ngIf="isConnectionSecure">
+                <mat-icon>content_copy</mat-icon>
+            </button>
+            <button mat-button matTooltip="Format (Shift+Alt+F)" color="primary" (click)="triggerFormat('editor-' + settingData.settingId)">
+                <mat-icon>text_fields</mat-icon>
+            </button>
+            <button mat-button matTooltip="History" color="primary"
+                [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'histories']" queryParamsHandling="merge"
+                [disabled]="!settingData.dataRestored && settingData.version === '0'">
+                <mat-icon>history</mat-icon>
+            </button>
+        </div>
+        <div class="loading-container" *ngIf="settingIdToLoading[settingData.settingId]">
+            <div class="mat-bg-primary position-absolute rounded-circle app-icon-animation"><img class="app-icon bg-white"></div>
+            <div class="loading-spinner"></div>
+        </div>
+        <json-editor [id]="'editor-' + settingData.settingId" *ngIf="settingData.isDataFetched" (invalidData)="invalidData($event, settingData)" [(ngModel)]="settingData.tempData" [theme]="theme"></json-editor>
+    </mat-expansion-panel>
+</mat-accordion>
+
+<ng-template #noData>
+    <p class="p-2">No results found.</p>
+</ng-template>

@@ -1,0 +1,111 @@
+<div class="d-flex min-height-50">
+  <div *ngIf="multiSelectionEnabled">
+    <button mat-icon-button matTooltip="Expand All" (click)="expandAll()"
+      [disabled]="data.instances === undefined || data.instances.length === 0"><mat-icon>expand_more</mat-icon></button>
+    <button mat-icon-button matTooltip="Collapse All" (click)="collapseAll()"
+      [disabled]="data.instances === undefined || data.instances.length === 0"><mat-icon>expand_less</mat-icon></button>
+  </div>
+  <mat-slide-toggle class="d-flex ml-2" [(ngModel)]="multiSelectionEnabled"
+    (change)="onToggleMultiSelection($event)">Multi selection</mat-slide-toggle>
+  <span class="spacer"></span>
+</div>
+
+<mat-accordion multi *ngIf="data.instances?.length else noData;">
+  <mat-expansion-panel
+    *ngFor="let data of data.instances">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span matTooltip="Name">{{ data.name }}</span>
+      </mat-panel-title>
+      <mat-panel-description>
+        <span matTooltip="App Version">v{{ data.version }}</span>
+        <span class="spacer"></span>
+        <span class="fs-x-small" matTooltip="Dynamic Id">{{ data.dynamicId }}
+          <button mat-icon-button class="icon-mini" color="primary" (click)="copyToClipboard(data.dynamicId, $event)" *ngIf="isConnectionSecure">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </span>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-card class="info-card">
+      <mat-card-content>
+
+        <table class="custom-mat-table">
+          <tbody>
+            <tr *ngIf="data.urls">
+              <td class="custom-mat-cell key-cell">Urls:</td>
+              <td class="custom-mat-cell">
+                <mat-list class="d-grid">
+                  <mat-list-item *ngFor="let url of data.urls">
+                    <span>
+                      {{url}}
+                      <a class="text-decoration-none" [href]="url" target="_blank">
+                        <button mat-icon-button color="primary">
+                          <mat-icon>open_in_new</mat-icon>
+                        </button>
+                      </a>
+                    </span>
+                  </mat-list-item>
+                </mat-list>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Instance status:</td>
+              <td class="custom-mat-cell">{{data.isActive ? 'Active' : 'Inactive'}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Ip Address:</td>
+              <td class="custom-mat-cell">{{data.ipAddress || '-'}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Machine name:</td>
+              <td class="custom-mat-cell">{{data.machineName}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Environment:</td>
+              <td class="custom-mat-cell">{{data.environment}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Reload strategies:</td>
+              <td class="custom-mat-cell">{{getReloadStrategies(data.reloadStrategies)}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Service type:</td>
+              <td class="custom-mat-cell">{{getServiceType(data.serviceType)}}</td>
+            </tr>
+
+            <tr *ngIf="data.dataAccessType">
+              <td class="custom-mat-cell key-cell">Data access type:</td>
+              <td class="custom-mat-cell">{{getDataAccessType(data.dataAccessType)}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Created on:</td>
+              <td class="custom-mat-cell">{{data.createdOn}}</td>
+            </tr>
+
+            <tr>
+              <td class="custom-mat-cell key-cell">Updated on:</td>
+              <td class="custom-mat-cell">{{data.updatedOn}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex mt-2">
+          <span class="spacer"></span>
+          <button color="warn" mat-raised-button (click)="delete(data)">Delete</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<ng-template #noData>
+  <p class="p-2" *ngIf="data.instances !== undefined">No results found.</p>
+</ng-template>

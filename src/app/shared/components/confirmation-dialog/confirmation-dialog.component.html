@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>{{ data.title || 'Confirm' }}</h1>
+<div mat-dialog-content>
+  <p [innerHTML]="data.message || 'Are you sure?'"></p>
+
+  <form (ngSubmit)="onConfirm()">
+    <div *ngIf="data.requireConfirmation">
+      <p>To confirm, type "{{ data.confirmationText }}" below:</p>
+      <mat-form-field appearance="fill">
+        <mat-label>Type to confirm</mat-label>
+        <input matInput [(ngModel)]="userInput" name="confirmationInput">
+      </mat-form-field>
+    </div>
+
+    <div mat-dialog-actions>
+      <button mat-button [mat-dialog-close]="false">No</button>
+      <button mat-raised-button color="warn" [disabled]="data.requireConfirmation && !isInputMatching()" type="submit">
+        Yes
+      </button>
+    </div>
+  </form>
+</div>

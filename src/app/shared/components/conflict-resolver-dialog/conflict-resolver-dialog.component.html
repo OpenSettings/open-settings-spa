@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<div mat-dialog-content>
+  <p [innerHTML]="recreateBtnEnabled ? 'The data is no longer exists.' : 'The data has been updated since you last opened it.'"></p>
+
+    <div>
+      <p>{{ actionText }}</p>
+    </div>
+
+    <div mat-dialog-actions>
+      <button mat-button (click)="onSubmit('Discard')" matTooltip="Do nothing." *ngIf="discardBtnEnabled">Discard</button>
+      <button mat-raised-button (click)="onSubmit('Override')" color="warn" type="submit" matTooltip="Replace existing data with your changes." *ngIf="overrideBtnEnabled">Override</button>
+      <button mat-raised-button (click)="onSubmit('Recreate')" color="primary" type="submit" matToolTip="" *ngIf="recreateBtnEnabled">Recreate</button>
+      <button mat-raised-button (click)="onSubmit('Fetch Latest')" color="warn" type="submit" matTooltip="You'll lose your changes if any." *ngIf="fetchLatestBtnEnabled">Fetch Latest</button>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="d-flex mb-2 pb-2 border-bottom">
+    <mat-card-header>
+        <mat-card-title>{{title}}</mat-card-title>
+    </mat-card-header>
+    <span></span>
+    <span class="spacer"></span>
+    <!-- <button mat-icon-button (click)="toggleFullScreen()"
+        [matTooltip]="isFullScreen ? 'Exit full screen' : 'Enter full screen'" matTooltipPosition="above">
+        <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button> -->
+    <button mat-icon-button mat-dialog-close matToolTip="Close" matTooltipPosition="above">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-card-content class="mt-2">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input #input type="text" matInput formControlName="identifierName" [maxLength]="50"
+                [matAutocomplete]="groupAuto" (focus)="onFieldFocus()">
+            <mat-hint>If identifier missing, will be created along with the mapping.</mat-hint>
+            <button mat-icon-button matSuffix *ngIf="myForm.get('identifierName')!.value" type="button"
+                (click)="myForm.get('identifierName')!.setValue('')" matTooltip="clear">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <button mat-icon-button matSuffix [disabled]="myForm.invalid" type="submit" color="primary">
+                <mat-icon>check_circle</mat-icon>
+            </button>
+            <mat-error *ngIf="myForm.get('identifierName')?.hasError('identifierExists')">Identifier already
+                exists.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Position</mat-label>
+            <mat-select formControlName="position" (selectionChange)="onPositionChange()">
+                <mat-option [value]="setSortOrderPositions.Top">Top</mat-option>
+                <mat-option [value]="setSortOrderPositions.Bottom">Bottom</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-card-content>
+
+<mat-autocomplete #groupAuto="matAutocomplete">
+    <mat-option *ngFor="let option of filteredAppIdentifiers$ | async" [value]="option.name">
+        {{ option.name }}
+    </mat-option>
+</mat-autocomplete>

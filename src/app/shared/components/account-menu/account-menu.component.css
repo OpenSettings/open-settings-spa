@@ -1,0 +1,146 @@
+:host ::ng-deep .mat-badge-medium.mat-badge-overlap.mat-badge-before .mat-badge-content {
+    font-size: 10px;
+    left: 40px;
+}
+
+:host ::ng-deep .mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: 15px;
+}
+
+:host ::ng-deep .mat-badge-medium .mat-badge-content {
+    width: 15px;
+    height: 15px;
+    line-height: 14px;
+}
+
+:host ::ng-deep .mat-badge-content {
+    border: 1px solid;
+}
+
+::ng-deep.mat-menu {
+    max-width: 500px !important
+}
+
+.account-menu-mini-image {
+    text-overflow: clip;
+    overflow: hidden;
+    position: relative;
+    padding: 0;
+    border: 1px solid;
+    top: -1px;
+    left: -1px;
+}
+
+.initials-circle {
+    width: 24px;
+    height: 24px;
+    background-color: var(--mat-full-pseudo-checkbox-disabled-selected-icon-color);
+    font-size: 12px;
+}
+
+.menu .initials-circle {
+    width: 40px;
+    height: 40px;
+    border: none;
+}
+
+.user-subtitle {
+    font-size: 12px;
+}
+
+.user-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.notification-item {
+    padding: 10px;
+}
+
+.notification-header {
+    padding-top: 0px;
+}
+
+.notification-card {
+    width: 460px;
+}
+
+.notification-title {
+    font-size: 14px;
+}
+
+.notification-message {
+    font-size: 13px;
+}
+
+.notification-card mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-item.neutral .notification-card {
+    border-left: 5px solid var(--neutral);
+}
+
+.notification-item.info .notification-card {
+    border-left: 5px solid var(--info);
+}
+
+.notification-item.accent .notification-card {
+    border-left: 5px solid var(--accent);
+}
+
+.notification-item.success .notification-card {
+    border-left: 5px solid var(--success);
+}
+
+.notification-item.warn .notification-card {
+    border-left: 5px solid var(--warn);
+}
+
+.notification-item.error .notification-card {
+    border-left: 5px solid var(--error);
+}
+
+.notification-item.not-viewed .notification-card {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.notification-card button {
+    background: transparent;
+    border: none;
+    opacity: 0;
+}
+
+.notification-card:hover button {
+    opacity: 1; /* Show on hover */
+  }
+
+.notification-bottom {
+    font-size: 12px;
+    justify-content: space-between;
+    display: flex;
+}
+
+.new-indicator {
+    color: white;
+    font-weight: bold;
+    transition: opacity 1s ease-in-out;
+    border-radius: 7px;
+    animation: fadeInOut 3s ease-in-out forwards;
+    background-color: var(--accent);
+    font-size: 9px;
+    text-align: center;
+    position: fixed;
+    right: 35px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 0 7px;
+    opacity: 0;
+    z-index: -1;
+}
+
+.new-indicator.show {
+    opacity: 1;
+    z-index: 1;
+}

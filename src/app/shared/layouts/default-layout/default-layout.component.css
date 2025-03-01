@@ -1,0 +1,81 @@
+.subtitle {
+    font-size: 10px;
+    color: white;
+    padding: 2px 6px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15px;
+    box-shadow: 2px 2px 6px 1px rgba(0, 0, 0, 0.2);
+}
+
+.mat-toolbar-row {
+    padding-left: 4px;
+}
+
+.mat-sidenav-container {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+}
+
+::ng-deep .mat-drawer-inner-container {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden !important;
+}
+
+mat-nav-list mat-list-item {
+    border-radius: 0 !important;
+}
+
+.menu {
+    padding: 0 4px;
+    padding-top: 3px;
+    padding-bottom: 3.3px;
+    font-size: 17px;
+    height: 52px;
+}
+
+.nav-list-menu {
+    bottom: 7px;
+    position: relative;
+    left: 19px;
+}
+
+.nav-item-active {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-left: 3px solid var(--mat-option-selected-state-label-text-color);
+}
+
+.nav-item-active mat-icon {
+    margin-left: 13.5px;
+}
+
+.edition {
+    position: absolute;
+    font-size: 8px;
+    top: 23px;
+}
+
+.edition>button {
+    position: absolute;
+    top: -8px;
+    margin-left: -15px;
+    transform: scale(0.6);
+}
+
+.brand-watermark {
+    letter-spacing: 2.5px;
+    position: fixed;
+    bottom: 10px;
+    font-size: 14px;
+    color: var(--mat-ripple-color);
+    padding: 5px 10px;
+    font-family: 'Verdana', sans-serif;
+    text-transform: uppercase;
+    z-index: -1;
+    user-select: none;
+  }

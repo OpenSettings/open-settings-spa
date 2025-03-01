@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+
+$community-primary-palette: (
+  100 : #f9bdbd,
+  300 : #f06e6e,
+  400 : #ed5656,
+  500 : #ea5455,
+  600 : #e74b4b,
+  700 : #e44343,
+  contrast: (100 : #ffffff,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff)
+);
+
+$community-primary-500: mat.define-palette($community-primary-palette, 500);
+$community-primary-300: mat.define-palette($community-primary-palette, 300);
+
+$mat-blue-grey-A200: mat.define-palette(mat.$blue-grey-palette, A200);
+$mat-red-palette-900: mat.define-palette(mat.$red-palette, 900);
+$mat-pink-300: mat.define-palette(mat.$pink-palette, 300);
+
+$community-dark-theme: mat.define-dark-theme((
+ color: (
+   primary: $community-primary-500,
+   accent: $mat-blue-grey-A200,
+   warn: $mat-red-palette-900
+ )));
+
+$community-light-theme: mat.define-light-theme((
+ color: (
+   primary: $community-primary-300,
+   accent: $mat-pink-300,
+   warn: $mat-red-palette-900
+ ),
+ typography: mat.define-typography-config(),
+ density: 0,
+));
+
+.community-theme {
+    @include mat.all-component-themes($community-light-theme);
+}
+
+.community-theme.dark-theme {
+    @include mat.all-component-colors($community-dark-theme);
+}
