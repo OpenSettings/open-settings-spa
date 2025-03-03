@@ -182,6 +182,14 @@ export class SponsorListComponent implements OnInit {
         });
     }
 
+    openBecomeSponsorMenu(){
+        if(this.selectedRawResponseData.becomeSponsorLinks.length === 1){
+            this.openLink(this.selectedRawResponseData.becomeSponsorLinks[0].url)
+        } else{
+            this.matMenuTrigger?.openMenu();
+        }
+    }
+
     confirmationRequiredToOpenLink(url: string, event: Event) {
 
         event.preventDefault();

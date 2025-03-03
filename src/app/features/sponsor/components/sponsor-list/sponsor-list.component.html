@@ -71,7 +71,7 @@
     </mat-accordion>
 
     <ng-template #noSponsors>
-            <button *ngIf="this.selectedStatusFilter !== 0" color="" [disabled] mat-fab extended matIconSuffix class="position-fixed b-0 r-0 mr-3 mb-3 l-0" (click)="matMenuTrigger?.openMenu()">
+            <button *ngIf="this.selectedStatusFilter !== 0" color="" [disabled] mat-fab extended matIconSuffix class="position-fixed b-0 r-0 mr-3 mb-3 l-0" (click)="openBecomeSponsorMenu()">
                 We currently don't have any sponsors{{this.selectedClassFilter === null ? '' : ' for this category'}}, but that's okay! Our mission goes beyond this. <mat-icon matIconSuffix fontIcon="mood"></mat-icon>
             </button>
       </ng-template>

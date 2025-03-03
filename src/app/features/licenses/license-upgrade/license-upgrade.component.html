@@ -26,7 +26,7 @@
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <a mat-button *ngIf="licenseLink.isActive && licenseLink.url" [href]="licenseLink.url"  target="_blank">
+    <a mat-button *ngIf="licenseLink.isActive && licenseLink.url" [href]="licenseLink.url" target="_blank">
         <span>Get a License</span>
       </a>
     <button type="submit" mat-flat-button color="primary" [disabled]="!licenseKey" (click)="upgradeLicense(licenseKey)">{{actionName}}</button>
