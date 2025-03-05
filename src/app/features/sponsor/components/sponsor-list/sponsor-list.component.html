@@ -53,13 +53,13 @@
                 <mat-card class="card-item mb-2" appearance="outlined" *ngFor="let sponsor of entry.value" 
                     [ngClass]="{'past-sponsor': !sponsor.isActive}">
                     <div class="card-image-container">
-                        <img mat-card-image [src]="sponsor.imageUrl" [alt]="sponsor.name + ' IMG'">
+                        <img mat-card-image [src]="sponsor.imageUrl" [alt]="sponsor.name + ' IMG'" *ngIf="sponsor.imageUrl; else noImage">
                         <div class="card-overlay">
                             <mat-card-content style="padding:8px;">
                                 {{sponsor.name}}
-                                <a class="card-link" *ngIf="sponsor.url && sponsor.isActive" [href]="sponsor.url" (click)="confirmationRequiredToOpenLink(sponsor.url, $event)" target="_blank">
+                                <button mat-icon-button class="card-link" *ngIf="sponsor.url && sponsor.isActive" (click)="confirmationRequiredToOpenLink(sponsor.url, $event)">
                                     <mat-icon fontIcon="open_in_new"></mat-icon>
-                                </a>
+                                </button>
                             </mat-card-content>
                         </div>
                     </div>
@@ -96,3 +96,7 @@
 </mat-menu>
 
 <mat-progress-bar  *ngIf="isLoading" mode="indeterminate"  class="position-fixed l-0 b-0"></mat-progress-bar>
+
+<ng-template #noImage>
+    <img class="app-icon mat-bg-primary mask-size-cover">
+  </ng-template>

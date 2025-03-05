@@ -10,7 +10,7 @@ import { Sponsor } from "../../models/sponsor.model";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { MatDialog } from "@angular/material/dialog";
 import { Subscription } from "rxjs";
-import { MatMenu, MatMenuTrigger } from "@angular/material/menu";
+import { MatMenuTrigger } from "@angular/material/menu";
 import { OpenSettingsService } from "../../../../shared/services/open-settings.service";
 
 @Component({
@@ -195,7 +195,7 @@ export class SponsorListComponent implements OnInit {
         event.preventDefault();
 
         const title = 'Warn!';
-        const message = `You are about to navigating to an external website. Do you want to proceed? <br /><br />Url: <small><q>${url}</q></small>`;
+        const message = `You are about to navigate to an external website and we have no control the content, privacy policies, or data collection practices of this website. Do you want to proceed? <br /><br />Url: <small><q>${url}</q></small>`;
 
         const subscription = this.dialog.open(ConfirmationDialogComponent, {
             width: '500px',

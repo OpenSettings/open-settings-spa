@@ -112,21 +112,26 @@ export class AboutComponent implements OnInit {
     viewReleaseNotes(version?: string) {
 
         if (version) {
-            return this.releaseNotes.url.replace("%(Version)", version);
+
+            const majorVersion = version.split('.')[0];
+
+            return this.releaseNotes.url
+                .replace("%(MajorVersion)", majorVersion)
+                .replace("%(Version)", version);
         }
 
         return '';
     }
 
     upgradeLicense() {
-            this.dialog.open(LicenseUpgradeComponent, {
-                width: '500px',
-                height: '265px',
-                minWidth: 'inherit',
-                maxWidth: 'inherit',
-                autoFocus: false
-            });
-        }
+        this.dialog.open(LicenseUpgradeComponent, {
+            width: '500px',
+            height: '265px',
+            minWidth: 'inherit',
+            maxWidth: 'inherit',
+            autoFocus: false
+        });
+    }
 
     deleteLicense() {
 

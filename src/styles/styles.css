@@ -137,6 +137,10 @@ body {
     padding: 10px !important;
 }
 
+.p-3 {
+    padding: 15px !important;
+}
+
 .pt-0 {
     padding-top: 0 !important;
 }
@@ -400,6 +404,10 @@ body {
 
 .flex-direction-column {
     flex-direction: column;
+}
+
+.mask-size-cover{
+    mask-size:cover;
 }
 
 
