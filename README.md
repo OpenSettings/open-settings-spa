@@ -1,4 +1,4 @@
-# Open Settings Spa
+# <img src="logo/open-settings-logo.png" alt="Header" width="24"/> Open Settings Spa
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.3.
 
