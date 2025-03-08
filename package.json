@@ -1,5 +1,5 @@
 {
-  "name": "settings-spa",
+  "name": "open-settings-spa",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
