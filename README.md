@@ -1,10 +1,8 @@
 # <img src="logo/open-settings-logo.png" alt="Header" width="24"/> Open Settings Spa
 
-**OpenSettings** is a powerful, flexible, and centralized **configuration management solution** for .NET applications. It simplifies settings storage, retrieval, and synchronization.  
+A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings.
 
 ![Demo](https://raw.githubusercontent.com/OpenSettings/open-settings-docs/master/docs/v1/assets/demo.gif)
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.3.
 
 ## 🚀 Getting Started
 
