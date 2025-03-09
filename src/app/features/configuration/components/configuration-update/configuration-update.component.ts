@@ -34,7 +34,6 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
 
     ngOnInit(): void {
         this.form = this.formBuilder.group({
-            allowAnonymousAccess: [this.data.allowAnonymousAccess],
             storeInSeparateFile: [this.data.storeInSeparateFile],
             ignoreOnFileChange: [this.data.storeInSeparateFile ? this.data.ignoreOnFileChange ?? false : null],
             registrationMode: [this.data.registrationMode],
@@ -66,7 +65,6 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
     ngOnChanges(changes: SimpleChanges) {
         if (changes['data'] && this.data) {
             this.form?.patchValue({
-                allowAnonymousAccess: this.data.allowAnonymousAccess,
                 storeInSeparateFile: this.data.storeInSeparateFile,
                 ignoreOnFileChange: this.data.ignoreOnFileChange,
                 registrationMode: this.data.registrationMode,
@@ -185,14 +183,6 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 this.data.rowVersion = responseData.rowVersion;
 
                 switch (formControlName) {
-
-                    case 'allowAnonymousAccess':
-                        this.configUpdateEmitter.emit({
-                            formControlName,
-                            allowAnonymousAccess: responseData.updatedFieldNameToValue['AllowAnonymousAccess'],
-                            rowVersion: responseData.rowVersion
-                        });
-                        break;
 
                     case 'storeInSeparateFile':
                         this.configUpdateEmitter.emit({
@@ -372,7 +362,6 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 }
 
                 this.configUpdateEmitter.emit({
-                    allowAnonymousAccess: responseData.allowAnonymousAccess,
                     storeInSeparateFile: responseData.storeInSeparateFile,
                     ignoreOnFileChange: responseData.ignoreOnFileChange,
                     registrationMode: responseData.registrationMode,

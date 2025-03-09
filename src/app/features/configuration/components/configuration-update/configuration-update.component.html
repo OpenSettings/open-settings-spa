@@ -38,13 +38,6 @@
 
     <div class="d-flex px-3">
         <div class="mb-2 mr-3 d-flex align-items-center">
-            <span class="field-label-text">Allow Anonymous Access</span>
-            <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                matTooltip="Indicates whether anonymous access is allowed. When disabled, its typically forces to pre-registration of the app or user."></mat-icon>
-            <mat-slide-toggle labelPosition="before" formControlName="allowAnonymousAccess"
-                (change)="onToggleChange($event, 'allowAnonymousAccess')"></mat-slide-toggle>
-        </div>
-        <div class="mb-2 mr-3 d-flex align-items-center">
             <span class="field-label-text">Store In Separate File (global)</span>
             <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
                 [matTooltip]="'Indicates whether the settings should be stored in a separate file \'settings-generated.*.json\'. If not, it will be stored in the default \'settings-generated.json\' file.'"></mat-icon>

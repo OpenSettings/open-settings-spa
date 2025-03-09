@@ -2,7 +2,6 @@ import { ConfigurationConsumer, ConfigurationProvider } from "../../configuratio
 
 export interface GetConfigurationByAppAndIdentifierResponse {
     id: string;
-    allowAnonymousAccess: boolean;
     storeInSeparateFile: boolean;
     ignoreOnFileChange: boolean;
     registrationMode: number;

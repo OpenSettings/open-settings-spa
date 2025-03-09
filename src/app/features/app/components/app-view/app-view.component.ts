@@ -699,7 +699,6 @@ export class AppViewComponent implements OnInit, OnDestroy {
             configurationId: configuration.id,
             appId: this.data.appId,
             selectedIdentifierId: identifierId,
-            allowAnonymousAccess: configuration.allowAnonymousAccess,
             storeInSeparateFile: configuration.storeInSeparateFile,
             ignoreOnFileChange: configuration.ignoreOnFileChange,
             registrationMode: configuration.registrationMode,
@@ -937,10 +936,6 @@ export class AppViewComponent implements OnInit, OnDestroy {
         if (data.formControlName) {
             switch (data.formControlName) {
 
-                case 'allowAnonymousAccess':
-                    configuration.allowAnonymousAccess = this.configurationUpdateComponentData.allowAnonymousAccess = data.allowAnonymousAccess;
-                    break;
-
                 case 'storeInSeparateFile':
                     configuration.storeInSeparateFile = this.configurationUpdateComponentData.storeInSeparateFile = data.storeInSeparateFile;
                     break;
@@ -962,7 +957,6 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     break;
             }
         } else {
-            configuration.allowAnonymousAccess = this.configurationUpdateComponentData.allowAnonymousAccess = data.allowAnonymousAccess;
             configuration.storeInSeparateFile = this.configurationUpdateComponentData.storeInSeparateFile = data.storeInSeparateFile;
             configuration.ignoreOnFileChange = this.configurationUpdateComponentData.ignoreOnFileChange = data.ignoreOnFileChange;
             configuration.registrationMode = this.configurationUpdateComponentData.registrationMode = data.registrationMode;
@@ -1197,7 +1191,6 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
                         this.appData.identifierIdToConfiguration[result.identifierId] = {
                             id: responseData.id,
-                            allowAnonymousAccess: responseData.allowAnonymousAccess,
                             storeInSeparateFile: responseData.storeInSeparateFile,
                             ignoreOnFileChange: responseData.ignoreOnFileChange,
                             registrationMode: responseData.registrationMode,

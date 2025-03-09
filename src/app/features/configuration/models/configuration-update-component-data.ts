@@ -2,7 +2,6 @@ export interface ConfigurationUpdateComponentData {
     configurationId: string;
     appId: string;
     selectedIdentifierId: string;
-    allowAnonymousAccess: boolean;
     storeInSeparateFile: boolean;
     ignoreOnFileChange: boolean;
     registrationMode: number;
