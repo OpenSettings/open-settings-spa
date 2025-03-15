@@ -10,7 +10,7 @@ A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings)
 
 ## 💡 License  
 
-OpenSettings is licensed under the [OpenSettings License](https://opensettings.net/license).
+Licensed under the [OpenSettings License](https://opensettings.net/license).
 
 ## 🤝 Contributing
 
