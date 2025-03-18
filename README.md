@@ -2,7 +2,7 @@
 
 A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings.
 
-![Demo](https://raw.githubusercontent.com/OpenSettings/open-settings-docs/master/docs/v1/assets/demo.gif)
+![Demo](https://raw.githubusercontent.com/OpenSettings/open-settings-docs/master/docs/v1/assets/gifs/demo.gif)
 
 ## 🚀 Getting Started
 
