@@ -1,6 +1,6 @@
 # <img src="logo/open-settings-logo.png" alt="Header" width="24"/> Open Settings Spa
 
-A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings.
+A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings. Built with [Angular](https://angular.dev/overview).
 
 ![Demo](https://raw.githubusercontent.com/OpenSettings/open-settings-docs/master/docs/v1/assets/gifs/demo.gif)
 
