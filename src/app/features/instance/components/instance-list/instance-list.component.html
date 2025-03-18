@@ -25,6 +25,13 @@
             <mat-icon>content_copy</mat-icon>
           </button>
         </span>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="delete(data)">
+              <mat-icon>delete</mat-icon> Delete
+          </button>
+      </mat-menu>
+      <button mat-icon-button class="icon-mini" [matMenuTriggerFor]="menu"
+          (click)="$event.stopPropagation()"><mat-icon>more_vert</mat-icon></button>
       </mat-panel-description>
     </mat-expansion-panel-header>
     <mat-card class="info-card">
@@ -96,11 +103,6 @@
             </tr>
           </tbody>
         </table>
-
-        <div class="d-flex mt-2">
-          <span class="spacer"></span>
-          <button color="warn" mat-raised-button (click)="delete(data)">Delete</button>
-        </div>
       </mat-card-content>
     </mat-card>
   </mat-expansion-panel>

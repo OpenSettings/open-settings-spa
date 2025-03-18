@@ -15,3 +15,10 @@
 .info-value>p {
     padding-left: 16px;
 }
+
+.custom-mat-table .custom-mat-cell{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
