@@ -1,5 +1,8 @@
 # <img src="logo/open-settings-logo.png" alt="Header" width="24"/> Open Settings Spa
 
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://docs.opensettings.net)
+[![GitHub](https://img.shields.io/badge/•-open--settings-blue?logo=github)](https://github.com/OpenSettings/open-settings)
+
 A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings. Built with [Angular](https://angular.dev/overview).
 
 ![Demo](https://raw.githubusercontent.com/OpenSettings/open-settings-docs/master/docs/v1/assets/gifs/demo.gif)
