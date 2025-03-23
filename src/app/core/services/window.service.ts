@@ -14,7 +14,7 @@ export class WindowService {
     private _dbProviderName: string;
     private _isProvider: boolean;
     private _packVersion: string;
-    private _packVersionScore: bigint = BigInt(281474976710656n);
+    private _packVersionScore;
     private _version: string;
     private _clientName: string;
     private _clientId: string;
