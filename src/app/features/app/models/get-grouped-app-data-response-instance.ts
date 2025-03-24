@@ -15,6 +15,6 @@ export interface GetGroupedAppDataResponseInstance{
     reloadStrategies: ReloadStrategy[];
     serviceType: ServiceType;
     dataAccessType?: DataAccessType
-    createdOn: Date;
-    updatedOn?: Date; 
+    createdOn: string;
+    updatedOn?: string; 
 }

@@ -13,7 +13,7 @@ export interface GetGroupedAppDataByIdentifierIdResponseInstance {
     environment: string;
     reloadStrategies: ReloadStrategy[];
     serviceType: ServiceType;
-    createdOn: Date;
-    updatedOn?: Date;
+    createdOn: string;
+    updatedOn?: string;
     rowVersion: string;
 }

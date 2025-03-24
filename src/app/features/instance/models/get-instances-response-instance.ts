@@ -14,6 +14,6 @@ export interface GetInstancesResponseInstance {
     serviceType: ServiceType;
     dataAccessType?: DataAccessType;
     version: string;
-    createdOn: Date;
-    updatedOn?: Date;
+    createdOn: string;
+    updatedOn?: string;
 }

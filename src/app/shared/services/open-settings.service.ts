@@ -105,7 +105,7 @@ export interface GetNotificationsResponse {
     message: string;
     type: NotificationType;
     metadata: { [key: string]: any };
-    createdOn: Date;
+    createdOn: string;
     createdBy: string;
 }
 

@@ -6,6 +6,6 @@ export interface GetSettingHistoryResponse {
     createdById?: string;
     restoredById?: string;
     rowVersion: string;
-    createdOn: Date;
-    updatedOn?: Date;
+    createdOn: string;
+    updatedOn?: string;
 }

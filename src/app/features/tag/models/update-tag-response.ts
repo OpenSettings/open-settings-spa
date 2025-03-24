@@ -3,6 +3,6 @@ export interface UpdateTagResponse {
     slug: string;
     sortOrder: number;
     updatedById: string;
-    updatedOn: Date;
+    updatedOn: string;
     rowVersion: string;
 }

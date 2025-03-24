@@ -196,7 +196,7 @@ export interface GetNotificationsResponseNotification {
     source: NotificationSource;
     metadata: { [key: string]: any };
     isExpired: boolean;
-    createdOn: Date;
+    createdOn: string;
     creatorName: string;
 }
 
@@ -225,7 +225,7 @@ export interface GetUserNotificationsResponseNotification {
     isViewed: boolean;
     isDismissed: boolean;
     isExpired: boolean;
-    createdOn: Date;
+    createdOn: string;
     creatorName: string;
 }
 

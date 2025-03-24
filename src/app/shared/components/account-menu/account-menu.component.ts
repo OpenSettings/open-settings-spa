@@ -6,7 +6,6 @@ import { AuthService } from "../../../core/services/auth.service";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { Subscription, timer } from "rxjs";
 import { GetUserNotificationsResponseNotification, GetUserNotificationsResponseNotificationCounts, NotificationsService, NotificationType } from "../../services/notifications.service";
-import { getDateTimeUtcNow } from "../../utils/other-utils";
 import { GetLinksResponseLink, OpenSettingsService } from "../../services/open-settings.service";
 
 @Component({
@@ -380,9 +379,9 @@ export class AccountMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.notifications.splice(index, 1);
     }
 
-    formatTimestamp(date: Date): string {
+    formatTimestamp(date: string): string {
         const now = new Date();
-        const diff = now.getTime() - date.getTime();
+        const diff = now.getTime() - new Date(date).getTime();
 
         const seconds = Math.floor(diff / 1000);
         const minutes = Math.floor(seconds / 60);

@@ -158,11 +158,11 @@ export interface RedisInfo {
 export interface License {
     holder: string;
     referenceId: string;
-    expiryDate?: Date;
+    expiryDate?: string;
     edition: LicenseEdition;
     editionStringRepresentation: string
     isExpired: boolean;
-    issuedAt?: Date;
+    issuedAt?: string;
 }
 
 export enum LicenseEdition {

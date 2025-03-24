@@ -4,8 +4,8 @@ export interface ModelForPaginatedResponseData {
     slug: string;
     sortOrder: number;
     mappingsCount: number;
-    createdOn: Date;
-    updatedOn?: Date;
+    createdOn: string;
+    updatedOn?: string;
     createdBy: string;
     updatedBy: string;
     rowVersion: string;
