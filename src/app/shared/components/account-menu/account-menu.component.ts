@@ -381,9 +381,8 @@ export class AccountMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     formatTimestamp(date: Date): string {
-        const now = getDateTimeUtcNow();
-        const localDate = new Date(date);
-        const diff = now.getTime() - localDate.getTime();
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
 
         const seconds = Math.floor(diff / 1000);
         const minutes = Math.floor(seconds / 60);
