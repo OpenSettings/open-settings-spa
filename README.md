@@ -2,6 +2,7 @@
 
 [![Docs](https://img.shields.io/badge/docs-online-blue)](https://docs.opensettings.net)
 [![GitHub](https://img.shields.io/badge/•-open--settings-blue?logo=github)](https://github.com/OpenSettings/open-settings)
+[![GitHub](https://img.shields.io/badge/•-open--settings--docker-blue?logo=github)](https://github.com/OpenSettings/open-settings-docker)
 
 A web-based UI for [OpenSettings](https://github.com/OpenSettings/open-settings), providing an intuitive and user-friendly interface to manage application settings. Built with [Angular](https://angular.dev/overview).
 
