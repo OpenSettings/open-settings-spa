@@ -1,4 +1,4 @@
-import { ConfigurationConsumer, ConfigurationProvider } from "../../configuration/models/configuration-update-component-data";
+import { ConfigurationConsumer, ConfigurationController, ConfigurationProvider, ConfigurationSpa } from "../../configuration/models/configuration-update-component-data";
 
 export interface GetGroupedAppDataResponseConfiguration {
     id: string;
@@ -7,5 +7,7 @@ export interface GetGroupedAppDataResponseConfiguration {
     registrationMode: number;
     consumer: ConfigurationConsumer;
     provider: ConfigurationProvider;
+    controller: ConfigurationController;
+    spa: ConfigurationSpa;
     rowVersion: string;
 }

@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 })
 export class WindowService {
 
-    private _controllerOptions: ControllerOptions;
+    private _controller: ControllerConfiguration;
     private _providerInfo: ProviderInfo;
     private _documentTitle: string;
     private _serviceType: string;
@@ -23,7 +23,7 @@ export class WindowService {
 
     constructor() {
         const anyWindow = (window as any);
-        this._controllerOptions = anyWindow['controllerOptions'];
+        this._controller = anyWindow['controller'];
         this._providerInfo = anyWindow['providerInfo'];
         this._documentTitle = anyWindow['documentTitle'];
         this._serviceType = anyWindow['serviceType'];
@@ -45,8 +45,8 @@ export class WindowService {
         this._isConnectionSecure = window.location.protocol === 'https:';
     }
 
-    get controllerOptions(): ControllerOptions {
-        return this._controllerOptions;
+    get controller(): ControllerConfiguration {
+        return this._controller;
     }
 
     get providerInfo(): ProviderInfo {
@@ -117,14 +117,14 @@ export class WindowService {
     }
 }
 
-export interface ControllerOptions {
+export interface ControllerConfiguration {
     route: string;
     allowFromExploring: boolean;
     authorize: boolean;
-    oAuth2Options: OAuth2Options;
+    oAuth2: OAuth2Configuration;
 }
 
-export interface OAuth2Options {
+export interface OAuth2Configuration {
     authority: string;
     clientId: string;
     clientSecret: string;

@@ -2,7 +2,7 @@ import { HttpBackend, HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
-import { ControllerOptions, ProviderInfo, WindowService } from "./window.service";
+import { ControllerConfiguration, ProviderInfo, WindowService } from "./window.service";
 import { UserPreferencesService } from "../../shared/services/user-preferences.service";
 
 @Injectable({
@@ -15,7 +15,7 @@ export class AuthService {
 
     private _token: string | null = null;
     private httpClient: HttpClient;
-    private controllerOptions: ControllerOptions;
+    private controllerConfiguration: ControllerConfiguration;
     private providerInfo: ProviderInfo;
     private isProvider: boolean;
     private authenticatedEndpointUrl: string;
@@ -31,14 +31,14 @@ export class AuthService {
         private userPreferencesService: UserPreferencesService
     ) {
         this.httpClient = new HttpClient(httpBackend);
-        this.controllerOptions = this.windowService.controllerOptions;
+        this.controllerConfiguration = this.windowService.controller;
         this.providerInfo = this.windowService.providerInfo;
         this.isProvider = this.windowService.isProvider;
-        this.authenticatedEndpointUrl = `${this.controllerOptions.route}/v1/auth/authenticated`;
-        this.whoAmIEndpointUrl = `${this.controllerOptions.route}/v1/auth/who-am-i`;
-        this.logoutEndpointUrl = `${this.controllerOptions.route}/v1/auth/logout`;
+        this.authenticatedEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/authenticated`;
+        this.whoAmIEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/who-am-i`;
+        this.logoutEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/logout`;
 
-        this.setAuthorizationRequired(this.controllerOptions.authorize || this.providerInfo.authorize);
+        this.setAuthorizationRequired(this.controllerConfiguration.authorize || this.providerInfo.authorize);
     }
 
     get token(): string | null {

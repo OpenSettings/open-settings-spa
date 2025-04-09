@@ -704,6 +704,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
             registrationMode: configuration.registrationMode,
             consumer: configuration.consumer,
             provider: configuration.provider,
+            controller: configuration.controller,
+            spa: configuration.spa,
             rowVersion: configuration.rowVersion
         };
     }
@@ -1196,6 +1198,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
                             registrationMode: responseData.registrationMode,
                             consumer: responseData.consumer,
                             provider: responseData.provider,
+                            controller: responseData.controller,
+                            spa: responseData.spa,
                             rowVersion: responseData.rowVersion
                         };
                     }

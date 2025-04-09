@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
-    var controllerOptions;
+    var controller;
     var providerInfo;
     var documentTitle;
     var route;
@@ -25,7 +25,7 @@
     var license;
 
     try {
-      controllerOptions = JSON.parse('%(ControllerOptions)');
+      controller = JSON.parse('%(Controller)');
       providerInfo = JSON.parse('%(ProviderInfo)');
       documentTitle = '%(DocumentTitle)';
       serviceType = '%(ServiceType)';
@@ -39,7 +39,7 @@
       license = JSON.parse('%(License)');
     }
     catch {
-      controllerOptions = {
+      controller = {
         route: 'http://localhost:5288/api/settings',
         authorize: false
       };

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Subscription } from "rxjs";
 import { ConfigurationUpdateComponentData } from "../../models/configuration-update-component-data";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { ConfigurationsService } from "../../services/configurations.service";
@@ -54,6 +54,24 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 }),
                 compressionType: [this.data.provider.compressionType],
                 compressionLevel: [this.data.provider.compressionLevel]
+            }),
+            controller: this.formBuilder.group({
+                route: [this.data.controller.route],
+                allowFromExploring: [this.data.controller.allowFromExploring],
+                authorize: [this.data.controller.authorize],
+                oAuth2: this.formBuilder.group({
+                    authority: [this.data.controller.oAuth2.authority],
+                    clientId: [this.data.controller.oAuth2.clientId],
+                    clientSecret: [this.data.controller.oAuth2.clientSecret],
+                    signedOutRedirectUri: [this.data.controller.oAuth2.signedOutRedirectUri],
+                    allowOfflineAccess: [this.data.controller.oAuth2.allowOfflineAccess],
+                    isActive: [this.data.controller.oAuth2.isActive],
+                })
+            }),
+            spa: this.formBuilder.group({
+                routePrefix: [this.data.spa.routePrefix],
+                documentTitle: [this.data.spa.documentTitle],
+                isActive: [this.data.spa.isActive]
             })
         });
     }
@@ -85,6 +103,9 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                     },
                     compressionType: this.data.provider.compressionType,
                     compressionLevel: this.data.provider.compressionLevel
+                },
+                controller: {
+
                 }
             });
         }
@@ -229,14 +250,16 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
         this.subscriptions.add(subscription);
     }
 
-    saveConsumerSettings(event: Event) {
+    saveSettings<K extends keyof Pick<ConfigurationUpdateComponentData, 'consumer' | 'provider' | 'controller' | 'spa'>>(
+        event: Event,
+        fieldName: K
+    ): void {
         event.stopPropagation();
-
         this.isLoading = true;
 
-        let updatedFieldNameToValue: { [key: string]: any } = {};
-
-        updatedFieldNameToValue['consumer'] = {...this.form.value.consumer};
+        const updatedFieldNameToValue = {
+            [fieldName]: { ...this.form.value[fieldName] }
+        };
 
         const subscription = this.configurationsService.patchConfiguration({
             appId: this.data.appId,
@@ -248,100 +271,44 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
         }).subscribe({
             next: (response) => {
                 const responseData = response.data;
-
-                if (!responseData) {
-                    return;
-                }
+                if (!responseData) return;
 
                 this.data.rowVersion = responseData.rowVersion;
 
+                const updatedKey = fieldName.charAt(0).toUpperCase() + fieldName.slice(1); // "consumer" → "Consumer"
+                const updatePayload = responseData.updatedFieldNameToValue[updatedKey];
+
                 this.configUpdateEmitter.emit({
-                    formControlName: 'consumer',
-                    consumer: responseData.updatedFieldNameToValue['Consumer'],
+                    formControlName: fieldName,
+                    [fieldName]: updatePayload,
                     rowVersion: responseData.rowVersion
                 });
 
-                this.snackBar.open(`Configuration has been successfully updated! A restart is required for the changes to take effect.`, 'Close', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'top',
-                    duration: 5000
-                });
+                this.snackBar.open(
+                    `Configuration has been successfully updated! A restart is required for the changes to take effect.`,
+                    'Close',
+                    {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'top',
+                        duration: 5000
+                    }
+                );
 
                 this.isLoading = false;
             },
             error: (err: HttpErrorResponse) => {
-                this.form.get('consumer')?.setValue({...this.data.consumer});
-
-                const error = err.error as IResponse<PatchConfigurationResponse>;
-
-                if (error && error.status === 409 && error.errors) {
-                    this.isLoading = false;
-
-                    this.utilityService.error(error.errors, 3500);
-                    this.fetchLatestConfiguration();
-                }
-                else {
-                    this.isLoading = false;
-                }
-            }
-        });
-
-        this.subscriptions.add(subscription);
-    }
-
-    saveProviderSettings(event: Event) {
-        event.stopPropagation();
-
-        this.isLoading = true;
-
-        let updatedFieldNameToValue: { [key: string]: any } = {};
-
-        updatedFieldNameToValue['provider'] = {...this.form.value.provider};
-
-        const subscription = this.configurationsService.patchConfiguration({
-            appId: this.data.appId,
-            identifierId: this.data.selectedIdentifierId,
-            body: {
-                rowVersion: this.data.rowVersion,
-                updatedFieldNameToValue
-            }
-        }).subscribe({
-            next: (response) => {
-                const responseData = response.data;
-
-                if (!responseData) {
-                    return;
-                }
-
-                this.data.rowVersion = responseData.rowVersion;
-
-                this.configUpdateEmitter.emit({
-                    formControlName: 'provider',
-                    provider: responseData.updatedFieldNameToValue['Provider'],
-                    rowVersion: responseData.rowVersion
-                });
-
-                this.snackBar.open(`Configuration has been successfully updated! A restart is required for the changes to take effect.`, 'Close', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'top',
-                    duration: 5000
-                });
 
                 this.isLoading = false;
-            },
-            error: (err: HttpErrorResponse) => {
-                this.form.get('provider')?.setValue({...this.data.provider});
+
+                const formControl = this.form.get(fieldName) as FormControl;
+
+                formControl?.setValue({ ...this.data[fieldName] });
 
                 const error = err.error as IResponse<PatchConfigurationResponse>;
 
                 if (error && error.status === 409 && error.errors) {
-                    this.isLoading = false;
-
                     this.utilityService.error(error.errors, 3500);
                     this.fetchLatestConfiguration();
-                }
-                else {
-                    this.isLoading = false;
                 }
             }
         });

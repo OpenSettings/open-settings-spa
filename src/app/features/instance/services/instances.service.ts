@@ -5,7 +5,6 @@ import { WindowService } from "../../../core/services/window.service";
 import { GetInstancesByAppRequest } from "../models/get-instances-by-app-request";
 import { Observable, Subject, takeUntil } from "rxjs";
 import { DeleteInstanceRequest } from "../models/delete-instance-request";
-import { DeleteInstanceResponse } from "../models/delete-instance-response";
 import { IResponse, IResponseAny } from "../../../shared/models/response";
 import { GetInstancesResponseInstance } from "../models/get-instances-response-instance";
 
@@ -21,7 +20,7 @@ export class InstancesService implements OnDestroy {
         private httpClient: HttpClient,
         private authService: AuthService,
         windowService: WindowService) {
-        this.route = windowService.controllerOptions.route;
+        this.route = windowService.controller.route;
         this.authService.isAuthenticated$
             .pipe(takeUntil(this.destroy$))
             .subscribe(isAuthenticated => {

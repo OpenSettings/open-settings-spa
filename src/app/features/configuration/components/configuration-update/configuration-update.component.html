@@ -54,7 +54,7 @@
     </div>
 
     <mat-accordion multi="true">
-        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel expanded="false">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 Consumer Configuration
@@ -62,7 +62,7 @@
             </mat-panel-title>
             <mat-panel-description>
                 <span class="spacer"></span>
-                <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveConsumerSettings($event)">
+                <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveSettings($event, 'consumer')">
                     <mat-icon>save</mat-icon>
                 </button>
             </mat-panel-description>
@@ -102,7 +102,7 @@
 
             </mat-expansion-panel>
 
-            <mat-expansion-panel expanded="false">
+            <mat-expansion-panel expanded="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Others
@@ -146,7 +146,7 @@
         </mat-accordion>
         </mat-expansion-panel>
 
-        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel expanded="false">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Provider Configuration
@@ -154,7 +154,7 @@
                 </mat-panel-title>
                 <mat-panel-description>
                     <span class="spacer"></span>
-                    <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveProviderSettings($event)">
+                    <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveSettings($event, 'provider')">
                         <mat-icon>save</mat-icon>
                     </button>
                 </mat-panel-description>
@@ -184,7 +184,7 @@
                         <input matInput formControlName="channel">
                     </mat-form-field>
                 </mat-expansion-panel>
-                <mat-expansion-panel expanded="false">
+                <mat-expansion-panel expanded="true">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
                             Others
@@ -235,6 +235,144 @@
 
             </mat-accordion>
         </mat-expansion-panel>
+
+        <mat-expansion-panel expanded="false">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Controller Configuration
+                    <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info" matTooltip="Configuration options for the settings controller, including route, authorization and Api visibility."></mat-icon>
+                </mat-panel-title>
+                <mat-panel-description>
+                    <span class="spacer"></span>
+                    <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveSettings($event, 'controller')">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-accordion multi="true" formGroupName="controller">
+                <mat-expansion-panel expanded="false" formGroupName="oAuth2">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            OAuth2
+                        </mat-panel-title>
+                       
+                    </mat-expansion-panel-header>
+               
+                    <mat-form-field>
+                        <mat-label>Authority <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The authority URL for the OAuth2 provider. The value is trimmed of any trailing slashes."></mat-icon></mat-label>
+                        <input matInput formControlName="authority">
+                        <mat-hint>e.g. https://idm.opensettings.net</mat-hint>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>ClientId <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The client id used to authenticate with the OAuth2 provider."></mat-icon></mat-label>
+                        <input matInput formControlName="clientId">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>ClientSecret <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The client secret used to authenticate with the OAuth2 provider.."></mat-icon></mat-label>
+                        <input matInput formControlName="clientSecret">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>SignedOutRedirectUri <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The URI to redirect to after the user is signed out. The default value is 'settings'."></mat-icon></mat-label>
+                        <input matInput formControlName="signedOutRedirectUri">
+                    </mat-form-field>
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">AllowOfflineAccess</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="Indicates whether offline access is allowed. When enabled, offline access tokens can be obtained. The default value is disabled."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="allowOfflineAccess"></mat-slide-toggle>
+                    </div>
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">Is Active</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                        matTooltip="Indicates whether the OAuth2 configuration is active. The default value is disabled."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="isActive"></mat-slide-toggle>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel expanded="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Others
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field>
+                        <mat-label>Route <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The base route for the service controller's endpoints. The default is 'api/settings'. Trailing and leading slashes are trimmed if present."></mat-icon></mat-label>
+                        <input matInput formControlName="route">
+                        <mat-hint>e.g. api/settings</mat-hint>
+                    </mat-form-field>
+
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">AllowFromExploring</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Specifies whether the open settings controller's endpoints should be exposed in Api documentation (e.g., for Swagger or other Api explorers). The default is disabled."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="allowFromExploring"></mat-slide-toggle>
+                    </div>
+
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">Authorize</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Indicates whether the controller requires authentication for access. When enabled, authentication is enforced. When disabled, the controller is accessible without authentication unless the service type is Consumer, in which case the provider's authorization settings take precedence, and authentication may still be required. The default is disabled."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="authorize"></mat-slide-toggle>
+                    </div>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel expanded="false">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Spa Configuration
+                    <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info" matTooltip="Represents the configuration options for the open settings Spa page."></mat-icon>
+                </mat-panel-title>
+                <mat-panel-description>
+                    <span class="spacer"></span>
+                    <button color="primary" mat-icon-button class="icon-mini" matTooltip="Save" (click)="saveSettings($event, 'spa')">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-accordion multi="true" formGroupName="spa">
+                <mat-expansion-panel expanded="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Others
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-form-field>
+                        <mat-label>RoutePrefix <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Specifies the prefix used to access the open settings Spa page. With this prefix, the open settings Spa page can be accessed through the defined route. The default value is 'settings'."></mat-icon></mat-label>
+                        <input matInput formControlName="routePrefix">
+                        <mat-hint>e.g. settings</mat-hint>
+                    </mat-form-field>
+
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">DocumentTitle</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The title of the document for the open settings page. This title is used in the HTML document's title element and will be displayed in the browser's title bar. The default value is 'OpenSettings Spa'."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="documentTitle"></mat-slide-toggle>
+                    </div>
+
+                    <div class="mb-2 mr-3 d-flex align-items-center">
+                        <span class="field-label-text">IsActive</span>
+                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="Indicates whether the open settings Spa (Single Page Application) is enabled. When enabled, does not guarantee that the Spa will be accessible. Make sure to register AddOpenSettingsController(...) and app.UseOpenSettings(...) after app.UseRouting() and before app.UseEndpoints(). The default value is enabled."></mat-icon>
+                        <mat-slide-toggle labelPosition="before" formControlName="isActive"></mat-slide-toggle>
+                    </div>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+        </mat-expansion-panel>
+
     </mat-accordion>
 
 </form>

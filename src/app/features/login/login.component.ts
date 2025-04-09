@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['']);
         }
 
-        this.route = this.windowService.controllerOptions.route;
+        this.route = this.windowService.controller.route;
         this.providerInfo = this.windowService.providerInfo;
         this.serviceType = this.windowService.serviceType;
         this.packVersion = this.windowService.packVersion;

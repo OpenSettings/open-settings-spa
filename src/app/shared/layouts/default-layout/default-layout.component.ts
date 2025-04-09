@@ -42,7 +42,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
         this.subscriptions.add(this.defaultLayoutService.menuOpened$.subscribe(menuOpened => this.menuOpened = menuOpened));
 
-        this.route = this.windowService.controllerOptions.route;
+        this.route = this.windowService.controller.route;
         this.providerInfo = this.windowService.providerInfo;
         this.documentTitle = this.windowService.documentTitle;
         this.isProvider = this.windowService.isProvider;

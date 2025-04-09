@@ -34,7 +34,7 @@ export class SettingsService implements OnDestroy {
         private httpClient: HttpClient,
         private authService: AuthService,
         windowService: WindowService) {
-        this.route = windowService.controllerOptions.route;
+        this.route = windowService.controller.route;
         this.authService.isAuthenticated$
         .pipe(takeUntil(this.destroy$))
         .subscribe(isAuthenticated => {

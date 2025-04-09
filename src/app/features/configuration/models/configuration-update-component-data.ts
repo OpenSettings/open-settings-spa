@@ -1,3 +1,5 @@
+import { OAuth2Configuration } from "../../../core/services/window.service";
+
 export interface ConfigurationUpdateComponentData {
     configurationId: string;
     appId: string;
@@ -7,6 +9,8 @@ export interface ConfigurationUpdateComponentData {
     registrationMode: number;
     consumer: ConfigurationConsumer;
     provider: ConfigurationProvider;
+    controller: ConfigurationController;
+    spa: ConfigurationSpa;
     rowVersion: string;
 }
 
@@ -36,6 +40,19 @@ export interface ConfigurationProvider{
     redis: RedisSettings;
     compressionType: CompressionType;
     compressionLevel: CompressionLevel; 
+}
+
+export interface ConfigurationController{
+    route: string;
+    allowFromExploring: boolean;
+    authorize: boolean;
+    oAuth2: OAuth2Configuration;
+}
+
+export interface ConfigurationSpa{
+    routePrefix: string;
+    documentTitle: string;
+    isActive: boolean;
 }
 
 export interface RedisSettings{
