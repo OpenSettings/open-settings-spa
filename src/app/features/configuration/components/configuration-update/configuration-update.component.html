@@ -355,12 +355,12 @@
                         <mat-hint>e.g. settings</mat-hint>
                     </mat-form-field>
 
-                    <div class="mb-2 mr-3 d-flex align-items-center">
-                        <span class="field-label-text">DocumentTitle</span>
-                        <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                            matTooltip="The title of the document for the open settings page. This title is used in the HTML document's title element and will be displayed in the browser's title bar. The default value is 'OpenSettings Spa'."></mat-icon>
-                        <mat-slide-toggle labelPosition="before" formControlName="documentTitle"></mat-slide-toggle>
-                    </div>
+                    <mat-form-field>
+                        <mat-label>DocumentTitle <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The title of the document for the open settings page. This title is used in the HTML document's title element and will be displayed in the browser's title bar. The default value is 'OpenSettings Spa'."></mat-icon></mat-label>
+                        <input matInput formControlName="documentTitle">
+                        <mat-hint>e.g. OpenSettings Spa</mat-hint>
+                    </mat-form-field>
 
                     <div class="mb-2 mr-3 d-flex align-items-center">
                         <span class="field-label-text">IsActive</span>
