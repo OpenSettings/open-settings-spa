@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { License, WindowService } from "../../core/services/window.service";
+import { ClientInfo, License, PackInfo, ProviderInfo, WindowService } from "../../core/services/window.service";
 import { GetLinksResponseLink, OpenSettingsService } from "../../shared/services/open-settings.service";
 import { filter, Subscription, switchMap, tap } from "rxjs";
 import { DatePipe } from "@angular/common";
@@ -16,10 +16,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class AboutComponent implements OnInit {
     isProvider: boolean = false;
-    providerInfo: any;
-    packVersion?: string;
-    version?: string;
-    clientName?: string;
+    providerInfo?: ProviderInfo;
+    packInfo?: PackInfo;
+    client?: ClientInfo;
     releaseNotes: GetLinksResponseLink = { url: '', isActive: false };
     displayedColumns: string[] = ['key', 'value'];
     appDataSource: { key: string, value: string }[] = [];
@@ -40,21 +39,19 @@ export class AboutComponent implements OnInit {
     ngOnInit(): void {
         this.isProvider = this.windowService.isProvider;
         this.providerInfo = this.windowService.providerInfo;
-        this.packVersion = this.windowService.packVersion;
-        this.version = this.windowService.version;
-        this.clientName = this.windowService.clientName;
-
+        this.packInfo = this.windowService.packInfo;
+        this.client = this.windowService.client;
 
         this.appDataSource = [
-            { key: 'Name', value: this.clientName },
-            { key: 'Version', value: 'v' + this.version },
-            { key: 'OpenSettings Pack Version', value: 'v' + this.packVersion }
+            { key: 'Name', value: this.client.name },
+            { key: 'Version', value: 'v' + this.client.version },
+            { key: 'OpenSettings Pack Version', value: 'v' + this.packInfo.version },
         ];
 
         this.providerDataSource = [
-            { key: 'Name', value: this.providerInfo.clientName },
-            { key: 'Version', value: 'v' + this.providerInfo.version },
-            { key: 'OpenSettings Pack Version', value: 'v' + this.providerInfo.packVersion }
+            { key: 'Name', value: this.providerInfo.client.name },
+            { key: 'Version', value: 'v' + this.providerInfo.client.version },
+            { key: 'OpenSettings Pack Version', value: 'v' + this.providerInfo.packInfo.version }
         ]
 
         const licenseSubscription = this.windowService.license$.subscribe((license) => {
@@ -111,16 +108,15 @@ export class AboutComponent implements OnInit {
 
     viewReleaseNotes(version?: string) {
 
-        if (version) {
-
-            const majorVersion = version.split('.')[0];
-
-            return this.releaseNotes.url
-                .replace("%(MajorVersion)", majorVersion)
-                .replace("%(Version)", version);
+        if (!version) {
+            return '';
         }
 
-        return '';
+        const majorVersion = version.split('.')[0];
+
+        return this.releaseNotes.url
+            .replace("%(MajorVersion)", majorVersion)
+            .replace("%(Version)", version);
     }
 
     upgradeLicense() {

@@ -12,30 +12,29 @@
   <script>
     var controller;
     var providerInfo;
+    var packInfo;
+    var client;
     var documentTitle;
     var route;
     var serviceType;
     var dataAccessType;
     var dbProviderName;
-    var packVersion;
-    var packVersionScore;
-    var version;
-    var clientName;
-    var clientId;
+    // var packVersion;
+    // var packVersionScore;
+    // var clientId
+    // var version;
+    // var clientName;
     var license;
 
     try {
       controller = JSON.parse('%(Controller)');
       providerInfo = JSON.parse('%(ProviderInfo)');
+      packInfo = JSON.parse('%(PackInfo)');
+      client = JSON.parse('%(Client)');
       documentTitle = '%(DocumentTitle)';
       serviceType = '%(ServiceType)';
       dataAccessType = '%(DataAccessType)';
       dbProviderName = '%(DbProviderName)';
-      packVersion = '%(PackVersion)';
-      packVersionScore = '%(PackVersionScore)';
-      version = '%(Version)';
-      clientName = '%(ClientName)';
-      clientId = '%(ClientId)';
       license = JSON.parse('%(License)');
     }
     catch {
@@ -44,25 +43,36 @@
         authorize: false
       };
       providerInfo = {
-        clientId: '00000000-0000-0000-0000-000000000000',
-        clientName: 'OpenSettings.Api',
         authorize: false,
-        version: '1.0.0',
-        packVersion: '1.0.0',
+        client:{
+          id: '00000000-0000-0000-0000-000000000000',
+          name: 'OpenSettings.Api',
+          version: '1.0.0',
+        },
+        packInfo: {
+          version: '1.0.0',
+          score: '1000000500000',
+          isPreview: false
+        },
         oAuth2: {
           authority: 'http://localhost:5288',
           isActive: true
         }
       };
+      client = {
+        id: '00000000-0000-0000-0000-000000000000',
+        name: 'OpenSettings.Api',
+        version: '1.0.0'
+      };
+      packInfo = {
+        version: '1.0.0',
+        score: '1000000500000',
+        isPreview: false
+      };
       documentTitle = 'OpenSettings Spa';
       serviceType = 'Provider';
       dataAccessType = 'Orm';
       dbProviderName = 'SqlServer';
-      packVersion = '1.0.0';
-      packVersionScore = '1000000500000';
-      version = '1.0.0';
-      clientName = 'OpenSettings.Api';
-      clientId = '00000000-0000-0000-0000-000000000000';
       license = {
         holder: 'OpenSettings',
         referenceId: 'L-OS/OS-COMM-20250209-OS-1',

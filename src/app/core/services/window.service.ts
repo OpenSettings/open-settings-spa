@@ -8,16 +8,13 @@ export class WindowService {
 
     private _controller: ControllerConfiguration;
     private _providerInfo: ProviderInfo;
+    private _packInfo: PackInfo;
+    private _client: ClientInfo
     private _documentTitle: string;
     private _serviceType: string;
     private _dataAccessType: string;
     private _dbProviderName: string;
     private _isProvider: boolean;
-    private _packVersion: string;
-    private _packVersionScore;
-    private _version: string;
-    private _clientName: string;
-    private _clientId: string;
     private _licenseSubject: BehaviorSubject<License>;
     private _isConnectionSecure: boolean;
 
@@ -25,16 +22,13 @@ export class WindowService {
         const anyWindow = (window as any);
         this._controller = anyWindow['controller'];
         this._providerInfo = anyWindow['providerInfo'];
+        this._packInfo = anyWindow['packInfo'];
+        this._client = anyWindow['client'];
         this._documentTitle = anyWindow['documentTitle'];
         this._serviceType = anyWindow['serviceType'];
         this._dataAccessType = anyWindow['dataAccessType'];
         this._dbProviderName = anyWindow['dbProviderName'];
         this._isProvider = this._serviceType !== 'Consumer';
-        this._packVersion = anyWindow['packVersion'];
-        this._packVersionScore = BigInt(anyWindow['packVersionScore']);
-        this._version = anyWindow['version'];
-        this._clientName = anyWindow['clientName'];
-        this._clientId = anyWindow['clientId'];
 
         const license = anyWindow['license'] as License;
 
@@ -53,6 +47,14 @@ export class WindowService {
         return this._providerInfo;
     }
 
+    get packInfo(): PackInfo {
+        return this._packInfo;
+    }
+
+    get client(): ClientInfo {
+        return this._client;
+    }
+
     get documentTitle(): string {
         return this._documentTitle;
     }
@@ -65,32 +67,12 @@ export class WindowService {
         return this._dataAccessType;
     }
 
-    get dbProviderName(): string{
+    get dbProviderName(): string {
         return this._dbProviderName;
     }
 
     get isProvider(): boolean {
         return this._isProvider;
-    }
-
-    get packVersion(): string {
-        return this._packVersion;
-    }
-
-    get packVersionScore(): bigint {
-        return this._packVersionScore;
-    }
-
-    get version(): string {
-        return this._version;
-    }
-
-    get clientName(): string {
-        return this._clientName;
-    }
-
-    get clientId(): string {
-        return this._clientId;
     }
 
     get license(): License {
@@ -107,7 +89,7 @@ export class WindowService {
 
     updateLicense(license: License) {
 
-        if(this.license.referenceId === license.referenceId){
+        if (this.license.referenceId === license.referenceId) {
             return;
         }
 
@@ -134,11 +116,9 @@ export interface OAuth2Configuration {
 }
 
 export interface ProviderInfo {
-    clientId: string;
-    clientName: string;
     authorize: boolean;
-    version: string;
-    packVersion: string;
+    client: ClientInfo;
+    packInfo: PackInfo;
     oAuth2: OAuth2Info;
     redis: RedisInfo
 }
@@ -171,4 +151,16 @@ export enum LicenseEdition {
     Professional = 300,
     Trial = 400,
     Enterprise = 500
+}
+
+export interface ClientInfo {
+    id: string;
+    name: string;
+    version: string;
+}
+
+export interface PackInfo {
+    version: string;
+    score: bigint;
+    isPreview: boolean;
 }

@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { ControllerConfiguration, ProviderInfo, WindowService } from "./window.service";
 import { UserPreferencesService } from "../../shared/services/user-preferences.service";
+import { IResponse } from "../../shared/models/response";
 
 @Injectable({
     providedIn: 'root'
@@ -92,14 +93,14 @@ export class AuthService {
             url += `?uuid=${this.userPreferencesService.uuid}`;
         }
 
-        return this.httpClient.post<AuthenticatedResponse>(url, null).pipe(
-            switchMap((response: AuthenticatedResponse) => {
-                if (response.isAuthenticated) {
+        return this.httpClient.post<IResponse<AuthenticatedResponse>>(url, null).pipe(
+            switchMap((response: IResponse<AuthenticatedResponse>) => {
+                if (response.data!.isAuthenticated) {
 
                     let headers;
 
-                    if (response.accessToken) {
-                        this._token = `Bearer ${response.accessToken}`;
+                    if (response.data!.accessToken) {
+                        this._token = `Bearer ${response.data!.accessToken}`;
                         this.userPreferencesService.setAuthToken(this._token);
                         headers = new HttpHeaders({ 'Authorization': this._token });
                     } else {
@@ -108,9 +109,9 @@ export class AuthService {
                         headers = new HttpHeaders({});
                     }
 
-                    return this.httpClient.get<{ [key: string]: string }>(this.whoAmIEndpointUrl, { headers }).pipe(
-                        tap(claims => {
-                            this.setClaims(claims);
+                    return this.httpClient.get<IResponse<WhoAmIResponse>>(this.whoAmIEndpointUrl, { headers }).pipe(
+                        tap(response => {
+                            this.setClaims(response.data!.claims);
                         }),
                         map(() => {
                             this.setIsAuthenticated(true);
@@ -138,16 +139,16 @@ export class AuthService {
         const token = 'Basic ' + btoa(`${clientId}:${clientSecret}`);
         const headers = new HttpHeaders({ 'Authorization': token });
 
-        return this.httpClient.post<AuthenticatedResponse>(this.authenticatedEndpointUrl, null, { headers }).pipe(
+        return this.httpClient.post<IResponse<AuthenticatedResponse>>(this.authenticatedEndpointUrl, null, { headers }).pipe(
             switchMap(response => {
-                if (response.isAuthenticated) {
+                if (response.data!.isAuthenticated) {
                     this._token = token;
                     this.userPreferencesService.setAuthToken(token);
                     this.userPreferencesService.setAuth('basic');
 
-                    return this.httpClient.get<{ [key: string]: string }>(this.whoAmIEndpointUrl, { headers }).pipe(
-                        tap(claims => {
-                            this.setClaims(claims);
+                    return this.httpClient.get<IResponse<WhoAmIResponse>>(this.whoAmIEndpointUrl, { headers }).pipe(
+                        tap(response => {
+                            this.setClaims(response.data!.claims);
                         }),
                         map(() => {
                             this.setIsAuthenticated(true);
@@ -205,4 +206,9 @@ export class AuthService {
 export interface AuthenticatedResponse {
     isAuthenticated: boolean;
     accessToken: string;
+}
+
+
+export interface WhoAmIResponse{
+    claims: { [key: string]: string };
 }

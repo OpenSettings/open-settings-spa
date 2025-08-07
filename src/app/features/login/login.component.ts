@@ -42,8 +42,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.route = this.windowService.controller.route;
         this.providerInfo = this.windowService.providerInfo;
         this.serviceType = this.windowService.serviceType;
-        this.packVersion = this.windowService.packVersion;
-
+        this.packVersion = this.windowService.packInfo.version;
+        
         if (!this.providerInfo.oAuth2.isActive) {
             this.selectedLogin = 'basic';
         }
@@ -57,7 +57,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
     }
-
 
     selectLogin(type: 'basic'): void {
         this.selectedLogin = type;

@@ -25,7 +25,7 @@
     </mat-card-content>
 
     <mat-card-actions align="end" *ngIf="releaseNotes.isActive && releaseNotes.url">
-      <a mat-button color="primary" [href]="viewReleaseNotes(packVersion)" target="_blank">View Release Notes</a>
+      <a mat-button color="primary" [href]="viewReleaseNotes(packInfo?.version)" target="_blank">View Release Notes</a>
     </mat-card-actions>
   </mat-card>
 
@@ -51,7 +51,7 @@
     </mat-card-content>
 
     <mat-card-actions align="end" *ngIf="releaseNotes.isActive && releaseNotes.url">
-      <a mat-button color="primary" [href]="viewReleaseNotes(providerInfo.packVersion)" target="_blank">View Release
+      <a mat-button color="primary" [href]="viewReleaseNotes(providerInfo?.packInfo?.version)" target="_blank">View Release
         Notes</a>
     </mat-card-actions>
   </mat-card>

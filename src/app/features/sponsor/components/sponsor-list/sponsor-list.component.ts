@@ -54,7 +54,7 @@ export class SponsorListComponent implements OnInit {
 
     ngOnInit(): void {
 
-        this.packVersion = this.windowService.packVersion;
+        this.packVersion = this.windowService.packInfo.version;
 
         this.startFetching();
 

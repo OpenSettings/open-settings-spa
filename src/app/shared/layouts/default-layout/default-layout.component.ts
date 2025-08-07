@@ -53,7 +53,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
             this.subtitle += ` (${this.windowService.dataAccessType}:${this.windowService.dbProviderName})`;
         }
 
-        this.subtitle += ` v${this.windowService.packVersion}`;
+        this.subtitle += ` v${this.windowService.packInfo.version}`;
 
         const licenseSubscription = this.windowService.license$.subscribe((license) => {
 
