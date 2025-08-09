@@ -105,7 +105,22 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                     compressionLevel: this.data.provider.compressionLevel
                 },
                 controller: {
-
+                    route: this.data.controller.route,
+                    allowFromExploring: this.data.controller.allowFromExploring,
+                    authorize: this.data.controller.authorize,
+                    oAuth2: {
+                        authority: this.data.controller.oAuth2.authority,
+                        clientId: this.data.controller.oAuth2.clientId,
+                        clientSecret: this.data.controller.oAuth2.clientSecret,
+                        signedOutRedirectUri: this.data.controller.oAuth2.signedOutRedirectUri,
+                        allowOfflineAccess: this.data.controller.oAuth2.allowOfflineAccess,
+                        isActive: this.data.controller.oAuth2.isActive
+                    }
+                },
+                spa: {
+                    routePrefix: this.data.spa.routePrefix,
+                    documentTitle: this.data.spa.documentTitle,
+                    isActive: this.data.spa.isActive
                 }
             });
         }
