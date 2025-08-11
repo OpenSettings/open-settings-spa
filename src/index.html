@@ -19,11 +19,6 @@
     var serviceType;
     var dataAccessType;
     var dbProviderName;
-    // var packVersion;
-    // var packVersionScore;
-    // var clientId
-    // var version;
-    // var clientName;
     var license;
 
     try {
@@ -43,7 +38,7 @@
         authorize: false
       };
       providerInfo = {
-        authorize: false,
+        authorize: true, // set 'true' to enable local auth testing. 
         client:{
           id: '00000000-0000-0000-0000-000000000000',
           name: 'OpenSettings.Api',

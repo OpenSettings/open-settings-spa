@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const subscription = this.authService.basicAuthorize(clientId, clientSecret).subscribe(isAuthenticated => {
+        const subscription = this.authService.machineToMachineAuthorize(clientId, clientSecret).subscribe(isAuthenticated => {
 
             if (isAuthenticated) {
                 this.router.navigate(['']);
@@ -113,7 +113,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             url += `?uuid=${this.userPreferencesService.uuid}`;
         }
 
-        this.userPreferencesService.setAuth('oauth2')
+        this.userPreferencesService.setAuthType('OAuth2')
         
         window.location.href = url;
     }

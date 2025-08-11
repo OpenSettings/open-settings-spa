@@ -58,7 +58,6 @@ export class AccountMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.displayName = claims['db_user_displayName'] ?? '';
         this.initials = claims['db_user_initials'] ?? '';
         this.userId = claims['db_user_id'] ?? '';
-        this.email = claims['db_user_email'] ?? '';
 
         if (this.userId) {
             const subscription = this.notificationsService.getUserNotifications({

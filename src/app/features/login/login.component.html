@@ -1,10 +1,10 @@
 <div class="login-container">
     <mat-card class="login-card">
-        <mat-card-title class="login-title">{{ selectedLogin ? 'Basic Authentication' : 'Please choose your preferred login'}}</mat-card-title>
+        <mat-card-title class="login-title">{{ selectedLogin ? 'Authentication' : 'Please choose your preferred login'}}</mat-card-title>
         <mat-divider></mat-divider>
 
         <div class="mt-2" *ngIf="!selectedLogin else basicLogin">
-            <button class="w-100" mat-raised-button color="primary" (click)="selectLogin('basic')"><mat-icon>vpn_key</mat-icon>Basic</button>
+            <button class="w-100" mat-raised-button color="primary" (click)="selectLogin('basic')"><mat-icon>vpn_key</mat-icon>Machine Credentials</button>
             <button class="w-100 mt-2" mat-raised-button color="accent" (click)="handleOauth()"><mat-icon>enhanced_encryption</mat-icon>OAuth</button>
         </div>
     </mat-card>

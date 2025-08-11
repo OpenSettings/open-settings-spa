@@ -2,7 +2,9 @@ import { Injectable } from "@angular/core";
 import { ThemePreference } from "../../core/services/theme.service";
 import { v4 as uuidv4 } from 'uuid';
 
-export type AuthType = 'basic' | 'oauth2';
+export type AuthType = 'OAuth2' | 'Machine';
+export type AuthMethod = 'Basic' | 'Jwt'  | 'Cookie';
+export type Headers = 'x-os-auth-type' | 'x-os-auth-method' | 'x-os-caller-type' | 'x-os-client-id' | 'x-os-pack-version' | 'x-os-pack-version-score';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +18,8 @@ export class UserPreferencesService {
         SIDEBAR_MENU_OPENED: `${this.prefix}sidebarMenuOpened`,
         UUID: `${this.prefix}uuid`,
         CLAIMS: `${this.prefix}claims`,
-        AUTH: `${this.prefix}auth`,
+        AUTH_TYPE: `${this.prefix}authType`,
+        AUTH_METHOD: `${this.prefix}authMethod`,
         AUTH_TOKEN: `${this.prefix}authToken`,
         DRAG_AND_DROP_ENABLED: `${this.prefix}dragAndDropEnabled`
     };
@@ -33,17 +36,30 @@ export class UserPreferencesService {
         localStorage.removeItem(this.KEYS.AUTH_TOKEN);
     }
 
-    get auth(): AuthType | null {
-        const item = localStorage.getItem(this.KEYS.AUTH);
+    get authType(): AuthType | null {
+        const item = localStorage.getItem(this.KEYS.AUTH_TYPE);
         return item ? item as AuthType : null;
     }
 
-    setAuth(authType: AuthType) {
-        localStorage.setItem(this.KEYS.AUTH, authType);
+    setAuthType(authType: AuthType) {
+        localStorage.setItem(this.KEYS.AUTH_TYPE, authType);
     }
 
-    removeAuth() {
-        localStorage.removeItem(this.KEYS.AUTH);
+    removeAuthType() {
+        localStorage.removeItem(this.KEYS.AUTH_TYPE);
+    }
+
+    get authMethod(): | AuthMethod | null {
+        const item = localStorage.getItem(this.KEYS.AUTH_METHOD);
+        return item ? item as AuthMethod : null;
+    }
+
+    setAuthMethod(authMethod: AuthMethod) {
+        localStorage.setItem(this.KEYS.AUTH_METHOD, authMethod);
+    }
+
+    removeAuthMethod() {
+        localStorage.removeItem(this.KEYS.AUTH_METHOD);
     }
 
     get claims(): { [key: string]: string } | undefined {

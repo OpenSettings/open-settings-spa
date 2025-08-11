@@ -1,7 +1,6 @@
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, Subscription, catchError, tap } from "rxjs";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthService } from "../services/auth.service";
 import { IResponseAny } from "../../shared/models/response";
 import { UtilityService } from "../../shared/services/utility.service";
