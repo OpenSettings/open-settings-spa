@@ -20,8 +20,8 @@ export class AuthService {
     private controllerConfiguration: ControllerConfiguration;
     private providerInfo: ProviderInfo;
     private isProvider: boolean;
-    private authenticatedEndpointUrl: string;
-    private whoAmIEndpointUrl: string;
+    private statusEndpointUrl: string;
+    private identityEndpointUrl: string;
     private logoutEndpointUrl: string;
     private generateMachineToMachineTokenEndpointUrl: string;
 
@@ -37,8 +37,8 @@ export class AuthService {
         this.controllerConfiguration = this.windowService.controller;
         this.providerInfo = this.windowService.providerInfo;
         this.isProvider = this.windowService.isProvider;
-        this.authenticatedEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/authenticated`;
-        this.whoAmIEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/who-am-i`;
+        this.statusEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/status`;
+        this.identityEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/identity`;
         this.logoutEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/logout`;
         this.generateMachineToMachineTokenEndpointUrl = `${this.controllerConfiguration.route}/v1/token/m2m`;
 
@@ -96,19 +96,19 @@ export class AuthService {
     }
 
     private performOAuth2Authentication(): Observable<boolean> {
-        let url = this.authenticatedEndpointUrl;
+        let url = this.statusEndpointUrl;
         if (!this.isProvider) {
             url += `?uuid=${this.userPreferencesService.uuid}`;
         }
 
-        return this.httpClient.post<IResponse<AuthenticatedResponse>>(url, null).pipe(
-            switchMap((response: IResponse<AuthenticatedResponse>) => {
-                if (response.data!.isAuthenticated) {
+        let headers = new HttpHeaders({
+            'x-os-caller-type': 'Spa',
+            'x-os-auth-type': 'OAuth2'
+        });
 
-                    let headers = new HttpHeaders({
-                        'x-os-caller-type': 'Spa',
-                        'x-os-auth-type': 'OAuth2'
-                    });
+        return this.httpClient.post<IResponse<GetAuthStatusResponse>>(url, null, { headers }).pipe(
+            switchMap((response: IResponse<GetAuthStatusResponse>) => {
+                if (response.data!.isAuthenticated) {
 
                     this._authType = 'OAuth2';
                     this.userPreferencesService.setAuthType(this._authType);
@@ -126,7 +126,7 @@ export class AuthService {
                         headers = headers.set('x-os-auth-method', 'Cookie');
                     }
 
-                    return this.httpClient.get<IResponse<WhoAmIResponse>>(this.whoAmIEndpointUrl, { headers }).pipe(
+                    return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
                         tap(response => {
                             this.setClaims(response.data!.claims);
                         }),
@@ -188,7 +188,7 @@ export class AuthService {
 
         headers = headers.set('Authorization', token);
 
-        return this.httpClient.post<IResponse<AuthenticatedResponse>>(this.authenticatedEndpointUrl, null, { headers }).pipe(
+        return this.httpClient.post<IResponse<GetAuthStatusResponse>>(this.statusEndpointUrl, null, { headers }).pipe(
             switchMap(response => {
                 if (response.data!.isAuthenticated) {
                     this._token = token;
@@ -196,7 +196,7 @@ export class AuthService {
                     this.userPreferencesService.setAuthToken(token);
                     this.userPreferencesService.setAuthType(authType);
 
-                    return this.httpClient.get<IResponse<WhoAmIResponse>>(this.whoAmIEndpointUrl, { headers }).pipe(
+                    return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
                         tap(response => {
                             this.setClaims(response.data!.claims);
                         }),
@@ -254,20 +254,22 @@ export class AuthService {
     }
 
     public logout(hasExpired?: boolean): void {
-        this.clearAuthData();
 
         if (this.userPreferencesService.authType === 'OAuth2') {
+            this.clearAuthData();
             window.location.href = this.logoutEndpointUrl;
         }
+
+        this.clearAuthData();
     }
 }
 
-export interface AuthenticatedResponse {
+export interface GetAuthStatusResponse {
     isAuthenticated: boolean;
     accessToken: string;
 }
 
-export interface WhoAmIResponse {
+export interface GetIdentityResponse {
     claims: { [key: string]: string };
 }
 
