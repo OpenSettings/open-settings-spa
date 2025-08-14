@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const subscription = this.authService.machineToMachineAuthorize(clientId, clientSecret).subscribe(isAuthenticated => {
+        const subscription = this.authService.authorizeWithMachineCredentials(clientId, clientSecret).subscribe(isAuthenticated => {
 
             if (isAuthenticated) {
                 this.router.navigate(['']);

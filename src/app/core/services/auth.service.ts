@@ -16,6 +16,7 @@ export class AuthService {
 
     private _token: string | null = null;
     private _authType: AuthType | null = null;
+    private _authMethod: AuthMethod | null = null;
     private httpClient: HttpClient;
     private controllerConfiguration: ControllerConfiguration;
     private providerInfo: ProviderInfo;
@@ -23,7 +24,7 @@ export class AuthService {
     private statusEndpointUrl: string;
     private identityEndpointUrl: string;
     private logoutEndpointUrl: string;
-    private generateMachineToMachineTokenEndpointUrl: string;
+    private generateTokenForMachineEndpointUrl: string;
 
     isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
     isAuthorizationRequired$ = this.isAuthorizationRequiredSubject.asObservable();
@@ -40,7 +41,7 @@ export class AuthService {
         this.statusEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/status`;
         this.identityEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/identity`;
         this.logoutEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/logout`;
-        this.generateMachineToMachineTokenEndpointUrl = `${this.controllerConfiguration.route}/v1/token/m2m`;
+        this.generateTokenForMachineEndpointUrl = `${this.controllerConfiguration.route}/v1/token/machine`;
 
         this.setAuthorizationRequired(this.controllerConfiguration.authorize || this.providerInfo.authorize);
     }
@@ -51,6 +52,10 @@ export class AuthService {
 
     get authType(): AuthType | null {
         return this._authType;
+    }
+
+    get authMethod(): AuthMethod | null {
+        return this._authMethod
     }
 
     claims$: Observable<{ [key: string]: string }> = this.claimsSubject.asObservable();
@@ -75,6 +80,7 @@ export class AuthService {
 
         this._token = this.userPreferencesService.authToken;
         this._authType = this.userPreferencesService.authType;
+        this._authMethod = this.userPreferencesService.authMethod;
 
         const claims = this.userPreferencesService.claims;
 
@@ -103,7 +109,8 @@ export class AuthService {
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
-            'x-os-auth-type': 'OAuth2'
+            'x-os-auth-type': 'OAuth2',
+            'x-os-client-id': this.windowService.client.id
         });
 
         return this.httpClient.post<IResponse<GetAuthStatusResponse>>(url, null, { headers }).pipe(
@@ -115,15 +122,18 @@ export class AuthService {
 
                     if (response.data!.accessToken) {
                         this._token = `Bearer ${response.data!.accessToken}`;
+                        this._authMethod = 'Jwt';
                         this.userPreferencesService.setAuthToken(this._token);
-                        this.userPreferencesService.setAuthMethod('Jwt');
+                        this.userPreferencesService.setAuthMethod(this._authMethod);
                         headers = headers.set('Authorization', this._token);
-                        headers = headers.set('x-os-auth-method', 'Jwt');
+                        headers = headers.set('x-os-auth-method', this._authMethod);
                     } else {
                         this._token = null;
+                        this._authMethod = 'Jwt';
+                        this._authMethod = 'Cookie';
                         this.userPreferencesService.removeAuthToken();
-                        this.userPreferencesService.setAuthMethod('Cookie');
-                        headers = headers.set('x-os-auth-method', 'Cookie');
+                        this.userPreferencesService.setAuthMethod(this._authMethod);
+                        headers = headers.set('x-os-auth-method', this._authMethod);
                     }
 
                     return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
@@ -152,14 +162,15 @@ export class AuthService {
         );
     }
 
-    public machineToMachineAuthorize(clientId: string, clientSecret: string): Observable<boolean | undefined> {
+    public authorizeWithMachineCredentials(clientId: string, clientSecret: string): Observable<boolean | undefined> {
 
         const headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
-            'x-os-login-type': 'Machine'
+            'x-os-login-type': 'Machine',
+            'x-os-client-id': this.windowService.client.id
         });
 
-        return this.httpClient.post<IResponse<GenerateMachineToMachineTokenResponse>>(this.generateMachineToMachineTokenEndpointUrl, {
+        return this.httpClient.post<IResponse<GenerateTokenResponse>>(this.generateTokenForMachineEndpointUrl, {
             client: {
                 id: clientId,
                 secret: clientSecret
@@ -193,8 +204,10 @@ export class AuthService {
                 if (response.data!.isAuthenticated) {
                     this._token = token;
                     this._authType = authType;
+                    this._authMethod = authMethod;
                     this.userPreferencesService.setAuthToken(token);
                     this.userPreferencesService.setAuthType(authType);
+                    this.userPreferencesService.setAuthMethod(authMethod);
 
                     return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
                         tap(response => {
@@ -241,6 +254,7 @@ export class AuthService {
         this.userPreferencesService.removeUuid();
         this._token = null;
         this._authType = null;
+        this._authMethod = null;
         this.claimsSubject.next({});
         this.setIsAuthenticated(false);
     }
@@ -273,7 +287,7 @@ export interface GetIdentityResponse {
     claims: { [key: string]: string };
 }
 
-export interface GenerateMachineToMachineTokenResponse {
+export interface GenerateTokenResponse {
     accessToken: string;
     expires: string;
     expiresInSeconds: number;
