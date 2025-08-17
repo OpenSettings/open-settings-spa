@@ -107,15 +107,17 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     handleOauth(): void {
 
-        let url = this.route + '/v1/auth/login';
-
-        if (this.serviceType === 'Consumer') {
-            url += `?uuid=${this.userPreferencesService.uuid}`;
-        }
+        let url = `${this.route}/v1/auth/login?returnUrl=${encodeURIComponent(window.location.href)}&apiUrl=${this.getApiUrl()}&stateId=${this.userPreferencesService.stateId}&clientId=${this.windowService.client.id}`;
 
         this.userPreferencesService.setAuthType('OAuth2')
         
         window.location.href = url;
+    }
+
+    getApiUrl() : string{
+        const baseUrl = window.location.origin;
+
+        return encodeURIComponent(baseUrl + this.windowService.controller.route);
     }
 
     reset(): void {

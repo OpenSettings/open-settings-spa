@@ -18,10 +18,13 @@ export class RequestInterceptor implements HttpInterceptor {
             'x-os-pack-version-score': this.windowService.packInfo.score.toString()
         };
 
-        if (token) {
-            headers['Authorization'] = token;
+        if(this.authService.isAuthenticated){
             headers['x-os-auth-type'] = this.authService.authType!;
             headers['x-os-auth-method'] = this.authService.authMethod!;
+        }
+
+        if (token) {
+            headers['Authorization'] = token;
         }
 
         const cloned = req.clone({

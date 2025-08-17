@@ -58,7 +58,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
             controller: this.formBuilder.group({
                 route: [this.data.controller.route],
                 allowFromExploring: [this.data.controller.allowFromExploring],
-                authorize: [this.data.controller.authorize],
+                requiresAuthentication: [this.data.controller.requiresAuthentication],
                 oAuth2: this.formBuilder.group({
                     authority: [this.data.controller.oAuth2.authority],
                     clientId: [this.data.controller.oAuth2.clientId],
@@ -107,7 +107,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 controller: {
                     route: this.data.controller.route,
                     allowFromExploring: this.data.controller.allowFromExploring,
-                    authorize: this.data.controller.authorize,
+                    requiresAuthentication: this.data.controller.requiresAuthentication,
                     oAuth2: {
                         authority: this.data.controller.oAuth2.authority,
                         clientId: this.data.controller.oAuth2.clientId,

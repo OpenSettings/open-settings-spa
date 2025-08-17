@@ -35,10 +35,10 @@
     catch {
       controller = {
         route: 'http://localhost:5288/api/settings',
-        authorize: false
+        requiresAuthentication: false
       };
       providerInfo = {
-        authorize: true, // set 'true' to enable local auth testing. 
+        requiresAuthentication: true, // set 'true' to enable local auth testing. 
         client:{
           id: '00000000-0000-0000-0000-000000000000',
           name: 'OpenSettings.Api',

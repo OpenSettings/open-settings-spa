@@ -16,7 +16,7 @@ export class UserPreferencesService {
         APP_VIEW_MULTI_SELECTION_ENABLED: `${this.prefix}appViewMultiSelectionEnabled`,
         THEME_PREFERENCE: `${this.prefix}themePreference`,
         SIDEBAR_MENU_OPENED: `${this.prefix}sidebarMenuOpened`,
-        UUID: `${this.prefix}uuid`,
+        STATE_ID: `${this.prefix}stateId`,
         CLAIMS: `${this.prefix}claims`,
         AUTH_TYPE: `${this.prefix}authType`,
         AUTH_METHOD: `${this.prefix}authMethod`,
@@ -75,26 +75,26 @@ export class UserPreferencesService {
         localStorage.removeItem(this.KEYS.CLAIMS);
     }
 
-    get uuid(): string {
-        const item = localStorage.getItem(this.KEYS.UUID);
+    get stateId(): string {
+        const item = localStorage.getItem(this.KEYS.STATE_ID);
 
         if (item) {
             return item;
         }
 
-        const uuid = uuidv4().replace('-', '');
+        const stateId = uuidv4().replace('-', '');
 
-        this.setUuid(uuid);
+        this.setStateId(stateId);
 
-        return uuid;
+        return stateId;
     }
 
-    private setUuid(uuid: string) {
-        localStorage.setItem(this.KEYS.UUID, uuid);
+    private setStateId(stateId: string) {
+        localStorage.setItem(this.KEYS.STATE_ID, stateId);
     }
 
-    removeUuid() {
-        localStorage.removeItem(this.KEYS.UUID);
+    removeStateId() {
+        localStorage.removeItem(this.KEYS.STATE_ID);
     }
 
     get sidebarMenuOpened(): boolean {

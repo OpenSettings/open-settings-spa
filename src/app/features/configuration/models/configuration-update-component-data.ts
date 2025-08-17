@@ -45,7 +45,7 @@ export interface ConfigurationProvider{
 export interface ConfigurationController{
     route: string;
     allowFromExploring: boolean;
-    authorize: boolean;
+    requiresAuthentication: boolean;
     oAuth2: OAuth2Configuration;
 }
 

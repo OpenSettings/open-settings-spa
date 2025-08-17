@@ -30,7 +30,6 @@ export function computeIdentifier(input: string): string {
     }
 
     const hash = crypto.MD5(input).toString(crypto.enc.Hex);
-
     const byteArray = hexToNumberArray(hash);
 
     const reversedByteArray = [

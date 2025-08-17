@@ -21,11 +21,11 @@ export class AuthService {
     private controllerConfiguration: ControllerConfiguration;
     private providerInfo: ProviderInfo;
     private isProvider: boolean;
-    private statusEndpointUrl: string;
-    private identityEndpointUrl: string;
+    private meEndpointUrl: string;
     private logoutEndpointUrl: string;
     private generateTokenForMachineEndpointUrl: string;
 
+    claims$: Observable<{ [key: string]: string }> = this.claimsSubject.asObservable();
     isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
     isAuthorizationRequired$ = this.isAuthorizationRequiredSubject.asObservable();
 
@@ -38,27 +38,25 @@ export class AuthService {
         this.controllerConfiguration = this.windowService.controller;
         this.providerInfo = this.windowService.providerInfo;
         this.isProvider = this.windowService.isProvider;
-        this.statusEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/status`;
-        this.identityEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/identity`;
+        this.meEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/me`;
         this.logoutEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/logout`;
         this.generateTokenForMachineEndpointUrl = `${this.controllerConfiguration.route}/v1/token/machine`;
 
-        this.setAuthorizationRequired(this.controllerConfiguration.authorize || this.providerInfo.authorize);
+        this.setAuthorizationRequired(this.controllerConfiguration.requiresAuthentication || this.providerInfo.requiresAuthentication);
     }
 
     get token(): string | null {
-        return this._token;
+        return this._token ?? this.userPreferencesService.authToken;
     }
 
     get authType(): AuthType | null {
-        return this._authType;
+        return this._authType ?? this.userPreferencesService.authType;
     }
 
     get authMethod(): AuthMethod | null {
-        return this._authMethod
+        return this._authMethod ?? this.userPreferencesService.authMethod;
     }
 
-    claims$: Observable<{ [key: string]: string }> = this.claimsSubject.asObservable();
 
     get claims(): { [key: string]: string } {
         return this.claimsSubject.getValue();
@@ -78,17 +76,14 @@ export class AuthService {
             return of(false);
         }
 
-        this._token = this.userPreferencesService.authToken;
-        this._authType = this.userPreferencesService.authType;
-        this._authMethod = this.userPreferencesService.authMethod;
+        if (this.token) {
 
-        const claims = this.userPreferencesService.claims;
+            const claims = this.userPreferencesService.claims;
 
-        if (claims) {
-            this.claimsSubject.next(claims);
-        }
+            if (claims) {
+                this.claimsSubject.next(claims);
+            }
 
-        if (this._token) {
             this.setIsAuthenticated(true);
             return of(true);
         }
@@ -98,14 +93,12 @@ export class AuthService {
         }
 
         this.setIsAuthenticated(false);
+
         return of(false);
     }
 
     private performOAuth2Authentication(): Observable<boolean> {
-        let url = this.statusEndpointUrl;
-        if (!this.isProvider) {
-            url += `?uuid=${this.userPreferencesService.uuid}`;
-        }
+        let url = `${this.meEndpointUrl}?stateId=${this.userPreferencesService.stateId}&includes=Claims`;
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
@@ -113,10 +106,11 @@ export class AuthService {
             'x-os-client-id': this.windowService.client.id
         });
 
-        return this.httpClient.post<IResponse<GetAuthStatusResponse>>(url, null, { headers }).pipe(
-            switchMap((response: IResponse<GetAuthStatusResponse>) => {
-                if (response.data!.isAuthenticated) {
+        return this.httpClient.post<IResponse<GetMeResponse>>(url, null, { headers }).pipe(
+            map((response: IResponse<GetMeResponse>) => {
+                const isAuthenticated = !!response.data?.isAuthenticated;
 
+                if (isAuthenticated) {
                     this._authType = 'OAuth2';
                     this.userPreferencesService.setAuthType(this._authType);
 
@@ -125,35 +119,20 @@ export class AuthService {
                         this._authMethod = 'Jwt';
                         this.userPreferencesService.setAuthToken(this._token);
                         this.userPreferencesService.setAuthMethod(this._authMethod);
-                        headers = headers.set('Authorization', this._token);
-                        headers = headers.set('x-os-auth-method', this._authMethod);
                     } else {
                         this._token = null;
-                        this._authMethod = 'Jwt';
                         this._authMethod = 'Cookie';
                         this.userPreferencesService.removeAuthToken();
                         this.userPreferencesService.setAuthMethod(this._authMethod);
-                        headers = headers.set('x-os-auth-method', this._authMethod);
                     }
 
-                    return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
-                        tap(response => {
-                            this.setClaims(response.data!.claims);
-                        }),
-                        map(() => {
-                            this.setIsAuthenticated(true);
-                            return true;
-                        }),
-                        catchError(error => {
-                            console.error('Error fetching claims:', error);
-                            this.setIsAuthenticated(false);
-                            return of(false);
-                        })
-                    );
+                    this.setClaims(response.data!.claims);
+                    this.setIsAuthenticated(true);
+                } else {
+                    this.setIsAuthenticated(false);
                 }
 
-                this.setIsAuthenticated(false);
-                return of(false);
+                return isAuthenticated;
             }),
             catchError((err) => {
                 this.setIsAuthenticated(false);
@@ -178,7 +157,7 @@ export class AuthService {
         }, { headers }).pipe(
             switchMap(response => {
 
-                const token = `Bearer ${response.data!.accessToken}`;
+                const token = `Bearer ${response.data!.accessToken.value}`;
 
                 return this.internalAuthorize('Machine', 'Jwt', token);
             }),
@@ -190,16 +169,18 @@ export class AuthService {
     }
 
     private internalAuthorize(authType: AuthType, authMethod: AuthMethod, token: string): Observable<boolean | undefined> {
+        let url = `${this.meEndpointUrl}?stateId=${this.userPreferencesService.stateId}&includes=Claims`;
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
             'x-os-auth-type': authType,
-            'x-os-auth-method': authMethod
+            'x-os-auth-method': authMethod,
+            'x-os-client-id': this.windowService.client.id
         });
 
         headers = headers.set('Authorization', token);
 
-        return this.httpClient.post<IResponse<GetAuthStatusResponse>>(this.statusEndpointUrl, null, { headers }).pipe(
+        return this.httpClient.post<IResponse<GetMeResponse>>(url, null, { headers }).pipe(
             switchMap(response => {
                 if (response.data!.isAuthenticated) {
                     this._token = token;
@@ -209,20 +190,9 @@ export class AuthService {
                     this.userPreferencesService.setAuthType(authType);
                     this.userPreferencesService.setAuthMethod(authMethod);
 
-                    return this.httpClient.get<IResponse<GetIdentityResponse>>(this.identityEndpointUrl, { headers }).pipe(
-                        tap(response => {
-                            this.setClaims(response.data!.claims);
-                        }),
-                        map(() => {
-                            this.setIsAuthenticated(true);
-                            return true;
-                        }),
-                        catchError(error => {
-                            console.error('Error fetching claims:', error);
-                            this.setIsAuthenticated(false);
-                            return of(false);
-                        })
-                    );
+                    this.setClaims(response.data!.claims);
+                    this.setIsAuthenticated(true);
+                    return of(true);
                 }
 
                 this.setIsAuthenticated(false);
@@ -251,7 +221,7 @@ export class AuthService {
         this.userPreferencesService.removeAuthType();
         this.userPreferencesService.removeAuthMethod();
         this.userPreferencesService.removeClaims();
-        this.userPreferencesService.removeUuid();
+        this.userPreferencesService.removeStateId();
         this._token = null;
         this._authType = null;
         this._authMethod = null;
@@ -278,17 +248,18 @@ export class AuthService {
     }
 }
 
-export interface GetAuthStatusResponse {
+export interface GetMeResponse {
     isAuthenticated: boolean;
     accessToken: string;
-}
-
-export interface GetIdentityResponse {
     claims: { [key: string]: string };
 }
 
 export interface GenerateTokenResponse {
-    accessToken: string;
-    expires: string;
+    accessToken: GenerateTokenResponseToken;
+}
+
+export interface GenerateTokenResponseToken {
+    value: string;
+    expiryDate: string;
     expiresInSeconds: number;
 }

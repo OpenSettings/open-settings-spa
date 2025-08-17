@@ -102,7 +102,7 @@ export class WindowService {
 export interface ControllerConfiguration {
     route: string;
     allowFromExploring: boolean;
-    authorize: boolean;
+    requiresAuthentication: boolean;
     oAuth2: OAuth2Configuration;
 }
 
@@ -116,7 +116,7 @@ export interface OAuth2Configuration {
 }
 
 export interface ProviderInfo {
-    authorize: boolean;
+    requiresAuthentication: boolean;
     client: ClientInfo;
     packInfo: PackInfo;
     oAuth2: OAuth2Info;
