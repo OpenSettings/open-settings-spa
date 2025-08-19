@@ -1,4 +1,4 @@
-import { OAuth2Configuration } from "../../../core/services/window.service";
+import { OpenIdConnectConfiguration } from "../../../core/services/window.service";
 
 export interface ConfigurationUpdateComponentData {
     configurationId: string;
@@ -46,7 +46,7 @@ export interface ConfigurationController{
     route: string;
     allowFromExploring: boolean;
     requiresAuthentication: boolean;
-    oAuth2: OAuth2Configuration;
+    openIdConnect: OpenIdConnectConfiguration;
 }
 
 export interface ConfigurationSpa{

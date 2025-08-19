@@ -59,13 +59,13 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 route: [this.data.controller.route],
                 allowFromExploring: [this.data.controller.allowFromExploring],
                 requiresAuthentication: [this.data.controller.requiresAuthentication],
-                oAuth2: this.formBuilder.group({
-                    authority: [this.data.controller.oAuth2.authority],
-                    clientId: [this.data.controller.oAuth2.clientId],
-                    clientSecret: [this.data.controller.oAuth2.clientSecret],
-                    signedOutRedirectUri: [this.data.controller.oAuth2.signedOutRedirectUri],
-                    allowOfflineAccess: [this.data.controller.oAuth2.allowOfflineAccess],
-                    isActive: [this.data.controller.oAuth2.isActive],
+                openIdConnect: this.formBuilder.group({
+                    authority: [this.data.controller.openIdConnect.authority],
+                    clientId: [this.data.controller.openIdConnect.clientId],
+                    clientSecret: [this.data.controller.openIdConnect.clientSecret],
+                    signedOutRedirectUri: [this.data.controller.openIdConnect.signedOutRedirectUri],
+                    allowOfflineAccess: [this.data.controller.openIdConnect.allowOfflineAccess],
+                    isActive: [this.data.controller.openIdConnect.isActive],
                 })
             }),
             spa: this.formBuilder.group({
@@ -108,13 +108,13 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                     route: this.data.controller.route,
                     allowFromExploring: this.data.controller.allowFromExploring,
                     requiresAuthentication: this.data.controller.requiresAuthentication,
-                    oAuth2: {
-                        authority: this.data.controller.oAuth2.authority,
-                        clientId: this.data.controller.oAuth2.clientId,
-                        clientSecret: this.data.controller.oAuth2.clientSecret,
-                        signedOutRedirectUri: this.data.controller.oAuth2.signedOutRedirectUri,
-                        allowOfflineAccess: this.data.controller.oAuth2.allowOfflineAccess,
-                        isActive: this.data.controller.oAuth2.isActive
+                    openIdConnect: {
+                        authority: this.data.controller.openIdConnect.authority,
+                        clientId: this.data.controller.openIdConnect.clientId,
+                        clientSecret: this.data.controller.openIdConnect.clientSecret,
+                        signedOutRedirectUri: this.data.controller.openIdConnect.signedOutRedirectUri,
+                        allowOfflineAccess: this.data.controller.openIdConnect.allowOfflineAccess,
+                        isActive: this.data.controller.openIdConnect.isActive
                     }
                 },
                 spa: {

@@ -103,10 +103,10 @@ export interface ControllerConfiguration {
     route: string;
     allowFromExploring: boolean;
     requiresAuthentication: boolean;
-    oAuth2: OAuth2Configuration;
+    openIdConnect: OpenIdConnectConfiguration;
 }
 
-export interface OAuth2Configuration {
+export interface OpenIdConnectConfiguration {
     authority: string;
     clientId: string;
     clientSecret: string;
@@ -119,11 +119,11 @@ export interface ProviderInfo {
     requiresAuthentication: boolean;
     client: ClientInfo;
     packInfo: PackInfo;
-    oAuth2: OAuth2Info;
+    openIdConnect: OpenIdConnectInfo;
     redis: RedisInfo
 }
 
-export interface OAuth2Info {
+export interface OpenIdConnectInfo {
     authority: string;
     allowOfflineAccess: boolean;
     isActive: boolean;

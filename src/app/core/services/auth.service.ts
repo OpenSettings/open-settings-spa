@@ -88,8 +88,8 @@ export class AuthService {
             return of(true);
         }
 
-        if (this.providerInfo.oAuth2.isActive) {
-            return this.performOAuth2Authentication();
+        if (this.providerInfo.openIdConnect.isActive) {
+            return this.performOpenIdConnectAuthentication();
         }
 
         this.setIsAuthenticated(false);
@@ -97,12 +97,12 @@ export class AuthService {
         return of(false);
     }
 
-    private performOAuth2Authentication(): Observable<boolean> {
+    private performOpenIdConnectAuthentication(): Observable<boolean> {
         let url = `${this.meEndpointUrl}?stateId=${this.userPreferencesService.stateId}&includes=Claims`;
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
-            'x-os-auth-type': 'OAuth2',
+            'x-os-auth-type': 'OpenIdConnect',
             'x-os-client-id': this.windowService.client.id
         });
 
@@ -111,7 +111,7 @@ export class AuthService {
                 const isAuthenticated = !!response.data?.isAuthenticated;
 
                 if (isAuthenticated) {
-                    this._authType = 'OAuth2';
+                    this._authType = 'OpenIdConnect';
                     this.userPreferencesService.setAuthType(this._authType);
 
                     if (response.data!.accessToken) {
@@ -239,7 +239,7 @@ export class AuthService {
 
     public logout(hasExpired?: boolean): void {
 
-        if (this.userPreferencesService.authType === 'OAuth2') {
+        if (this.userPreferencesService.authType === 'OpenIdConnect') {
             this.clearAuthData();
             window.location.href = this.logoutEndpointUrl;
         }

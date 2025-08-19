@@ -251,33 +251,33 @@
             </mat-expansion-panel-header>
 
             <mat-accordion multi="true" formGroupName="controller">
-                <mat-expansion-panel expanded="false" formGroupName="oAuth2">
+                <mat-expansion-panel expanded="false" formGroupName="openIdConnect">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
-                            OAuth2
+                            OpenIdConnect
                         </mat-panel-title>
                        
                     </mat-expansion-panel-header>
                
                     <mat-form-field>
                         <mat-label>Authority <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                            matTooltip="The authority URL for the OAuth2 provider. The value is trimmed of any trailing slashes."></mat-icon></mat-label>
+                            matTooltip="The authority URL for the OpenIdConnect provider. The value is trimmed of any trailing slashes."></mat-icon></mat-label>
                         <input matInput formControlName="authority">
                         <mat-hint>e.g. https://idm.opensettings.net</mat-hint>
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>ClientId <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                            matTooltip="The client id used to authenticate with the OAuth2 provider."></mat-icon></mat-label>
+                            matTooltip="The client id used to authenticate with the OpenIdConnect provider."></mat-icon></mat-label>
                         <input matInput formControlName="clientId">
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>ClientSecret <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                            matTooltip="The client secret used to authenticate with the OAuth2 provider.."></mat-icon></mat-label>
-                        <input matInput formControlName="clientSecret">
+                            matTooltip="The client secret used to authenticate with the OpenIdConnect provider.."></mat-icon></mat-label>
+                        <input matInput formControlName="clientSecret" autocomplete="off">
                     </mat-form-field>
                     <mat-form-field>
                         <mat-label>SignedOutRedirectUri <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                            matTooltip="The URI to redirect to after the user is signed out. The default value is 'settings'."></mat-icon></mat-label>
+                            matTooltip="The URI to redirect to after the user is signed out. The default value is 'null'. When null, empty or whitespace the default redirect flow is used: - Provider → Spa, Consumer → Spa."></mat-icon></mat-label>
                         <input matInput formControlName="signedOutRedirectUri">
                     </mat-form-field>
                     <div class="mb-2 mr-3 d-flex align-items-center">
@@ -289,7 +289,7 @@
                     <div class="mb-2 mr-3 d-flex align-items-center">
                         <span class="field-label-text">Is Active</span>
                         <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
-                        matTooltip="Indicates whether the OAuth2 configuration is active. The default value is disabled."></mat-icon>
+                        matTooltip="Indicates whether the OpenIdConnect configuration is active. The default value is disabled."></mat-icon>
                         <mat-slide-toggle labelPosition="before" formControlName="isActive"></mat-slide-toggle>
                     </div>
                 </mat-expansion-panel>

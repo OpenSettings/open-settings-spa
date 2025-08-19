@@ -22,7 +22,7 @@
     
             <mat-form-field class="mb-1" appearance="outline">
                 <mat-label>Client Secret:</mat-label>
-                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="clientSecret">
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="clientSecret" autocomplete="off">
                 <button mat-icon-button matSuffix (click)="togglePasswordVisibility()">
                     <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
@@ -30,7 +30,7 @@
             </mat-form-field>
 
             <button type="submit" mat-raised-button color="primary" class="w-100" [disabled]="form.invalid">Login</button>
-            <button mat-stroked-button color="warn" class="w-100 mt-2" (click)="reset()" *ngIf="providerInfo?.oAuth2?.isActive">Back</button>
+            <button mat-stroked-button color="warn" class="w-100 mt-2" (click)="reset()" *ngIf="providerInfo?.openIdConnect?.isActive">Back</button>
         </form>
     </mat-card-content>
 </ng-template>

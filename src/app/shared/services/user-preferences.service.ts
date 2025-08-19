@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ThemePreference } from "../../core/services/theme.service";
 import { v4 as uuidv4 } from 'uuid';
 
-export type AuthType = 'OAuth2' | 'Machine';
+export type AuthType = 'OpenIdConnect' | 'Machine';
 export type AuthMethod = 'Basic' | 'Jwt'  | 'Cookie';
 export type Headers = 'x-os-auth-type' | 'x-os-auth-method' | 'x-os-caller-type' | 'x-os-client-id' | 'x-os-pack-version' | 'x-os-pack-version-score';
 
@@ -82,7 +82,7 @@ export class UserPreferencesService {
             return item;
         }
 
-        const stateId = uuidv4().replace('-', '');
+        const stateId = uuidv4();
 
         this.setStateId(stateId);
 

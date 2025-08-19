@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.serviceType = this.windowService.serviceType;
         this.packVersion = this.windowService.packInfo.version;
         
-        if (!this.providerInfo.oAuth2.isActive) {
+        if (!this.providerInfo.openIdConnect.isActive) {
             this.selectedLogin = 'basic';
         }
 
@@ -109,7 +109,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         let url = `${this.route}/v1/auth/login?returnUrl=${encodeURIComponent(window.location.href)}&apiUrl=${this.getApiUrl()}&stateId=${this.userPreferencesService.stateId}&clientId=${this.windowService.client.id}`;
 
-        this.userPreferencesService.setAuthType('OAuth2')
+        this.userPreferencesService.setAuthType('OpenIdConnect')
         
         window.location.href = url;
     }
