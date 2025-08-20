@@ -15,6 +15,7 @@ export interface ConfigurationUpdateComponentData {
 }
 
 export interface ConfigurationConsumer {
+    providerUrl: string;
     requestEncodings: CompressionType[];
     isRedisActive: boolean;
     pollingSettingsWorker: PollingSettingsWorker;

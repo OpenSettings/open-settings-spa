@@ -109,6 +109,13 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
+                 <mat-form-field>
+                        <mat-label>Provider Url <mat-icon class="icon-mini" matIconPosition="right" fontIcon="info"
+                            matTooltip="The read-only provider url, which can only be set in the application."></mat-icon></mat-label>
+                        <input matInput formControlName="providerUrl" readonly>
+                        <mat-hint>e.g. 'https://.../api/settings/'</mat-hint>
+                    </mat-form-field>
+
                 <mat-form-field>
                     <mat-label>Request Encodings</mat-label>
                     <mat-select formControlName="requestEncodings" multiple>

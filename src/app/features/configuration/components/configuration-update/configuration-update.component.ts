@@ -38,6 +38,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
             ignoreOnFileChange: [this.data.storeInSeparateFile ? this.data.ignoreOnFileChange ?? false : null],
             registrationMode: [this.data.registrationMode],
             consumer: this.formBuilder.group({
+                providerUrl: [this.data.consumer.providerUrl],
                 requestEncodings: [this.data.consumer.requestEncodings],
                 isRedisActive: [this.data.consumer.isRedisActive],
                 pollingSettingsWorker: this.formBuilder.group({
@@ -87,6 +88,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
                 ignoreOnFileChange: this.data.ignoreOnFileChange,
                 registrationMode: this.data.registrationMode,
                 consumer: {
+                    providerUrl: this.data.consumer.providerUrl,
                     requestEncodings: [...this.data.consumer.requestEncodings],
                     isRedisActive: this.data.consumer.isRedisActive,
                     pollingSettingsWorker: {
