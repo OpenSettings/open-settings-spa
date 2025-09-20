@@ -3,7 +3,7 @@ import { License, WindowService } from "../../../core/services/window.service";
 import { filter, Subscription, switchMap } from "rxjs";
 import { ConfirmationDialogComponentModel } from "../../../shared/components/confirmation-dialog/confirmation-dialog-component.model";
 import { ConfirmationDialogComponent } from "../../../shared/components/confirmation-dialog/confirmation-dialog.component";
-import { LicensesService } from "../services/licenses.service";
+import { LicenseService } from "../services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseUpgradeComponent } from "../license-upgrade/license-upgrade.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -18,7 +18,7 @@ export class LicenseViewComponent implements OnInit, OnDestroy {
 
     constructor(
         private dialog: MatDialog,
-        private licensesService: LicensesService,
+        private licensesService: LicenseService,
         private windowService: WindowService,
         private snackBar: MatSnackBar) { }
 

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { LicensesService } from "../services/licenses.service";
+import { LicenseService } from "../services/license.service";
 import { Subscription, switchMap } from "rxjs";
 import { GetLinksResponseLink, OpenSettingsService } from "../../../shared/services/open-settings.service";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -21,7 +21,7 @@ export class LicenseUpgradeComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
 
     constructor(
-        private licensesService: LicensesService,
+        private licensesService: LicenseService,
         private openSettingsService: OpenSettingsService,
         private utilityService: UtilityService,
         private windowService: WindowService,

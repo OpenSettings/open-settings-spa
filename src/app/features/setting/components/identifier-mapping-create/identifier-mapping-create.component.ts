@@ -5,10 +5,10 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { debounceTime, distinctUntilChanged, map, Observable, startWith, Subject, Subscription, switchMap, timeout } from "rxjs";
 import { isNullOrWhiteSpace } from "../../../../shared/utils/other-utils";
 import { GetIdentifierResponse } from "../../../identifier/models/get-identifier-response";
-import { IdentifiersService } from "../../../identifier/services/identifiers.service";
+import { IdentifierService } from "../../../identifier/services/identifier.service";
 import { SetSortOrderPosition } from "../../../sponsor/models/set-order-position.enum";
 import { GetIdentifiersResponseIdentifier } from "../../../identifier/models/get-identifiers-response-identifier";
-import { AppIdentifierMappingsService } from "../../../../shared/services/app-identifier-mappings.service";
+import { AppIdentifierMappingService } from "../../../../shared/services/app-identifier-mapping.service";
 import { CreateAppIdentifierMappingRequestBody } from "../../../app/models/create-app-identifier-mapping-request-body";
 import { HttpErrorResponse } from "@angular/common/http";
 import { CreateAppIdentifierMappingResponse } from "../../../app/models/create-app-identifier-mapping-response";
@@ -38,8 +38,8 @@ export class IdentifierMappingCreateComponent implements OnInit, AfterViewInit, 
         public dialogRef: MatDialogRef<IdentifierMappingCreateComponent>,
         private formBuilder: FormBuilder,
         @Inject(MAT_DIALOG_DATA) public model: AppIdentifierAddComponentModel,
-        private identifiersService: IdentifiersService,
-        private appIdentifierMappingsService: AppIdentifierMappingsService
+        private identifiersService: IdentifierService,
+        private appIdentifierMappingsService: AppIdentifierMappingService
     ) { }
 
     ngOnInit(): void {

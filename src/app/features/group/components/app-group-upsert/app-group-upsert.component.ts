@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { GroupsService } from "../../services/app-groups.service";
+import { AppGroupService } from "../../services/app-group.service";
 import { SetSortOrderPosition } from "../../../sponsor/models/set-order-position.enum";
 import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { AppGroupUpsertComponentModel } from "../../models/app-group-upsert-component.model";
@@ -24,7 +24,7 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
     constructor(
         private snackBar: MatSnackBar,
         private formBuilder: FormBuilder,
-        private groupsService: GroupsService,
+        private appGroupService: AppGroupService,
         private dialog: MatDialog,
         public dialogRef: MatDialogRef<AppGroupUpsertComponent>,
         @Inject(MAT_DIALOG_DATA) public model: AppGroupUpsertComponentModel) { }
@@ -71,7 +71,7 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
 
             const trimmedName = formValue.name.trim();
 
-            const subscription = this.groupsService.createGroup({
+            const subscription = this.appGroupService.createAppGroup({
                 body: {
                     name: trimmedName,
                     sortOrder: formValue.sortOrder,
@@ -108,7 +108,7 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
         }
 
         const updateGroup = (formValue: any, rowVersion: string) => {
-            return this.groupsService.updateGroup({
+            return this.appGroupService.updateAppGroup({
                 groupId: formValue.id,
                 body: {
                     name: formValue.name,
@@ -120,7 +120,7 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
         };
 
         const createGroup = (formValue: any) => {
-            return this.groupsService.createGroup({
+            return this.appGroupService.createAppGroup({
                 body: {
                     name: formValue.name,
                     sortOrder: formValue.sortOrder,

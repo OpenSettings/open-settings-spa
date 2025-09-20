@@ -1,4 +1,4 @@
 export interface DeleteTagRequest{
-    tagId: string;
+    appTagId: string;
     rowVersion: string;
 }

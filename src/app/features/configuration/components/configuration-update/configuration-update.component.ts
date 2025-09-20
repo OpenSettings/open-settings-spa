@@ -5,7 +5,7 @@ import { ConfigurationUpdateComponentData } from "../../models/configuration-upd
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatSelect, MatSelectChange } from "@angular/material/select";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
-import { ConfigurationsService } from "../../services/configurations.service";
+import { AppConfigurationService } from "../../services/app-configuration.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { PatchConfigurationResponse } from "../../models/patch-configuration-response";
 import { IResponse } from "../../../../shared/models/response";
@@ -28,7 +28,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
     constructor(
         private snackBar: MatSnackBar,
         private formBuilder: FormBuilder,
-        private configurationsService: ConfigurationsService,
+        private configurationsService: AppConfigurationService,
         private utilityService: UtilityService
     ) { }
 
@@ -142,7 +142,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
 
         updatedFieldNameToValue['registrationMode'] = registrationMode;
 
-        const subscription = this.configurationsService.patchConfiguration({
+        const subscription = this.configurationsService.patchAppConfiguration({
             appId: this.data.appId,
             identifierId: this.data.selectedIdentifierId,
             body: {
@@ -203,7 +203,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
 
         updatedFieldNameToValue[formControlName] = event.checked;
 
-        const subscription = this.configurationsService.patchConfiguration({
+        const subscription = this.configurationsService.patchAppConfiguration({
             appId: this.data.appId,
             identifierId: this.data.selectedIdentifierId,
             body: {
@@ -278,7 +278,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
             [fieldName]: { ...this.form.value[fieldName] }
         };
 
-        const subscription = this.configurationsService.patchConfiguration({
+        const subscription = this.configurationsService.patchAppConfiguration({
             appId: this.data.appId,
             identifierId: this.data.selectedIdentifierId,
             body: {
@@ -334,7 +334,7 @@ export class ConfigurationUpdateComponent implements OnInit, OnDestroy, OnChange
     }
 
     fetchLatestConfiguration() {
-        const subscription = this.configurationsService.getConfigurationByAppAndIdentifier({
+        const subscription = this.configurationsService.getAppConfigurationByAppAndIdentifier({
             appId: this.data.appId,
             identifierId: this.data.selectedIdentifierId
         }).subscribe({

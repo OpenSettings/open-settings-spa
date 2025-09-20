@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { IdentifiersService } from "../../services/identifiers.service";
+import { IdentifierService } from "../../services/identifier.service";
 import { SetSortOrderPosition } from "../../../sponsor/models/set-order-position.enum";
 import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { ConflictResolverDialogComponent, ConflictResolverReturnType } from "../../../../shared/components/conflict-resolver-dialog/conflict-resolver-dialog.component";
@@ -25,7 +25,7 @@ export class IdentifierUpsertComponent implements OnInit, OnDestroy {
     constructor(
         private snackBar: MatSnackBar,
         private formBuilder: FormBuilder,
-        private identifiersService: IdentifiersService,
+        private identifiersService: IdentifierService,
         private dialog: MatDialog,
         public dialogRef: MatDialogRef<IdentifierUpsertComponent>,
         @Inject(MAT_DIALOG_DATA) public model: IdentifierUpsertComponentModel) { }

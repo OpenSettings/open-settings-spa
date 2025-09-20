@@ -8,11 +8,12 @@ import { PatchConfigurationRequest } from "../models/patch-configuration-request
 import { PatchConfigurationResponse } from "../models/patch-configuration-response";
 import { GetConfigurationByAppAndIdentifierRequest } from "../../instance/models/get-configuration-by-app-and-identifier-request";
 import { GetConfigurationByAppAndIdentifierResponse } from "../../instance/models/get-configuration-by-app-and-identifier-response";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class ConfigurationsService implements OnDestroy {
+export class AppConfigurationService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -36,16 +37,16 @@ export class ConfigurationsService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    getConfigurationByAppAndIdentifier(request: GetConfigurationByAppAndIdentifierRequest): Observable<IResponse<GetConfigurationByAppAndIdentifierResponse>> {
+    getAppConfigurationByAppAndIdentifier(request: GetConfigurationByAppAndIdentifierRequest): Observable<IResponse<GetConfigurationByAppAndIdentifierResponse>> {
 
-        let url = this.route + `/v1/apps/${request.appId}/identifiers/${request.identifierId}/configuration`;
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppConfigurationByAppIdAndIdentifierId(request.appId, request.identifierId);
 
         return this.httpClient.get<IResponse<GetConfigurationByAppAndIdentifierResponse>>(url, { headers: this.headers });
     }
 
-    patchConfiguration(request: PatchConfigurationRequest): Observable<IResponse<PatchConfigurationResponse>> {
+    patchAppConfiguration(request: PatchConfigurationRequest): Observable<IResponse<PatchConfigurationResponse>> {
 
-        let url = this.route + `/v1/apps/${request.appId}/identifiers/${request.identifierId}/configuration`;
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.patchAppConfiguration(request.appId, request.identifierId);
 
         return this.httpClient.patch<IResponse<PatchConfigurationResponse>>(url, request.body, { headers: this.headers });
     }

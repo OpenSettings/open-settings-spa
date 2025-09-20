@@ -6,7 +6,7 @@ import { debounceTime, Subject, Subscription } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { GroupsService } from "../../services/app-groups.service";
+import { AppGroupService } from "../../services/app-group.service";
 import { WindowService } from "../../../../core/services/window.service";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { SortDirection } from "../../../../shared/models/sort-direction.enum";
@@ -55,7 +55,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     maxSortOrder: number = 0
 
     constructor(
-        private groupsService: GroupsService,
+        private groupsService: AppGroupService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private windowService: WindowService,
@@ -227,7 +227,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     loadData(): void {
         this.startFetching();
 
-        const subscription = this.groupsService.getPaginatedGroups({
+        const subscription = this.groupsService.getPaginatedAppGroups({
             searchTerm: this.queryParams.searchTerm,
             pageIndex: this.queryParams.pageIndex + 1,
             pageSize: this.queryParams.pageSize,
@@ -360,7 +360,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
                                 return;
                             }
 
-                            const internalSubscription = this.groupsService.getGroupBySlug({
+                            const internalSubscription = this.groupsService.getAppGroupBySlug({
                                 groupIdOrSlug: slug
                             }).subscribe({
                                 next: (response) => {
@@ -422,7 +422,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
         }).afterClosed().subscribe(result => {
             if (result) {
 
-                const internalSubscription = this.groupsService.deleteGroup({ id: model.id, rowVersion: model.rowVersion })
+                const internalSubscription = this.groupsService.deleteAppGroup({ id: model.id, rowVersion: model.rowVersion })
                     .subscribe((response) => {
                         if (response.status === 409 && response.errors) {
                             this.utilityService.error(response.errors, 3500);
@@ -453,7 +453,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     moveOrder(model: ModelForPaginatedResponseData, ascent: boolean): void {
-        const subscription = this.groupsService.updateGroupSortOrder({
+        const subscription = this.groupsService.updateAppGroupSortOrder({
             id: model.id,
             ascent: ascent,
             rowVersion: model.rowVersion
@@ -469,7 +469,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     reorder() {
-        const subscription = this.groupsService.reorder().subscribe(() => {
+        const subscription = this.groupsService.reorderAppGroup().subscribe(() => {
             this.snackBar.open(`Reordered successfully!`, 'Close', {
                 horizontalPosition: 'right',
                 verticalPosition: 'top',
@@ -532,7 +532,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
         }).afterClosed().subscribe(result => {
             if (result) {
 
-                const internalSubscription = this.groupsService.deleteUnmappedGroups().subscribe(() => {
+                const internalSubscription = this.groupsService.deleteUnmappedAppGroups().subscribe(() => {
 
                     this.snackBar.open(`Deleted successfully!`, 'Close', {
                         horizontalPosition: 'right',
@@ -569,7 +569,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const target = this.dataSource.data[currentIndex];
 
-        const subscription = this.groupsService.dragGroup({
+        const subscription = this.groupsService.dragAppGroup({
             sourceId: source.id,
             targetId: target.id,
             ascent: ascent,

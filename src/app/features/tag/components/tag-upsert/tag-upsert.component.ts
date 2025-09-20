@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { TagsService } from "../../services/tags.service";
+import { AppTagService } from "../../services/app-tag.service";
 import { SetSortOrderPosition } from "../../../sponsor/models/set-order-position.enum";
 import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { TagUpsertComponentModel } from "../../models/tag-upsert-component.model";
@@ -24,7 +24,7 @@ export class TagUpsertComponent implements OnInit {
     constructor(
         private snackBar: MatSnackBar,
         private formBuilder: FormBuilder,
-        private tagsService: TagsService,
+        private tagsService: AppTagService,
         private dialog: MatDialog,
         public dialogRef: MatDialogRef<TagUpsertComponent>,
         @Inject(MAT_DIALOG_DATA) public model: TagUpsertComponentModel) { }
@@ -71,7 +71,7 @@ export class TagUpsertComponent implements OnInit {
 
             const trimmedName = formValue.name.trim();
 
-            const subscription = this.tagsService.createTag({
+            const subscription = this.tagsService.createAppTag({
                 body: {
                     name: trimmedName,
                     sortOrder: formValue.sortOrder,
@@ -108,8 +108,8 @@ export class TagUpsertComponent implements OnInit {
         }
 
         const updatetag = (formValue: any, rowVersion: string) => {
-            return this.tagsService.updateTag({
-                tagId: formValue.id,
+            return this.tagsService.updateAppTag({
+                appTagId: formValue.id,
                 body: {
                     name: formValue.name,
                     sortOrder: formValue.sortOrder,
@@ -120,7 +120,7 @@ export class TagUpsertComponent implements OnInit {
         };
 
         const createtag = (formValue: any) => {
-            return this.tagsService.createTag({
+            return this.tagsService.createAppTag({
                 body: {
                     name: formValue.name,
                     sortOrder: formValue.sortOrder,

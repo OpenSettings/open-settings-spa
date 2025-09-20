@@ -20,11 +20,12 @@ import { UpdateSortOrderResponse } from "../../../shared/models/update-sort-orde
 import { GetAppGroupResponse } from "../models/get-app-group-response";
 import { GetAppGroupRequest } from "../models/get-app-group-request";
 import { UpdateAppGroupResponse } from "../models/update-app-group-response";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class GroupsService implements OnDestroy {
+export class AppGroupService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -48,9 +49,9 @@ export class GroupsService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    getPaginatedGroups(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedAppGroupsResponse>> {
+    getPaginatedAppGroups(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedAppGroupsResponse>> {
 
-        let url = this.route + '/v1/app-groups/paginated';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.getPaginatedAppGroups();
 
         let params = new HttpParams();
 
@@ -75,23 +76,19 @@ export class GroupsService implements OnDestroy {
             }
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetPaginatedAppGroupsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetPaginatedAppGroupsResponse>>(url, { headers: this.headers, params });
     }
 
-    deleteUnmappedGroups(): Observable<IResponse<DeleteUnmappedItemsResponse>> {
+    deleteUnmappedAppGroups(): Observable<IResponse<DeleteUnmappedItemsResponse>> {
 
-        const url = this.route + '/v1/app-groups/unmapped';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.deleteUnmappedAppGroups();
 
         return this.httpClient.delete<IResponse<DeleteUnmappedItemsResponse>>(url, { headers: this.headers });
     }
 
-    getGroups(request: GetAppGroupsRequest): Observable<IResponse<GetAppGroupsResponse>> {
+    getAppGroups(request: GetAppGroupsRequest): Observable<IResponse<GetAppGroupsResponse>> {
 
-        let url = this.route + '/v1/app-groups';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.getAppGroups();
 
         let params = new HttpParams();
 
@@ -103,39 +100,37 @@ export class GroupsService implements OnDestroy {
             params = params.append("hasMappings", request.hasMappings);
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetAppGroupsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetAppGroupsResponse>>(url, { headers: this.headers, params });
     }
 
-    createGroup(request: CreateAppGroupRequest): Observable<IResponse<CreateAppGroupResponse>> {
+    createAppGroup(request: CreateAppGroupRequest): Observable<IResponse<CreateAppGroupResponse>> {
 
-        const url = this.route + '/v1/app-groups';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.createAppGroup();
 
         return this.httpClient.post<IResponse<CreateAppGroupResponse>>(url, request.body, { headers: this.headers });
     }
 
-    getGroupById(request: GetAppGroupRequest): Observable<IResponse<GetAppGroupResponse>> {
+    getAppGroupById(request: GetAppGroupRequest): Observable<IResponse<GetAppGroupResponse>> {
 
-        const url = this.route + '/v1/app-groups/' + request.groupIdOrSlug;
-
-        return this.httpClient.get<IResponse<GetAppGroupResponse>>(url, { headers: this.headers });
-    }
-
-    getGroupBySlug(request: GetAppGroupRequest): Observable<IResponse<GetAppGroupResponse>> {
-
-        const url = this.route + '/v1/app-groups/slug/' + request.groupIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.getAppGroupById(request.groupIdOrSlug);
 
         return this.httpClient.get<IResponse<GetAppGroupResponse>>(url, { headers: this.headers });
     }
 
-    deleteGroup(request: DeleteAppGroupRequest): Observable<IResponseAny> {
+    getAppGroupBySlug(request: GetAppGroupRequest): Observable<IResponse<GetAppGroupResponse>> {
 
-        const url = this.route + '/v1/app-groups/' + request.id + '?rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.getAppGroupBySlug(request.groupIdOrSlug);
 
-        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers }).pipe(
+        return this.httpClient.get<IResponse<GetAppGroupResponse>>(url, { headers: this.headers });
+    }
+
+    deleteAppGroup(request: DeleteAppGroupRequest): Observable<IResponseAny> {
+
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.deleteAppGroup(request.id);
+
+        let params = new HttpParams().append('rowVersion', request.rowVersion);
+
+        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponseAny);
@@ -146,11 +141,13 @@ export class GroupsService implements OnDestroy {
         );
     }
 
-    updateGroupSortOrder(request: UpdateAppGroupOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
+    updateAppGroupSortOrder(request: UpdateAppGroupOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
 
-        const url = this.route + '/v1/app-groups/' + request.id + '/sort-order?ascent=' + request.ascent + '&rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.updateAppGroupSortOrder(request.id);
 
-        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('rowVersion', request.rowVersion);
+
+        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSortOrderResponse>);
@@ -161,11 +158,13 @@ export class GroupsService implements OnDestroy {
         );
     }
 
-    dragGroup(request: DragItemSortOrderRequest): Observable<IResponse<DragItemSortOrderResponse>> {
+    dragAppGroup(request: DragItemSortOrderRequest): Observable<IResponse<DragItemSortOrderResponse>> {
 
-        const url = this.route + '/v1/app-groups/' + request.sourceId + '/drag/' + request.targetId + '?ascent=' + request.ascent + '&sourceRowVersion=' + encodeURIComponent(request.sourceRowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.dragAppGroup(request.sourceId, request.targetId);
 
-        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('sourceRowVersion', request.sourceRowVersion);
+
+        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<DragItemSortOrderResponse>);
@@ -176,9 +175,9 @@ export class GroupsService implements OnDestroy {
         );
     }
 
-    updateGroup(request: UpdateAppGroupRequest): Observable<IResponse<UpdateAppGroupResponse>> {
+    updateAppGroup(request: UpdateAppGroupRequest): Observable<IResponse<UpdateAppGroupResponse>> {
 
-        const url = this.route + '/v1/app-groups/' + request.groupId;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.updateAppGroup(request.groupId);
 
         return this.httpClient.put<IResponse<UpdateAppGroupResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
@@ -191,9 +190,9 @@ export class GroupsService implements OnDestroy {
         );
     }
 
-    reorder() {
+    reorderAppGroup() {
 
-        const url = this.route + '/v1/app-groups/reorder';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.reorderAppGroup();
 
         return this.httpClient.post<IResponseAny>(url, null, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {

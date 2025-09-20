@@ -1,4 +1,4 @@
-import { HttpHeaders, HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
 import { catchError, Observable, of, Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
@@ -6,11 +6,12 @@ import { WindowService } from "../../core/services/window.service";
 import { IResponse, IResponseAny } from "../models/response";
 import { CreateAppIdentifierMappingRequest } from "../../features/app/models/create-app-identifier-mapping-request";
 import { CreateAppIdentifierMappingResponse } from "../../features/app/models/create-app-identifier-mapping-response";
+import { OpenSettingsDefaults } from "../open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class AppIdentifierMappingsService implements OnDestroy {
+export class AppIdentifierMappingService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -36,49 +37,51 @@ export class AppIdentifierMappingsService implements OnDestroy {
 
     getAppIdentifierMappingsByAppId(request: GetAppIdentifierMappingsRequest): Observable<IResponse<GetAppIdentifierMappingsResponse>> {
 
-        const url = this.route + '/v1/apps/' + request.appIdOrSlug + '/identifiers';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppIdentifierMappingsByAppId(request.appIdOrSlug);
 
         return this.httpClient.get<IResponse<GetAppIdentifierMappingsResponse>>(url, { headers: this.headers });
     }
 
     getAppIdentifierMappingsByAppSlug(request: GetAppIdentifierMappingsRequest): Observable<IResponse<GetAppIdentifierMappingsResponse>> {
 
-        const url = this.route + '/v1/apps/slug' + request.appIdOrSlug + '/identifiers';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppIdentifierMappingsByAppSlug(request.appIdOrSlug);
 
         return this.httpClient.get<IResponse<GetAppIdentifierMappingsResponse>>(url, { headers: this.headers });
     }
 
     getAppIdentifierMappingByAppIdAndIdentifierId(request: GetAppIdentifierMappingByAppAndIdentifierRequest): Observable<IResponse<GetAppIdentifierMappingByAppAndIdentifierResponse>> {
 
-        const url = this.route + '/v1/apps/' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppIdentifierMappingByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetAppIdentifierMappingByAppAndIdentifierResponse>>(url, { headers: this.headers });
     }
 
     getAppIdentifierMappingByAppSlugAndIdentifierSlug(request: GetAppIdentifierMappingByAppAndIdentifierRequest): Observable<IResponse<GetAppIdentifierMappingByAppAndIdentifierResponse>> {
 
-        const url = this.route + '/v1/apps/slug/' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppIdentifierMappingByAppSlugAndIdentifierSlug(request.appIdOrSlug, request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetAppIdentifierMappingByAppAndIdentifierResponse>>(url, { headers: this.headers });
     }
 
     createAppIdentifierMapping(request: CreateAppIdentifierMappingRequest): Observable<IResponse<CreateAppIdentifierMappingResponse>> {
 
-        const url = this.route + '/v1/apps/' + request.appId + '/identifiers';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.createAppIdentifierMapping(request.appId);
 
         return this.httpClient.post<IResponse<CreateAppIdentifierMappingResponse>>(url, request.body, { headers: this.headers });
     }
 
     deleteAppIdentifierMapping(request: DeleteAppIdentifierMappingRequest): Observable<IResponseAny> {
 
-        const url = this.route + '/v1/apps/' + request.appId + '/identifiers/' + request.identifierId + '?rowVersion=' + encodeURIComponent(request.mappingRowVersion);
+        const url =  this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.deleteAppIdentifierMapping(request.appId, request.identifierId);
 
-        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers });
+        let params = new HttpParams().append('rowVersion', request.mappingRowVersion);
+
+        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers, params });
     }
 
     updateAppIdentifierMappingSortOrder(request: UpdateAppIdentifierMappingSortOrderRequest): Observable<IResponse<UpdateAppIdentifierMappingSortOrderResponse>> {
 
-        const url = this.route + '/v1/apps/' + request.appId + '/identifiers/' + request.identifierId + '/sort-order';
+         const url =  this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.updateAppIdentifierMappingSortOrder(request.appId, request.identifierId);
 
         return this.httpClient.put<IResponse<UpdateAppIdentifierMappingSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {

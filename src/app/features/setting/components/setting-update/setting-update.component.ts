@@ -5,7 +5,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { UtilityService } from "../../../../shared/services/utility.service";
 import { isValidGuid, computeIdentifier } from "../../../../shared/utils/hash-utils";
-import { SettingsService } from "../../services/setting.service";
+import { AppSettingService } from "../../services/app-setting.service";
 import { UpdateSettingRequestBody } from "../../models/update-setting-request-body";
 import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { SettingUpdateComponentReturnModel } from "../../models/setting-update-component-return.model";
@@ -26,7 +26,7 @@ export class SettingUpdateComponent implements OnInit, OnDestroy {
 
     constructor(public dialogRef: MatDialogRef<SettingUpdateComponent>,
         @Inject(MAT_DIALOG_DATA) public data: SettingUpdateComponentModel,
-        private settingsService: SettingsService,
+        private settingsService: AppSettingService,
         private formBuilder: FormBuilder,
         private utilityService: UtilityService,
         private windowService: WindowService,
@@ -137,7 +137,7 @@ export class SettingUpdateComponent implements OnInit, OnDestroy {
         let editAppSettingComponentReturnModel: SettingUpdateComponentReturnModel;
 
         const updateSetting = (model: UpdateSettingRequestBody) => {
-            return this.settingsService.updateSetting({
+            return this.settingsService.updateAppSetting({
                 settingId: this.data.id,
                 body: model
             });

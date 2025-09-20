@@ -2,8 +2,8 @@ import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
-import { AppIdentifierMappingsService, UpdateAppIdentifierMappingSortOrderResponse } from "../../../../shared/services/app-identifier-mappings.service";
-import { AppsService } from "../../services/apps.service";
+import { AppIdentifierMappingService, UpdateAppIdentifierMappingSortOrderResponse } from "../../../../shared/services/app-identifier-mapping.service";
+import { AppService } from "../../services/app.service";
 import { DummyComponentService } from "../../../../shared/components/dummy/dummy-component.service";
 import { config, Observable, of, Subscription, switchMap, tap } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -25,11 +25,11 @@ import { CopyAppSettingToComponentReturnModel, CopySettingToIdentifierComponentM
 import { GetGroupedAppDataResponseInstance } from "../../models/get-grouped-app-data-response-instance";
 import { InstanceData } from "../../models/instance-data.model";
 import { UtilityService } from "../../../../shared/services/utility.service";
-import { SettingsService } from "../../../setting/services/setting.service";
+import { AppSettingService } from "../../../setting/services/app-setting.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { ConfigurationUpdateComponentData } from "../../../configuration/models/configuration-update-component-data";
 import { GetGroupedAppDataResponseConfiguration } from "../../models/get-grouped-app-data-response-configuration";
-import { ConfigurationsService } from "../../../configuration/services/configurations.service";
+import { AppConfigurationService } from "../../../configuration/services/app-configuration.service";
 
 @Component({
     templateUrl: './app-view.component.html',
@@ -63,10 +63,10 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
     constructor(public dialogRef: MatDialogRef<AppViewComponent>,
         @Inject(MAT_DIALOG_DATA) public data: AppViewComponentModel,
-        private appsService: AppsService,
-        private configurationsService: ConfigurationsService,
-        private settingsService: SettingsService,
-        private appIdentifierMappingsService: AppIdentifierMappingsService,
+        private appsService: AppService,
+        private configurationsService: AppConfigurationService,
+        private settingsService: AppSettingService,
+        private appIdentifierMappingsService: AppIdentifierMappingService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private dummyComponentService: DummyComponentService,
@@ -993,7 +993,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
         let setting = settings.find(i => i.id === settingId)
 
-        return this.settingsService.getSettingById({ settingId }).pipe(switchMap((response) => {
+        return this.settingsService.getAppSettingById({ settingId }).pipe(switchMap((response) => {
 
             if (!response.data || response.data.identifierId !== this.selectedIdentifierId) {
                 return of(null);
@@ -1180,7 +1180,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
                 return;
             } else {
-                const configurationSubscription = this.configurationsService.getConfigurationByAppAndIdentifier({
+                const configurationSubscription = this.configurationsService.getAppConfigurationByAppAndIdentifier({
                     appId: this.data.appId,
                     identifierId: result.identifierId
                 }).subscribe({

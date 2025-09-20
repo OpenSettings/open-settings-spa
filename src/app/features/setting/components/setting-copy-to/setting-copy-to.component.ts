@@ -6,11 +6,11 @@ import { debounceTime, distinctUntilChanged, map, Observable, startWith, Subject
 import { MatSelect } from "@angular/material/select";
 import { GetIdentifierResponse } from "../../../identifier/models/get-identifier-response";
 import { isNullOrWhiteSpace } from "../../../../shared/utils/other-utils";
-import { SettingsService } from "../../services/setting.service";
+import { AppSettingService } from "../../services/app-setting.service";
 import { WindowService } from "../../../../core/services/window.service";
 import { CopySettingToRequestBody } from "../../models/copy-setting-to-request-body";
-import { IdentifiersService } from "../../../identifier/services/identifiers.service";
-import { AppsService } from "../../../app/services/apps.service";
+import { IdentifierService } from "../../../identifier/services/identifier.service";
+import { AppService } from "../../../app/services/app.service";
 import { GetAppsResponseApp } from "../../../app/models/get-apps-response-app";
 
 @Component({
@@ -37,9 +37,9 @@ export class SettingCopyToComponent implements OnInit, OnDestroy {
         public dialogRef: MatDialogRef<SettingCopyToComponent>,
         private formBuilder: FormBuilder,
         @Inject(MAT_DIALOG_DATA) public model: CopySettingToIdentifierComponentModel,
-        private settingsService: SettingsService,
-        private appsService: AppsService,
-        private identifiersService: IdentifiersService,
+        private settingsService: AppSettingService,
+        private appsService: AppService,
+        private identifiersService: IdentifierService,
         private windowService: WindowService
     ) { }
 
@@ -239,7 +239,7 @@ export class SettingCopyToComponent implements OnInit, OnDestroy {
             }
         };
 
-        const subscription = this.settingsService.copySettingTo({
+        const subscription = this.settingsService.copyAppSettingTo({
             settingId: this.model.currentSettingId,
             body: model
         }).subscribe(response => {

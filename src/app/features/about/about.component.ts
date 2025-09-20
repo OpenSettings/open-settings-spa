@@ -6,7 +6,7 @@ import { DatePipe } from "@angular/common";
 import { ConfirmationDialogComponentModel } from "../../shared/components/confirmation-dialog/confirmation-dialog-component.model";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfirmationDialogComponent } from "../../shared/components/confirmation-dialog/confirmation-dialog.component";
-import { LicensesService } from "../licenses/services/licenses.service";
+import { LicenseService } from "../licenses/services/license.service";
 import { LicenseUpgradeComponent } from "../licenses/license-upgrade/license-upgrade.component";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
@@ -31,7 +31,7 @@ export class AboutComponent implements OnInit {
     constructor(
         private windowService: WindowService,
         private openSettingsService: OpenSettingsService,
-        private licensesService: LicensesService,
+        private licensesService: LicenseService,
         private datePipe: DatePipe,
         private dialog: MatDialog,
         private snackBar: MatSnackBar) { }

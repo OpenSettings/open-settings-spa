@@ -8,11 +8,12 @@ import { IResponse, IResponseAny } from "../../../shared/models/response";
 import { SortDirection } from "../../../shared/models/sort-direction.enum";
 import { GetPaginatedLicensesResponse } from "../models/get-paginated-licenses-response";
 import { SaveLicenseRequest } from "../models/save-license-request";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class LicensesService implements OnDestroy {
+export class LicenseService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -28,7 +29,7 @@ export class LicensesService implements OnDestroy {
                 this.headers = isAuthenticated
                     ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
                     : new HttpHeaders();
-            });
+        });
     }
 
     ngOnDestroy() {
@@ -37,7 +38,7 @@ export class LicensesService implements OnDestroy {
     }
 
     getPaginatedLicenses(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedLicensesResponse>> {
-        let url = this.route + '/v1/licenses/paginated';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.LicensesEndpoints.getPaginatedLicenses();
 
         let params = new HttpParams();
 
@@ -66,30 +67,28 @@ export class LicensesService implements OnDestroy {
             }
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetPaginatedLicensesResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetPaginatedLicensesResponse>>(url, { headers: this.headers, params });
     }
 
     getCurrentLicense(): Observable<IResponse<License>> {
 
-        let url = this.route + '/v1/licenses/current';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.LicensesEndpoints.getCurrentLicense();
 
         return this.httpClient.get<IResponse<License>>(url, { headers: this.headers });
     }
 
     saveLicense(request: SaveLicenseRequest): Observable<IResponse<License>> {
 
-        const url = this.route + '/v1/licenses';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.LicensesEndpoints.saveLicense();
 
-        return this.httpClient.post<IResponse<License>>(url, `"${request.licenseKey}"`, { headers: this.headers.set('Content-Type', 'application/json') });
+        let headers = this.headers.set('Content-Type', 'application/json');
+
+        return this.httpClient.post<IResponse<License>>(url, `"${request.licenseKey}"`, { headers });
     }
 
     deleteLicense(referenceId: string): Observable<IResponseAny> {
 
-        const url = this.route + '/v1/licenses/' + encodeURIComponent(referenceId);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.LicensesEndpoints.deleteLicense(referenceId);
 
         return this.httpClient.delete<IResponseAny>(url, { headers: this.headers });
     }

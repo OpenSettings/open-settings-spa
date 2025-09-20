@@ -7,11 +7,12 @@ import { Observable, Subject, takeUntil } from "rxjs";
 import { DeleteInstanceRequest } from "../models/delete-instance-request";
 import { IResponse, IResponseAny } from "../../../shared/models/response";
 import { GetInstancesResponseInstance } from "../models/get-instances-response-instance";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class InstancesService implements OnDestroy {
+export class AppInstanceService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -35,32 +36,16 @@ export class InstancesService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    deleteInstance(request: DeleteInstanceRequest): Observable<IResponseAny> {
-        const url = this.route + '/v1/instances/' + request.instanceId;
+    deleteAppInstance(request: DeleteInstanceRequest): Observable<IResponseAny> {
+
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppInstancesEndpoints.deleteAppInstance(request.instanceId);
 
         return this.httpClient.delete<IResponseAny>(url, { headers: this.headers });
     }
 
-    getInstancesByAppId(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
+    getAppInstancesByAppId(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
 
-        let url = this.route + '/v1/apps/' + request.appIdOrSlug + '/instances';
-
-        let params = new HttpParams();
-
-        if (request.identifierId !== undefined) {
-            params = params.append("identifierId", request.identifierId);
-        }
-
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers });
-    }
-
-    getInstancesByAppBySlug(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
-
-        let url = this.route + '/v1/apps/slug/' + request.appIdOrSlug + '/instances';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppInstancesByAppId(request.appIdOrSlug);
 
         let params = new HttpParams();
 
@@ -68,23 +53,32 @@ export class InstancesService implements OnDestroy {
             params = params.append("identifierId", request.identifierId);
         }
 
-        const queryParams = params.toString()
+        return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers, params });
+    }
 
-        url += queryParams ? '?' + queryParams : '';
+    getAppInstancesByAppSlug(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
+
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppInstancesByAppSlug(request.appIdOrSlug);
+
+        let params = new HttpParams();
+
+        if (request.identifierId !== undefined) {
+            params = params.append("identifierId", request.identifierId);
+        }
+
+        return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers, params });
+    }
+
+    getAppInstancesByAppIdAndIdentifierId(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
+
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppInstancesByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierId!);
 
         return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers });
     }
 
-    getInstancesByAppIdAndIdentifierId(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
+    getAppInstancesByAppSlugAndIdentifierSlug(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
 
-        let url = this.route + '/v1/apps/' + request.appIdOrSlug + '/identifiers/' + request.identifierId + '/instances';
-
-        return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers });
-    }
-
-    getInstancesByAppSlugAndIdentifierSlug(request: GetInstancesByAppRequest): Observable<IResponse<GetInstancesResponseInstance[]>> {
-
-        let url = this.route + '/v1/apps/slug/' + request.appIdOrSlug + '/identifiers/' + request.identifierId + '/instances';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppInstancesByAppSlugAndIdentifierSlug(request.appIdOrSlug, request.identifierId!);
 
         return this.httpClient.get<IResponse<GetInstancesResponseInstance[]>>(url, { headers: this.headers });
     }

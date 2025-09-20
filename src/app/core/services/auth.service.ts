@@ -1,10 +1,11 @@
-import { HttpBackend, HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpBackend, HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { ControllerConfiguration, ProviderInfo, WindowService } from "./window.service";
 import { AuthMethod, AuthType, UserPreferencesService } from "../../shared/services/user-preferences.service";
 import { IResponse } from "../../shared/models/response";
+import { OpenSettingsDefaults } from "../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
@@ -20,10 +21,6 @@ export class AuthService {
     private httpClient: HttpClient;
     private controllerConfiguration: ControllerConfiguration;
     private providerInfo: ProviderInfo;
-    private isProvider: boolean;
-    private meEndpointUrl: string;
-    private logoutEndpointUrl: string;
-    private generateTokenForMachineEndpointUrl: string;
 
     claims$: Observable<{ [key: string]: string }> = this.claimsSubject.asObservable();
     isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -37,10 +34,6 @@ export class AuthService {
         this.httpClient = new HttpClient(httpBackend);
         this.controllerConfiguration = this.windowService.controller;
         this.providerInfo = this.windowService.providerInfo;
-        this.isProvider = this.windowService.isProvider;
-        this.meEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/me`;
-        this.logoutEndpointUrl = `${this.controllerConfiguration.route}/v1/auth/logout`;
-        this.generateTokenForMachineEndpointUrl = `${this.controllerConfiguration.route}/v1/token/machine`;
 
         this.setAuthorizationRequired(this.controllerConfiguration.requiresAuthentication || this.providerInfo.requiresAuthentication);
     }
@@ -56,7 +49,6 @@ export class AuthService {
     get authMethod(): AuthMethod | null {
         return this._authMethod ?? this.userPreferencesService.authMethod;
     }
-
 
     get claims(): { [key: string]: string } {
         return this.claimsSubject.getValue();
@@ -98,7 +90,9 @@ export class AuthService {
     }
 
     private performOpenIdConnectAuthentication(): Observable<boolean> {
-        let url = `${this.meEndpointUrl}?stateId=${this.userPreferencesService.stateId}&includes=Claims`;
+        let getMeUrl = this.controllerConfiguration.route + OpenSettingsDefaults.Routes.V1.AuthEndpoints.getMe();
+
+        let params = new HttpParams().append('stateId', this.userPreferencesService.stateId).append('includes', 'Claims');
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
@@ -106,7 +100,7 @@ export class AuthService {
             'x-os-client-id': this.windowService.client.id
         });
 
-        return this.httpClient.post<IResponse<GetMeResponse>>(url, null, { headers }).pipe(
+        return this.httpClient.post<IResponse<GetMeResponse>>(getMeUrl, null, { headers, params }).pipe(
             map((response: IResponse<GetMeResponse>) => {
                 const isAuthenticated = !!response.data?.isAuthenticated;
 
@@ -143,13 +137,15 @@ export class AuthService {
 
     public authorizeWithMachineCredentials(clientId: string, clientSecret: string): Observable<boolean | undefined> {
 
+        let generateTokenForMachineUrl = this.controllerConfiguration.route + OpenSettingsDefaults.Routes.V1.TokenEndpoints.generateTokenForMachine();
+
         const headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
             'x-os-login-type': 'Machine',
             'x-os-client-id': this.windowService.client.id
         });
 
-        return this.httpClient.post<IResponse<GenerateTokenResponse>>(this.generateTokenForMachineEndpointUrl, {
+        return this.httpClient.post<IResponse<GenerateTokenResponse>>(generateTokenForMachineUrl, {
             client: {
                 id: clientId,
                 secret: clientSecret
@@ -169,7 +165,10 @@ export class AuthService {
     }
 
     private internalAuthorize(authType: AuthType, authMethod: AuthMethod, token: string): Observable<boolean | undefined> {
-        let url = `${this.meEndpointUrl}?stateId=${this.userPreferencesService.stateId}&includes=Claims`;
+
+        let getMeUrl = this.controllerConfiguration.route + OpenSettingsDefaults.Routes.V1.AuthEndpoints.getMe();
+
+        let params = new HttpParams().append('stateId', this.userPreferencesService.stateId).append('includes', 'Claims');
 
         let headers = new HttpHeaders({
             'x-os-caller-type': 'Spa',
@@ -180,7 +179,7 @@ export class AuthService {
 
         headers = headers.set('Authorization', token);
 
-        return this.httpClient.post<IResponse<GetMeResponse>>(url, null, { headers }).pipe(
+        return this.httpClient.post<IResponse<GetMeResponse>>(getMeUrl, null, { headers }).pipe(
             switchMap(response => {
                 if (response.data!.isAuthenticated) {
                     this._token = token;
@@ -241,7 +240,7 @@ export class AuthService {
 
         if (this.userPreferencesService.authType === 'OpenIdConnect') {
             this.clearAuthData();
-            window.location.href = this.logoutEndpointUrl;
+            window.location.href = this.controllerConfiguration.route + OpenSettingsDefaults.Routes.V1.AuthEndpoints.logout();
         }
 
         this.clearAuthData();

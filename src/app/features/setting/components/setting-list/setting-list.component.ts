@@ -5,8 +5,8 @@ import { MatAccordion, MatExpansionPanel } from "@angular/material/expansion";
 import { ThemeService } from "../../../../core/services/theme.service";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { UtilityService } from "../../../../shared/services/utility.service";
-import { SettingsService } from "../../services/setting.service";
-import { SettingHistoriesService } from "../../../setting-history/services/setting-histories.service";
+import { AppSettingService } from "../../services/app-setting.service";
+import { AppSettingHistoryService } from "../../../setting-history/services/setting-histories.service";
 import { SettingCreateComponent } from "../setting-create/setting-create.component";
 import { SettingHistoryListComponentModel, SettingHistoryListComponent as SettingHistoryListComponent } from "../../../setting-history/components/setting-history-list/setting-history-list.component";
 import { AppViewService, SettingViewType } from "../../../app/services/app-view.service";
@@ -52,9 +52,9 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private utilityService: UtilityService,
-        private settingsService: SettingsService,
+        private settingsService: AppSettingService,
         private appViewService: AppViewService,
-        private settingHistoriesService: SettingHistoriesService,
+        private settingHistoriesService: AppSettingHistoryService,
         private themeService: ThemeService,
         private windowService: WindowService,
         private cdr: ChangeDetectorRef,
@@ -236,7 +236,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.buttons[data.settingId] = true;
 
-        const subscription = this.settingsService.getSettingData({
+        const subscription = this.settingsService.getAppSettingData({
             settingId: data.settingId
         }).subscribe({
             next: (response) => {
@@ -343,7 +343,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
                 rowVersion: data.settingRowVersion
             };
 
-            const subscription = this.settingsService.updateSettingData({
+            const subscription = this.settingsService.updateAppSettingData({
                 settingId: data.settingId,
                 body: updateSettingModel
             }).subscribe({
@@ -410,7 +410,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     history(setting: SettingData) {
 
-        const subscription = this.settingHistoriesService.getSettingHistories({
+        const subscription = this.settingHistoriesService.getAppSettingHistories({
             settingId: setting.settingId
         }).subscribe({
             next: (response) => {
@@ -493,7 +493,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.buttons[settingId] = true;
         });
 
-        const subscription = this.settingsService.getSettingsData({
+        const subscription = this.settingsService.getAppSettingsData({
             appId: this.data.appId,
             identifierId: this.data.selectedAppIdentifierId,
             ids: settingIds
@@ -677,7 +677,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
             data: { title, message, requireConfirmation }
         }).afterClosed().subscribe(result => {
             if (result) {
-                const internalSubscription = this.settingsService.deleteSetting({
+                const internalSubscription = this.settingsService.deleteAppSetting({
                     settingId: model.settingId,
                     rowVersion: model.settingRowVersion
                 }).subscribe(() => {

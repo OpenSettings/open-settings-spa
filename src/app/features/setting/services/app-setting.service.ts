@@ -21,11 +21,12 @@ import { GetSettingByIdResponse } from '../models/get-setting-by-id-response';
 import { GetSettingsDataResponse } from '../models/get-settings-data-response';
 import { GetSettingsByIdentifierIdResponseData } from '../models/get-settings-by-identifier-id-response-data';
 import { GetSettingsByIdentifierIdRequest } from '../models/get-settings-by-identifier-id-request';
+import { OpenSettingsDefaults } from '../../../shared/open-settings-defaults';
 
 @Injectable({
     providedIn: 'root'
 })
-export class SettingsService implements OnDestroy {
+export class AppSettingService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -36,36 +37,36 @@ export class SettingsService implements OnDestroy {
         windowService: WindowService) {
         this.route = windowService.controller.route;
         this.authService.isAuthenticated$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(isAuthenticated => {
-          this.headers = isAuthenticated
-            ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
-            : new HttpHeaders();
-        });
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(isAuthenticated => {
+                this.headers = isAuthenticated
+                    ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
+                    : new HttpHeaders();
+            });
     }
 
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-      }
+    }
 
-    getSettingsByAppIdAndIdentifierId(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
+    getAppSettingsByAppIdAndIdentifierId(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
 
-        const url = this.route + '/v1/apps/' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug + '/settings';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppSettingsByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData[]>>(url, { headers: this.headers });
     }
 
-    getSettingsByAppSlugAndIdentifierSlug(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
+    getAppSettingsByAppSlugAndIdentifierSlug(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
 
-        const url = this.route + '/v1/apps/slug' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug + '/settings';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppSettingsByAppSlugAndIdentifierSlug(request.appIdOrSlug, request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData[]>>(url, { headers: this.headers });
     }
 
-    getSettingsData(request: GetSettingsDataRequest): Observable<IResponse<GetSettingsDataResponse>> {
+    getAppSettingsData(request: GetSettingsDataRequest): Observable<IResponse<GetSettingsDataResponse>> {
 
-        let url = this.route + '/v1/apps/' + request.appId + '/settings/data';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppSettingsData(request.appId);
 
         let params = new HttpParams();
 
@@ -77,58 +78,52 @@ export class SettingsService implements OnDestroy {
             params = params.append('ids', request.ids.join(','));
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetSettingsDataResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetSettingsDataResponse>>(url, { headers: this.headers, params });
     }
 
-    copySettingTo(request: CopySettingToRequest): Observable<IResponse<CopySettingToResponse>> {
-        
-        const url = this.route + '/v1/settings/' + request.settingId + '/copy';
+    copyAppSettingTo(request: CopySettingToRequest): Observable<IResponse<CopySettingToResponse>> {
+
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.copyAppSettingTo(request.settingId);
 
         return this.httpClient.post<IResponse<CopySettingToResponse>>(url, request.body, { headers: this.headers });
     }
 
-    getSettingData(request: GetSettingDataRequest): Observable<IResponse<GetSettingDataResponse>> {
+    getAppSettingData(request: GetSettingDataRequest): Observable<IResponse<GetSettingDataResponse>> {
 
-        const url = this.route + '/v1/settings/' + request.settingId + '/data';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.getAppSettingData(request.settingId);
 
         return this.httpClient.get<IResponse<GetSettingDataResponse>>(url, { headers: this.headers });
     }
 
-    deleteSetting(request: DeleteSettingRequest): Observable<IResponseAny> {
+    deleteAppSetting(request: DeleteSettingRequest): Observable<IResponseAny> {
 
-        const url = this.route + '/v1/settings/' + request.settingId + '?rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.deleteAppSetting(request.settingId);
 
-        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers });
+        let params = new HttpParams().append('rowVersion', request.rowVersion);
+
+        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers, params });
     }
 
-    getSettingById(request: GetSettingByIdRequest): Observable<IResponse<GetSettingByIdResponse>> {
+    getAppSettingById(request: GetSettingByIdRequest): Observable<IResponse<GetSettingByIdResponse>> {
 
-        let url = this.route + '/v1/settings/' + request.settingId;
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.getAppSettingById(request.settingId);
 
         let params = new HttpParams();
 
-        if(request.excludes){
+        if (request.excludes) {
             params = params.append('excludes', request.excludes.join(','));
         }
 
-        const queryParams = params.toString();
-
-        url +=  queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetSettingByIdResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetSettingByIdResponse>>(url, { headers: this.headers, params });
     }
 
-    updateSetting(request: UpdateSettingRequest): Observable<IResponse<UpdateSettingResponse>> {
+    updateAppSetting(request: UpdateSettingRequest): Observable<IResponse<UpdateSettingResponse>> {
 
-        const url = this.route + '/v1/settings/' + request.settingId;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.updateAppSetting(request.settingId);
 
         return this.httpClient.put<IResponse<UpdateSettingResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSettingResponse>);
                 }
 
@@ -137,20 +132,20 @@ export class SettingsService implements OnDestroy {
         );;
     }
 
-    createSetting(request: CreateSettingRequest): Observable<IResponse<CreateSettingResponse>> {
+    createAppSetting(request: CreateSettingRequest): Observable<IResponse<CreateSettingResponse>> {
 
-        const url = this.route + '/v1/settings';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.createAppSetting();
 
         return this.httpClient.post<IResponse<CreateSettingResponse>>(url, request.body, { headers: this.headers });
     }
 
-    updateSettingData(request: UpdateSettingDataRequest): Observable<IResponse<UpdateSettingDataResponse>> {
+    updateAppSettingData(request: UpdateSettingDataRequest): Observable<IResponse<UpdateSettingDataResponse>> {
 
-        const url = this.route + '/v1/settings/' + request.settingId + '/data';
+        const url = this.route + '/v1/app-settings/' + request.settingId + '/data';
 
         return this.httpClient.put<IResponse<UpdateSettingDataResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSettingDataResponse>);
                 }
 

@@ -6,7 +6,7 @@ import { debounceTime, Subject, Subscription } from "rxjs";
 import { MatSort } from "@angular/material/sort";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { IdentifiersService } from "../../services/identifiers.service";
+import { IdentifierService } from "../../services/identifier.service";
 import { WindowService } from "../../../../core/services/window.service";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { ActivatedRoute, Params, Router } from "@angular/router";
@@ -55,7 +55,7 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
     maxSortOrder: number = 0;
 
     constructor(
-        private identifiersService: IdentifiersService,
+        private identifiersService: IdentifierService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private windowService: WindowService,

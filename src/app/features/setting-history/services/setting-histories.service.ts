@@ -12,11 +12,12 @@ import { GetSettingHistoryRequest } from "../models/get-setting-history-request"
 import { GetSettingHistoryResponse } from "../models/get-setting-history-response";
 import { GetSettingHistoryDataRequest } from "../models/get-setting-history-data-request";
 import { GetSettingHistoryDataResponse } from "../models/get-setting-history-data-response";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class SettingHistoriesService implements OnDestroy {
+export class AppSettingHistoryService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -40,37 +41,37 @@ export class SettingHistoriesService implements OnDestroy {
         this.destroy$.complete();
       }
 
-    getSettingHistoryData(request: GetSettingHistoryDataRequest): Observable<IResponse<GetSettingHistoryDataResponse>> {
+    getAppSettingHistoryData(request: GetSettingHistoryDataRequest): Observable<IResponse<GetSettingHistoryDataResponse>> {
 
-        const url = this.route + '/v1/setting-histories/' + request.historyId + '/data';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingHistoriesEndpoints.getAppSettingHistoryData(request.historyId);
 
         return this.httpClient.get<IResponse<GetSettingHistoryDataResponse>>(url, { headers: this.headers });
     }
 
-    getSettingHistoryById(request: GetSettingHistoryRequest): Observable<IResponse<GetSettingHistoryResponse>> {
+    getAppSettingHistoryById(request: GetSettingHistoryRequest): Observable<IResponse<GetSettingHistoryResponse>> {
 
-        const url = this.route + '/v1/setting-histories/' + request.historyIdOrSlug;
-
-        return this.httpClient.get<IResponse<GetSettingHistoryResponse>>(url, { headers: this.headers });
-    }
-
-    getSettingHistoryBySlug(request: GetSettingHistoryRequest): Observable<IResponse<GetSettingHistoryResponse>> {
-
-        const url = this.route + '/v1/setting-histories/slug/' + request.historyIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingHistoriesEndpoints.getAppSettingHistoryById(request.historyIdOrSlug);
 
         return this.httpClient.get<IResponse<GetSettingHistoryResponse>>(url, { headers: this.headers });
     }
 
-    getSettingHistories(request: GetSettingHistoriesRequest): Observable<IResponse<GetSettingHistoriesResponse[]>> {
+    getAppSettingHistoryBySlug(request: GetSettingHistoryRequest): Observable<IResponse<GetSettingHistoryResponse>> {
 
-        const url = this.route + '/v1/settings/' + request.settingId + '/histories';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingHistoriesEndpoints.getAppSettingHistoryBySlug(request.historyIdOrSlug);
+
+        return this.httpClient.get<IResponse<GetSettingHistoryResponse>>(url, { headers: this.headers });
+    }
+
+    getAppSettingHistories(request: GetSettingHistoriesRequest): Observable<IResponse<GetSettingHistoriesResponse[]>> {
+
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.getAppSettingHistories(request.settingId);
 
         return this.httpClient.get<IResponse<GetSettingHistoriesResponse[]>>(url, { headers: this.headers });
     }
 
-    restoreSettingHistory(request: RestoreSettingHistoryRequest): Observable<IResponse<RestoreSettingHistoryResponse>> {
+    restoreAppSettingHistory(request: RestoreSettingHistoryRequest): Observable<IResponse<RestoreSettingHistoryResponse>> {
 
-        const url = this.route + '/v1/setting-histories/' + request.historyId + '/restore';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingHistoriesEndpoints.restoreAppSettingHistory(request.historyId);
 
         return this.httpClient.post<IResponse<RestoreSettingHistoryResponse>>(url, request.body, { headers: this.headers });
     }

@@ -22,11 +22,12 @@ import { DeleteUnmappedItemsResponse } from "../../../shared/models/delete-unmap
 import { ReorderResponse } from "../../../shared/models/reorder-response";
 import { GetPaginatedTagsResponse } from "../models/get-paginated-tags-response";
 import { UpdateSortOrderResponse } from "../../../shared/models/update-sort-order-response";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class TagsService implements OnDestroy {
+export class AppTagService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -37,22 +38,22 @@ export class TagsService implements OnDestroy {
         windowService: WindowService) {
         this.route = windowService.controller.route;
         this.authService.isAuthenticated$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(isAuthenticated => {
-          this.headers = isAuthenticated
-            ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
-            : new HttpHeaders();
-        });
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(isAuthenticated => {
+                this.headers = isAuthenticated
+                    ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
+                    : new HttpHeaders();
+            });
     }
 
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-      }
+    }
 
-    getTags(request: GetTagsRequest): Observable<IResponse<GetTagsResponse>> {
+    getAppTags(request: GetTagsRequest): Observable<IResponse<GetTagsResponse>> {
 
-        let url = this.route + '/v1/tags';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTags();
 
         let params = new HttpParams();
 
@@ -64,26 +65,22 @@ export class TagsService implements OnDestroy {
             params = params.append("hasMappings", request.hasMappings);
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetTagsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetTagsResponse>>(url, { headers: this.headers, params });
     }
 
-    createTag(request: CreateTagRequest): Observable<IResponse<CreateTagResponse>> {
+    createAppTag(request: CreateTagRequest): Observable<IResponse<CreateTagResponse>> {
 
-        const url = this.route + '/v1/tags';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.createAppTag();
 
         return this.httpClient.post<IResponse<CreateTagResponse>>(url, request.body, { headers: this.headers });
     }
 
-    getPaginatedTags(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedTagsResponse>> {
+    getPaginatedAppTags(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedTagsResponse>> {
 
-        let url = this.route + '/v1/tags/paginated';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getPaginatedAppTags();
 
         let params = new HttpParams();
-        
+
         if (request.pageIndex) {
             params = params.append("page", request.pageIndex);
         }
@@ -96,7 +93,7 @@ export class TagsService implements OnDestroy {
             params = params.append("searchTerm", request.searchTerm);
         }
 
-        if (request.searchBy){
+        if (request.searchBy) {
             params = params.append("searchBy", request.searchBy);
         }
 
@@ -109,37 +106,33 @@ export class TagsService implements OnDestroy {
             }
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetPaginatedTagsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetPaginatedTagsResponse>>(url, { headers: this.headers, params });
     }
 
-    deleteUnmappedTags(): Observable<IResponse<DeleteUnmappedItemsResponse>> {
+    deleteUnmappedAppTags(): Observable<IResponse<DeleteUnmappedItemsResponse>> {
 
-        const url = this.route + '/v1/tags/unmapped';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.deleteUnmappedAppTags();
 
         return this.httpClient.delete<IResponse<DeleteUnmappedItemsResponse>>(url, { headers: this.headers });
     }
 
-    getTagById(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
+    getAppTagById(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
 
-        const url = this.route + '/v1/tags/' + request.tagIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTagById(request.tagIdOrSlug);
+
+        return this.httpClient.get<IResponse<GetTagResponse>>(url, { headers: this.headers });
+    }
+
+    getAppTagBySlug(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
+
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTagBySlug(request.tagIdOrSlug);
 
         return this.httpClient.get<IResponse<GetTagResponse>>(url, { headers: this.headers });
     }
 
-    getTagBySlug(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
+    updateAppTag(request: UpdateTagRequest): Observable<IResponse<UpdateTagResponse>> {
 
-        const url = this.route + '/v1/tags/slug/' + request.tagIdOrSlug;
-
-        return this.httpClient.get<IResponse<GetTagResponse>>(url, { headers: this.headers });
-    }
-  
-    updateTag(request: UpdateTagRequest): Observable<IResponse<UpdateTagResponse>> {
-
-        const url = this.route + '/v1/tags/' + request.tagId;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.updateAppTag(request.appTagId);
 
         return this.httpClient.put<IResponse<UpdateTagResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
@@ -152,13 +145,15 @@ export class TagsService implements OnDestroy {
         );
     }
 
-    deleteTag(request: DeleteTagRequest): Observable<IResponseAny> {
+    deleteAppTag(request: DeleteTagRequest): Observable<IResponseAny> {
 
-        const url = this.route + '/v1/tags/' + request.tagId + '?rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.deleteAppTag(request.appTagId);
 
-        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('rowVersion', request.rowVersion);
+
+        return this.httpClient.delete<IResponseAny>(url, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<IResponseAny>);
                 }
 
@@ -167,13 +162,15 @@ export class TagsService implements OnDestroy {
         );
     }
 
-    updateTagSortOrder(request: UpdateTagSortOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
+    updateAppTagSortOrder(request: UpdateTagSortOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
 
-        const url = this.route + '/v1/tags/' + request.id + '/sort-order?ascent=' + request.ascent + '&rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.updateAppTagSortOrder(request.id);
 
-        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('rowVersion', request.rowVersion);
+
+        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSortOrderResponse>);
                 }
 
@@ -182,13 +179,15 @@ export class TagsService implements OnDestroy {
         );
     }
 
-    dragTag(request: DragItemSortOrderRequest): Observable<IResponse<DragItemSortOrderResponse>> {
+    dragAppTag(request: DragItemSortOrderRequest): Observable<IResponse<DragItemSortOrderResponse>> {
 
-        const url = this.route + '/v1/tags/' + request.sourceId + '/drag/' + request.targetId + '?ascent=' + request.ascent + '&sourceRowVersion=' + encodeURIComponent(request.sourceRowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.dragAppTag(request.sourceId, request.targetId);
 
-        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('sourceRowVersion', request.sourceRowVersion);
+
+        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<DragItemSortOrderResponse>);
                 }
 
@@ -197,13 +196,13 @@ export class TagsService implements OnDestroy {
         );
     }
 
-    reorder() {
+    reorderAppTags() {
 
-        const url = this.route + '/v1/tags/reorder';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.reorderAppTag();
 
         return this.httpClient.post<IResponse<ReorderResponse>>(url, null, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
-                if(response.status === 409){
+                if (response.status === 409) {
                     return of(response.error as IResponse<ReorderResponse>);
                 }
 

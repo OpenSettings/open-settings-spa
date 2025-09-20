@@ -5,7 +5,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { ThemeService } from "../../../../core/services/theme.service";
 import { UtilityService } from "../../../../shared/services/utility.service";
 import { isValidGuid, computeIdentifier } from "../../../../shared/utils/hash-utils";
-import { SettingsService } from "../../services/setting.service";
+import { AppSettingService } from "../../services/app-setting.service";
 import { Subscription } from "rxjs";
 import { CreateSettingRequestBody } from "../../models/create-setting-request-body";
 import { SettingCreateComponentReturnModel } from "../../models/setting-create-component-return.model";
@@ -29,7 +29,7 @@ export class SettingCreateComponent implements OnInit, OnDestroy {
 
     constructor(public dialogRef: MatDialogRef<SettingCreateComponent>,
         @Inject(MAT_DIALOG_DATA) public data: SettingCreateComponentModel,
-        private settingsService: SettingsService,
+        private settingsService: AppSettingService,
         private formBuilder: FormBuilder,
         private utilityService: UtilityService,
         private windowService: WindowService,
@@ -130,7 +130,7 @@ export class SettingCreateComponent implements OnInit, OnDestroy {
                 registrationMode: formValue.registrationMode
             }
 
-            const subscription = this.settingsService.createSetting({
+            const subscription = this.settingsService.createAppSetting({
                 body: model
             }).subscribe(response => {
 

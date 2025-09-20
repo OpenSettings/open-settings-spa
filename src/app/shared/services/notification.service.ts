@@ -4,11 +4,12 @@ import { Observable, Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
 import { WindowService } from "../../core/services/window.service";
 import { IResponse, IResponseAny } from "../models/response";
+import { OpenSettingsDefaults } from "../open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
 })
-export class NotificationsService implements OnDestroy {
+export class NotificationService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -34,35 +35,35 @@ export class NotificationsService implements OnDestroy {
 
     createNotification(request: CreateNotificationRequest): Observable<IResponse<CreateNotificationResponse>> {
 
-        const url = this.route + '/v1/notifications';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.createNotification();
 
         return this.httpClient.post<IResponse<CreateNotificationResponse>>(url, request.body, { headers: this.headers });
     }
 
-
     markNotificationsAsOpened(request: MarkNotificationsAsOpenedRequest): Observable<IResponseAny> {
 
-        const url = this.route + `/v1/notifications/users/${request.userId}/open`;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.markNotificationsAsOpened(request.userId);
 
         return this.httpClient.post<IResponseAny>(url, null, { headers: this.headers });
     }
 
     markNotificationAsViewed(request: MarkNotificationAsRequest): Observable<IResponseAny> {
 
-        const url = this.route + `/v1/notifications/${request.notificationId}/users/${request.userId}/view`;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.markNotificationAsViewed(request.notificationId, request.userId);
 
         return this.httpClient.post<IResponseAny>(url, null, { headers: this.headers });
     }
 
     markNotificationAsDismissed(request: MarkNotificationAsRequest): Observable<IResponseAny> {
 
-        const url = this.route + `/v1/notifications/${request.notificationId}/users/${request.userId}/dismiss`;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.markNotificationAsDismissed(request.notificationId, request.userId);
 
         return this.httpClient.post<IResponseAny>(url, null, { headers: this.headers });
     }
 
     getNotifications(request: GetNotificationsRequest): Observable<IResponse<GetNotificationsResponse>> {
-        let url = this.route + '/v1/notifications';
+
+        let url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.getNotifications();
 
         let params = new HttpParams();
 
@@ -78,16 +79,12 @@ export class NotificationsService implements OnDestroy {
             params = params.append("source", request.source);
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetNotificationsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetNotificationsResponse>>(url, { headers: this.headers, params });
     }
 
     getUserNotifications(request: GetUserNotificationsRequest): Observable<IResponse<GetUserNotificationsResponse>> {
 
-        let url = this.route + '/v1/notifications/users/' + request.userId;
+        let url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.getUserNotifications(request.userId);
 
         let params = new HttpParams();
 
@@ -115,16 +112,12 @@ export class NotificationsService implements OnDestroy {
             params = params.append("source", request.source);
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetUserNotificationsResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetUserNotificationsResponse>>(url, { headers: this.headers, params });
     }
 
     dispatchNotificationsToUsers(request: DispatchNotificationsToUsersRequest): Observable<IResponseAny> {
 
-        const url = this.route + `/v1/notifications/${request.notificationId}/users/dispatch`;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.NotificationsEndpoints.dispatchNotificationsToUsers(request.notificationId);
 
         return this.httpClient.post<IResponseAny>(url, null, { headers: this.headers });
     }

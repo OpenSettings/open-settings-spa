@@ -22,12 +22,13 @@ import { UpdateIdentifierRequest } from "../models/update-identifier-request";
 import { UpdateIdentifierResponse } from "../models/update-identifier-response";
 import { UpdateIdentifierOrderRequest } from "../models/update-identifier-sort-order-request";
 import { GetIdentifiersResponse } from "../models/get-identifiers-response";
+import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 
 @Injectable({
     providedIn: 'root'
 })
-export class IdentifiersService implements OnDestroy {
+export class IdentifierService implements OnDestroy {
     private headers: HttpHeaders = new HttpHeaders();
     private route: string;
     private destroy$ = new Subject<void>();
@@ -38,22 +39,22 @@ export class IdentifiersService implements OnDestroy {
         windowService: WindowService) {
         this.route = windowService.controller.route;
         this.authService.isAuthenticated$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(isAuthenticated => {
-          this.headers = isAuthenticated
-            ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
-            : new HttpHeaders();
-        });
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(isAuthenticated => {
+                this.headers = isAuthenticated
+                    ? new HttpHeaders({ 'Authorization': `${this.authService.token}` })
+                    : new HttpHeaders();
+            });
     }
 
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-      }
+    }
 
     getPaginatedIdentifiers(request: GetPaginatedRequest): Observable<IResponse<GetPaginatedIdentifiersResponse>> {
 
-        let url = this.route + '/v1/identifiers/paginated';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.getPaginatedIdentifiers();
 
         let params = new HttpParams();
 
@@ -82,23 +83,19 @@ export class IdentifiersService implements OnDestroy {
             }
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetPaginatedIdentifiersResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetPaginatedIdentifiersResponse>>(url, { headers: this.headers, params });
     }
 
     deleteUnmappedIdentifiers(): Observable<IResponse<DeleteUnmappedItemsResponse>> {
 
-        const url = this.route + '/v1/identifiers/unmapped';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.deleteUnmappedIdentifiers();
 
         return this.httpClient.delete<IResponse<DeleteUnmappedItemsResponse>>(url, { headers: this.headers });
     }
 
     getIdentifiers(request: GetIdentifiersRequest): Observable<IResponse<GetIdentifiersResponse>> {
 
-        let url = this.route + '/v1/identifiers';
+        let url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.getIdentifiers();
 
         let params = new HttpParams();
 
@@ -114,37 +111,33 @@ export class IdentifiersService implements OnDestroy {
             }
         }
 
-        const queryParams = params.toString()
-
-        url += queryParams ? '?' + queryParams : '';
-
-        return this.httpClient.get<IResponse<GetIdentifiersResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetIdentifiersResponse>>(url, { headers: this.headers, params });
     }
 
     createIdentifier(request: CreateIdentifierRequest): Observable<IResponse<CreateIdentifierResponse>> {
 
-        const url = this.route + '/v1/identifiers';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.createIdentifier();
 
         return this.httpClient.post<IResponse<CreateIdentifierResponse>>(url, request.body, { headers: this.headers });
     }
 
     getIdentifierById(request: GetIdentifierRequest): Observable<IResponse<GetIdentifierResponse>> {
 
-        const url = this.route + '/v1/identifiers/' + request.identifierIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.getIdentifierById(request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetIdentifierResponse>>(url, { headers: this.headers });
     }
 
     getIdentifierBySlug(request: GetIdentifierRequest): Observable<IResponse<GetIdentifierResponse>> {
 
-        const url = this.route + '/v1/identifiers/slug/' + request.identifierIdOrSlug;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.getIdentifierBySlug(request.identifierIdOrSlug);
 
         return this.httpClient.get<IResponse<GetIdentifierResponse>>(url, { headers: this.headers });
     }
 
     updateIdentifier(request: UpdateIdentifierRequest): Observable<IResponse<UpdateIdentifierResponse>> {
 
-        const url = this.route + '/v1/identifiers/' + request.identifierId;
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.updateIdentifier(request.identifierId);
 
         return this.httpClient.put<IResponse<UpdateIdentifierResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
@@ -159,9 +152,11 @@ export class IdentifiersService implements OnDestroy {
 
     deleteIdentifier(request: DeleteIdentifierRequest): Observable<IResponseAny> {
 
-        const url = this.route + '/v1/identifiers/' + request.identifierId + '?rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.deleteIdentifier(request.identifierId);
 
-        return this.httpClient.delete<IResponse<DeleteIdentifierResponse>>(url, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('rowVersion', request.rowVersion);
+
+        return this.httpClient.delete<IResponse<DeleteIdentifierResponse>>(url, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponseAny);
@@ -174,9 +169,11 @@ export class IdentifiersService implements OnDestroy {
 
     updateIdentifierSortOrder(request: UpdateIdentifierOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
 
-        const url = this.route + '/v1/identifiers/' + request.identifierId + '/sort-order?ascent=' + request.ascent + '&rowVersion=' + encodeURIComponent(request.rowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.updateIdentifierSortOrder(request.identifierId);
 
-        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('rowVersion', request.rowVersion);
+
+        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSortOrderResponse>);
@@ -189,9 +186,11 @@ export class IdentifiersService implements OnDestroy {
 
     dragIdentifier(request: DragItemSortOrderRequest): Observable<IResponse<DragItemSortOrderResponse>> {
 
-        const url = this.route + '/v1/identifiers/' + request.sourceId + '/drag/' + request.targetId + '?ascent=' + request.ascent + '&sourceRowVersion=' + encodeURIComponent(request.sourceRowVersion);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.dragIdentifier(request.sourceId, request.targetId);
 
-        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers }).pipe(
+        let params = new HttpParams().append('ascent', request.ascent).append('sourceRowVersion', request.sourceRowVersion);
+
+        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<DragItemSortOrderResponse>);
@@ -204,7 +203,7 @@ export class IdentifiersService implements OnDestroy {
 
     reorder(): Observable<IResponse<ReorderResponse>> {
 
-        const url = this.route + '/v1/identifiers/reorder';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.reorderIdentifiers();
 
         return this.httpClient.post<IResponse<ReorderResponse>>(url, null, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {

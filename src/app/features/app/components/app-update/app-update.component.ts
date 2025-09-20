@@ -5,9 +5,9 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dial
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Observable, startWith, debounceTime, switchMap, map, Subject, distinctUntilChanged, Subscription, of, catchError } from "rxjs";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
-import { GroupsService } from "../../../group/services/app-groups.service";
-import { TagsService } from "../../../tag/services/tags.service";
-import { AppsService } from "../../services/apps.service";
+import { AppGroupService } from "../../../group/services/app-group.service";
+import { AppTagService } from "../../../tag/services/app-tag.service";
+import { AppService } from "../../services/app.service";
 import { UpdateAppRequestBody } from "../../models/update-app-request-body";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { isNullOrWhiteSpace } from "../../../../shared/utils/other-utils";
@@ -38,9 +38,9 @@ export class AppUpdateComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<AppUpdateComponent>,
         @Inject(MAT_DIALOG_DATA) public model: AppEditComponentModel,
-        private appsService: AppsService,
-        private groupsService: GroupsService,
-        private tagsService: TagsService) { }
+        private appsService: AppService,
+        private groupsService: AppGroupService,
+        private tagsService: AppTagService) { }
 
     ngOnInit(): void {
 
@@ -78,7 +78,7 @@ export class AppUpdateComponent implements OnInit, OnDestroy {
             distinctUntilChanged());
 
         this.filteredGroups$ = groupName$.pipe(
-            switchMap(value => this.groupsService.getGroups({
+            switchMap(value => this.groupsService.getAppGroups({
                 searchTerm: value
             }).pipe(map(response => response.data?.appGroups ?? []))));
     }
@@ -99,7 +99,7 @@ export class AppUpdateComponent implements OnInit, OnDestroy {
             distinctUntilChanged());
 
         this.filteredTags$ = tagName$.pipe(
-            switchMap(value => this.tagsService.getTags({
+            switchMap(value => this.tagsService.getAppTags({
                 searchTerm: value
             }).pipe(map(response => {
 

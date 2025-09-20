@@ -5,7 +5,8 @@ import { AuthService } from "../../core/services/auth.service";
 import { WindowService } from "../../core/services/window.service";
 import { GetSponsorsResponse } from "../../features/sponsor/models/get-sponsors-response.model";
 import { GetSponsorsResult } from "../../features/sponsor/models/get-sponsors-result.model";
-import { NotificationType } from "./notifications.service";
+import { NotificationType } from "./notification.service";
+import { OpenSettingsDefaults } from "../open-settings-defaults";
 
 @Injectable({
     providedIn: 'root'
@@ -40,7 +41,7 @@ export class OpenSettingsService implements OnDestroy {
 
     getSponsors(): Observable<GetSponsorsResult> {
 
-        const url = this.route + '/v1/open-settings/configs-data/sponsors';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.OpenSettingsEndpoints.getConfigData('sponsors');
 
         return this.httpClient.get<GetSponsorsResponse>(url, { headers: this.headers }).pipe(map(response => {
             return { data: response, fromFallback: false };
@@ -68,7 +69,7 @@ export class OpenSettingsService implements OnDestroy {
         this.isLinksLoading = true;
         this.linksLoadingSubject$.next(true);
 
-        const url = this.route + '/v1/open-settings/configs-data/links';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.OpenSettingsEndpoints.getConfigData('links');
 
         return this.httpClient.get<GetLinksResponse>(url, { headers: this.headers }).pipe(map(response => {
 
@@ -85,7 +86,7 @@ export class OpenSettingsService implements OnDestroy {
 
     getNotifications(): Observable<GetNotificationsResponse[]> {
 
-        const url = this.route + '/v1/open-settings/configs-data/notifications';
+        const url = this.route + OpenSettingsDefaults.Routes.V1.OpenSettingsEndpoints.getConfigData('notifications');
 
         return this.httpClient.get<GetNotificationsResponse[]>(url, { headers: this.headers }).pipe(map(response => {
             return response;

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angula
 import { MatSort } from "@angular/material/sort";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { TagsService } from "../../services/tags.service";
+import { AppTagService } from "../../services/app-tag.service";
 import { MatDialog } from "@angular/material/dialog";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
@@ -55,7 +55,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
     maxSortOrder: number = 0;
 
     constructor(
-        private tagsService: TagsService,
+        private tagsService: AppTagService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
         private windowService: WindowService,
@@ -227,7 +227,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
     loadData(): void {
         this.startFetching();
 
-        const subscription = this.tagsService.getPaginatedTags({
+        const subscription = this.tagsService.getPaginatedAppTags({
             searchTerm: this.queryParams.searchTerm,
             pageIndex: this.queryParams.pageIndex + 1,
             pageSize: this.queryParams.pageSize,
@@ -359,7 +359,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
                                 return;
                             }
 
-                            const internalSubscription = this.tagsService.getTagById({
+                            const internalSubscription = this.tagsService.getAppTagById({
                                 tagIdOrSlug: slug
                             }).subscribe({
                                 next: (response) => {
@@ -422,7 +422,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
         }).afterClosed().subscribe(result => {
             if (result) {
 
-                const internalSubscription = this.tagsService.deleteTag({ tagId: model.id, rowVersion: model.rowVersion }).subscribe(() => {
+                const internalSubscription = this.tagsService.deleteAppTag({ appTagId: model.id, rowVersion: model.rowVersion }).subscribe(() => {
 
                     this.snackBar.open(`Deleted successfully!`, 'Close', {
                         horizontalPosition: 'right',
@@ -449,7 +449,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
     }
 
     moveOrder(model: ModelForPaginatedResponseData, ascent: boolean): void {
-        const subscription = this.tagsService.updateTagSortOrder({
+        const subscription = this.tagsService.updateAppTagSortOrder({
             id: model.id,
             ascent: ascent,
             rowVersion: model.rowVersion
@@ -465,7 +465,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
     }
 
     reorder() {
-        const subscription = this.tagsService.reorder().subscribe(() => {
+        const subscription = this.tagsService.reorderAppTags().subscribe(() => {
             this.snackBar.open(`Reordered successfully!`, 'Close', {
                 horizontalPosition: 'right',
                 verticalPosition: 'top',
@@ -528,7 +528,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
         }).afterClosed().subscribe(result => {
             if (result) {
 
-                const internalSubscription = this.tagsService.deleteUnmappedTags().subscribe(() => {
+                const internalSubscription = this.tagsService.deleteUnmappedAppTags().subscribe(() => {
 
                     this.snackBar.open(`Deleted successfully!`, 'Close', {
                         horizontalPosition: 'right',
@@ -565,7 +565,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
 
         const target = this.dataSource.data[currentIndex];
 
-        const subscription = this.tagsService.dragTag({
+        const subscription = this.tagsService.dragAppTag({
             sourceId: source.id,
             targetId: target.id,
             ascent: ascent,

@@ -8,9 +8,9 @@ import { UtilityService } from "../../../../shared/services/utility.service";
 import { WindowService } from "../../../../core/services/window.service";
 import { DefaultLayoutService } from "../../../../shared/layouts/default-layout/default-layout.service";
 import { AuthService } from "../../../../core/services/auth.service";
-import { AppsService } from "../../services/apps.service";
+import { AppService } from "../../services/app.service";
 import { GetGroupedAppsResponseApp } from "../../models/get-grouped-apps-response-app";
-import { GroupsService } from "../../../group/services/app-groups.service";
+import { AppGroupService } from "../../../group/services/app-group.service";
 import { AppCreateComponent } from "../app-create/app-create.component";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { AppViewComponent } from "../app-view/app-view.component";
@@ -64,8 +64,8 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
         private cdr: ChangeDetectorRef,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
-        private appsService: AppsService,
-        private groupsService: GroupsService,
+        private appsService: AppService,
+        private groupsService: AppGroupService,
         private authService: AuthService,
         private utilityService: UtilityService,
         private windowService: WindowService,
@@ -260,7 +260,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.isGroupsFetched = true;
 
-        const groupSubscription = this.groupsService.getGroups({ hasMappings: true }).subscribe({
+        const groupSubscription = this.groupsService.getAppGroups({ hasMappings: true }).subscribe({
             next: (response) => {
                 this.groups = [
                     { id: "-1", name: "Filter > Ungrouped apps", sortOrder: 0, rowVersion: '' },

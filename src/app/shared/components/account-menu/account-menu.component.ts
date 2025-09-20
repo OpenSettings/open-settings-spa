@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "../../../core/services/auth.service";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { Subscription, timer } from "rxjs";
-import { GetUserNotificationsResponseNotification, GetUserNotificationsResponseNotificationCounts, NotificationsService, NotificationType } from "../../services/notifications.service";
+import { GetUserNotificationsResponseNotification, GetUserNotificationsResponseNotificationCounts, NotificationService, NotificationType } from "../../services/notification.service";
 import { GetLinksResponseLink, OpenSettingsService } from "../../services/open-settings.service";
 
 @Component({
@@ -45,7 +45,7 @@ export class AccountMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         private router: Router,
         private authService: AuthService,
         private themeService: ThemeService,
-        private notificationsService: NotificationsService,
+        private notificationsService: NotificationService,
         private openSettingsService: OpenSettingsService,
     ) { }
 

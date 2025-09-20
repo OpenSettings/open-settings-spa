@@ -19,11 +19,12 @@ import { GetGroupedAppDataResponse } from '../models/get-grouped-app-data-respon
 import { GetGroupedAppDataByIdentifierIdRequest } from '../models/get-grouped-app-data-by-identifier-id-request';
 import { GetGroupedAppDataByIdentifierIdResponse } from '../models/get-grouped-app-data-by-identifier-id-response';
 import { GetAppsResponseApp } from '../models/get-apps-response-app';
+import { OpenSettingsDefaults } from '../../../shared/open-settings-defaults';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AppsService implements OnDestroy {
+export class AppService implements OnDestroy {
   private headers: HttpHeaders = new HttpHeaders();
   private route: string;
   private destroy$ = new Subject<void>();
@@ -47,9 +48,22 @@ export class AppsService implements OnDestroy {
     this.destroy$.complete();
   }
 
+  getApps(request: GetAppsRequest): Observable<IResponse<GetAppsResponseApp[]>> {
+
+    let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getApps();
+
+    let params = new HttpParams();
+
+    if (request.searchTerm) {
+      params = params.append("searchTerm", request.searchTerm);
+    }
+
+    return this.httpClient.get<IResponse<GetAppsResponseApp[]>>(url, { headers: this.headers, params });
+  }
+
   getGroupedApps(request: GetGroupedAppsRequest): Observable<IResponse<GetGroupedAppsResponse>> {
 
-    let url = this.route + '/v1/apps/grouped';
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getGroupedApps();
 
     let params = new HttpParams();
 
@@ -61,47 +75,26 @@ export class AppsService implements OnDestroy {
       params = params.append("searchTerm", request.searchTerm);
     }
 
-    const queryParams = params.toString()
-
-    url += queryParams ? '?' + queryParams : '';
-
-    return this.httpClient.get<IResponse<GetGroupedAppsResponse>>(url, { headers: this.headers });
+    return this.httpClient.get<IResponse<GetGroupedAppsResponse>>(url, { headers: this.headers, params });
   }
 
   getAppById(request: GetAppRequest): Observable<IResponse<GetAppResponse>> {
 
-    const url = this.route + '/v1/apps/' + request.appIdOrSlug;
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppById(request.appIdOrSlug);
 
     return this.httpClient.get<IResponse<GetAppResponse>>(url, { headers: this.headers });
   }
 
   getAppBySlug(request: GetAppRequest): Observable<IResponse<GetAppResponse>> {
 
-    const url = this.route + '/v1/apps/slug/' + request.appIdOrSlug;
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppBySlug(request.appIdOrSlug);
 
     return this.httpClient.get<IResponse<GetAppResponse>>(url, { headers: this.headers });
   }
 
-  getApps(request: GetAppsRequest): Observable<IResponse<GetAppsResponseApp[]>> {
-
-    let url = this.route + '/v1/apps';
-
-    let params = new HttpParams();
-
-    if (request.searchTerm) {
-      params = params.append("searchTerm", request.searchTerm);
-    }
-
-    const queryParams = params.toString();
-
-    url += queryParams ? '?' + queryParams : '';
-
-    return this.httpClient.get<IResponse<GetAppsResponseApp[]>>(url, { headers: this.headers });
-  }
-
   updateApp(request: UpdateAppRequest): Observable<IResponse<UpdateAppResponse>> {
 
-    const url = this.route + '/v1/apps/' + request.appId;
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.updateApp(request.appId);
 
     return this.httpClient.put<IResponse<UpdateAppResponse>>(url, request.body, { headers: this.headers }).pipe(
       catchError((response: HttpErrorResponse) => {
@@ -116,43 +109,45 @@ export class AppsService implements OnDestroy {
 
   createApp(request: CreateAppRequest): Observable<IResponse<CreateAppResponse>> {
 
-    let url = this.route + '/v1/apps';
+    let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.createApp();
 
     return this.httpClient.post<IResponse<CreateAppResponse>>(url, request.body, { headers: this.headers });
   }
 
   getGroupedAppDataByAppId(request: GetGroupedAppDataRequest): Observable<IResponse<GetGroupedAppDataResponse>> {
 
-    const url = this.route + '/v1/apps/' + request.appIdOrSlug + '/grouped';
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getGroupedAppDataByAppId(request.appIdOrSlug);
 
     return this.httpClient.get<IResponse<GetGroupedAppDataResponse>>(url, { headers: this.headers });
   }
 
   getGroupedAppDataByAppSlug(request: GetGroupedAppDataRequest): Observable<IResponse<GetGroupedAppDataResponse>> {
 
-    const url = this.route + '/v1/apps/slug/' + request.appIdOrSlug + '/grouped';
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getGroupedAppDataByAppSlug(request.appIdOrSlug);
 
     return this.httpClient.get<IResponse<GetGroupedAppDataResponse>>(url, { headers: this.headers });
   }
 
   getGroupedAppDataByAppIdAndIdentifierId(request: GetGroupedAppDataByIdentifierIdRequest): Observable<IResponse<GetGroupedAppDataByIdentifierIdResponse>> {
 
-    const url = this.route + '/v1/apps/' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug + '/grouped';
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getGroupedAppDataByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierIdOrSlug);
 
     return this.httpClient.get<IResponse<GetGroupedAppDataByIdentifierIdResponse>>(url, { headers: this.headers });
   }
 
   getGroupedAppDataByAppSlugAndIdentifierSlug(request: GetGroupedAppDataByIdentifierIdRequest): Observable<IResponse<GetGroupedAppDataByIdentifierIdResponse>> {
 
-    const url = this.route + '/v1/apps/slug/' + request.appIdOrSlug + '/identifiers/' + request.identifierIdOrSlug + '/grouped';
+    const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getGroupedAppDataByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierIdOrSlug);
 
     return this.httpClient.get<IResponse<GetGroupedAppDataByIdentifierIdResponse>>(url, { headers: this.headers });
   }
 
   deleteApp(request: deleteAppRequest): Observable<IResponseAny> {
 
-    const url = this.route + '/v1/apps/' + request.appId + '?rowVersion=' + encodeURIComponent(request.rowVersion);
+    let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.deleteApp(request.appId);
 
-    return this.httpClient.delete<IResponseAny>(url, { headers: this.headers });
+    let params = new HttpParams().append('rowVersion', request.rowVersion);
+
+    return this.httpClient.delete<IResponseAny>(url, { headers: this.headers, params });
   }
 }

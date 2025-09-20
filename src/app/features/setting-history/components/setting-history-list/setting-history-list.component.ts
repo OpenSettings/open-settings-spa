@@ -1,7 +1,7 @@
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from "@angular/material/snack-bar";
 import { MatSelect } from "@angular/material/select";
-import { SettingHistoriesService } from "../../services/setting-histories.service";
+import { AppSettingHistoryService } from "../../services/setting-histories.service";
 import { Component, AfterViewInit, ViewChild, Inject, OnDestroy } from "@angular/core";
 import { ThemeService } from "../../../../core/services/theme.service";
 import { UtilityService } from "../../../../shared/services/utility.service";
@@ -50,7 +50,7 @@ export class SettingHistoryListComponent implements AfterViewInit, OnDestroy {
         private dialog: MatDialog,
         public dialogRef: MatDialogRef<SettingHistoryListComponent>,
         @Inject(MAT_DIALOG_DATA) public data: SettingHistoryListComponentModel,
-        private settingHistoriesService: SettingHistoriesService,
+        private settingHistoriesService: AppSettingHistoryService,
         private utilityService: UtilityService,
         private windowService: WindowService,
         private snackBar: MatSnackBar,
@@ -97,7 +97,7 @@ export class SettingHistoryListComponent implements AfterViewInit, OnDestroy {
             return;
         }
 
-        const subscription = this.settingHistoriesService.getSettingHistoryData({
+        const subscription = this.settingHistoriesService.getAppSettingHistoryData({
             historyId: history.id
         }).subscribe({
             next: (response) => {
@@ -153,7 +153,7 @@ export class SettingHistoryListComponent implements AfterViewInit, OnDestroy {
 
         let model: SettingHistoryListComponentResponseModel;
 
-        const subscription = this.settingHistoriesService.restoreSettingHistory({
+        const subscription = this.settingHistoriesService.restoreAppSettingHistory({
             historyId: historyData.historyId,
             body: restoreSettingHistoryRequestBody
         }).subscribe({

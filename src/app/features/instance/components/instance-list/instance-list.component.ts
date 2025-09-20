@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from "@angular/core";
 import { MatAccordion } from "@angular/material/expansion";
 import { MatDialog } from "@angular/material/dialog";
-import { InstancesService } from "../../services/instances.service";
+import { AppInstanceService } from "../../services/app-instance.service";
 import { UtilityService } from "../../../../shared/services/utility.service";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { Subscription, tap } from "rxjs";
@@ -30,7 +30,7 @@ export class InstanceListComponent implements OnInit, OnDestroy {
     @Output() instanceDeleteEmitter: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(
-        private instancesService: InstancesService,
+        private instancesService: AppInstanceService,
         private utilityService: UtilityService,
         private windowService: WindowService,
         private dialog: MatDialog,
@@ -69,7 +69,7 @@ export class InstanceListComponent implements OnInit, OnDestroy {
         }).afterClosed().subscribe(result => {
             if (result) {
 
-                const internalSubscription = this.instancesService.deleteInstance({
+                const internalSubscription = this.instancesService.deleteAppInstance({
                     instanceId: data.id
                 }).subscribe(() => {
 

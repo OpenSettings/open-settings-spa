@@ -7,12 +7,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { debounceTime, distinctUntilChanged, map, Observable, startWith, Subscription, switchMap } from "rxjs";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import { CustomValidators } from "../../../../shared/utils/custom-validators";
-import { AppsService } from "../../services/apps.service";
+import { AppService } from "../../services/app.service";
 import { UtilityService } from "../../../../shared/services/utility.service";
 import { ConfirmationDialogComponent } from "../../../../shared/components/confirmation-dialog/confirmation-dialog.component";
 import { isNullOrWhiteSpace } from "../../../../shared/utils/other-utils";
-import { GroupsService } from "../../../group/services/app-groups.service";
-import { TagsService } from "../../../tag/services/tags.service";
+import { AppGroupService } from "../../../group/services/app-group.service";
+import { AppTagService } from "../../../tag/services/app-tag.service";
 import { CreateAppRequestBody } from "../../models/create-app-request-body";
 import { GetAppGroupsResponseGroup } from "../../../group/models/get-app-groups-response-group";
 import { GetTagsResponseTag } from "../../../tag/models/get-tags-response-tag";
@@ -37,9 +37,9 @@ export class AppCreateComponent implements OnInit, OnDestroy {
     @ViewChild('tagSearchInput') tagSearchInput!: ElementRef<HTMLInputElement>;
 
     constructor(public dialogRef: MatDialogRef<AppCreateComponent>,
-        private appsService: AppsService,
-        private groupsService: GroupsService,
-        private tagsService: TagsService,
+        private appsService: AppService,
+        private groupsService: AppGroupService,
+        private tagsService: AppTagService,
         private formBuilder: FormBuilder,
         private utilityService: UtilityService,
         private windowService: WindowService,
@@ -113,7 +113,7 @@ export class AppCreateComponent implements OnInit, OnDestroy {
             distinctUntilChanged());
 
         this.filteredGroups$ = groupName$.pipe(
-            switchMap(value => this.groupsService.getGroups({
+            switchMap(value => this.groupsService.getAppGroups({
                 searchTerm: value
             }).pipe(map(response => {
                 const responseData = response.data?.appGroups;
@@ -146,7 +146,7 @@ export class AppCreateComponent implements OnInit, OnDestroy {
             distinctUntilChanged());
 
         this.filteredTags$ = tagName$.pipe(
-            switchMap(value => this.tagsService.getTags({
+            switchMap(value => this.tagsService.getAppTags({
                 searchTerm: value
             }).pipe(map(response => {
 
