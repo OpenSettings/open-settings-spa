@@ -32,9 +32,9 @@ export class IdentifierUpsertComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         
-        const id = this.model.id ?? '0';
+        const id = this.model.id ?? null;
 
-        if (id == '0') {
+        if (id === null) {
             this.title = 'Create a new identifier';
         } else {
             this.title = 'Update - Identifier'
@@ -68,7 +68,7 @@ export class IdentifierUpsertComponent implements OnInit, OnDestroy {
 
     update(formValue: any) {
 
-        if (formValue.id === '0') {
+        if (formValue.id === null) {
 
             const trimmedName = formValue.name.trim();
 

@@ -1,6 +1,6 @@
 import { ConfigurationConsumer, ConfigurationController, ConfigurationProvider, ConfigurationSpa } from "../../configuration/models/configuration-update-component-data";
 
-export interface GetConfigurationByAppAndIdentifierResponse {
+export interface GetAppConfigurationByAppAndIdentifierResponse {
     id: string;
     storeInSeparateFile: boolean;
     ignoreOnFileChange: boolean;

@@ -1,7 +1,12 @@
 export interface GetGroupedAppDataResponseIdentifier {
     id: string;
     name: string;
+    slug: string;
     sortOrder: number;
-    mappingSortOrder: number;
-    mappingRowVersion: string;
+    appMapping: GetGroupedAppDataResponseIdentifierAppMapping;
+}
+
+export interface GetGroupedAppDataResponseIdentifierAppMapping {
+    sortOrder: number;
+    rowVersion: string;
 }

@@ -7,7 +7,7 @@
     </div>
     <mat-slide-toggle class="d-flex ml-2" [(ngModel)]="multiSelectionEnabled" (change)="onToggleMultiSelection($event)">Multi selection</mat-slide-toggle>
     <span class="spacer"></span>
-    <button mat-icon-button matTooltip="Add setting" matTooltipPosition="above" [routerLink]="['./apps', data.slug, data.selectedAppIdentifierId, 'settings', 'new']" queryParamsHandling="merge"
+    <button mat-icon-button matTooltip="Add setting" matTooltipPosition="above" [routerLink]="['./apps', data.slug, data.selectedIdentifierSlug, 'settings', 'new']" queryParamsHandling="merge"
         [disabled]="!data.selectedAppIdentifierId">
         <mat-icon>add</mat-icon>
     </button>
@@ -25,7 +25,7 @@
                 <span class="fs-x-small pr-3" matTooltip="Computed Identifier">{{ settingData.computedIdentifier }}</span>
                 <span class="fs-x-small pr-1" matTooltip="Namespace">{{ settingData.classNamespace }}</span>
                 <mat-menu #menu="matMenu">
-                    <button mat-menu-item [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'update']" queryParamsHandling="merge">
+                    <button mat-menu-item [routerLink]="['./apps', settingData.slug, data.selectedIdentifierSlug, 'settings', settingData.settingId, 'update']" queryParamsHandling="merge">
                         <mat-icon>edit</mat-icon> Edit
                     </button>
                     <button mat-menu-item (click)="deleteSetting(settingData)">
@@ -42,7 +42,7 @@
                 <mat-icon>save</mat-icon>
             </button>
             <span class="spacer"></span>
-            <button mat-button matTooltip="Copy setting to" color="primary" [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'copyTo']" queryParamsHandling="merge">
+            <button mat-button matTooltip="Copy setting to" color="primary" [routerLink]="['./apps', settingData.slug, data.selectedIdentifierSlug, 'settings', settingData.settingId, 'copyTo']" queryParamsHandling="merge">
                 <mat-icon>send</mat-icon>
             </button>
             <button mat-button matTooltip="Download" color="primary"
@@ -60,7 +60,7 @@
                 <mat-icon>text_fields</mat-icon>
             </button>
             <button mat-button matTooltip="History" color="primary"
-                [routerLink]="['./apps', settingData.slug, data.selectedAppIdentifierId, 'settings', settingData.settingId, 'histories']" queryParamsHandling="merge"
+                [routerLink]="['./apps', settingData.slug, data.selectedIdentifierSlug, 'settings', settingData.settingId, 'histories']" queryParamsHandling="merge"
                 [disabled]="!settingData.dataRestored && settingData.version === '0'">
                 <mat-icon>history</mat-icon>
             </button>

@@ -3,6 +3,7 @@ export interface CopySettingToIdentifierEmitData {
     parsedData: object;
     currentSettingId: string;
     currentAppIdentifierId: string;
+    currentIdentifierSlug: string;
     currentAppIdentifierName: string;
     computedIdentifier: string;
     className: string;

@@ -48,7 +48,7 @@ export class IdentifierMappingCreateComponent implements OnInit, AfterViewInit, 
 
         this.myForm = this.formBuilder.group({
             identifierName: ['', [Validators.required, this.identifierValidator]],
-            identifierId: ['0'],
+            identifierId: [null],
             position: [this.defaultPosition]
         });
     }
@@ -143,7 +143,7 @@ export class IdentifierMappingCreateComponent implements OnInit, AfterViewInit, 
                 }
 
                 const returnModel: AppIdentifierAddComponentReturnModel = {
-                    mappingSortOrder: responseData.identifier.mappingSortOrder,
+                    mappingSortOrder: responseData.sortOrder,
                     identifierId: responseData.identifier.id,
                     identifierName: model.identifier.name,
                     identifierSortOrder: responseData.identifier.sortOrder
@@ -178,12 +178,11 @@ export class IdentifierMappingCreateComponent implements OnInit, AfterViewInit, 
                             }
 
                             const returnModel: AppIdentifierAddComponentReturnModel = {
-                                mappingSortOrder: responseData.mappingSortOrder,
+                                mappingSortOrder: responseData.sortOrder,
                                 identifierId: responseData.identifier.id,
                                 identifierName: model.identifier.name,
                                 identifierSortOrder: responseData.identifier.sortOrder
                             };
-
 
                             this.dialogRef.close(returnModel);
                         });
@@ -197,7 +196,6 @@ export class IdentifierMappingCreateComponent implements OnInit, AfterViewInit, 
         this.subscriptions.add(subscription);
     }
     
-
     onPositionChange(): void {
         const position = this.myForm.get('position')?.value;
         if (position === -1) {

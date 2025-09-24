@@ -32,8 +32,8 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
     groupedApps: { key: string, apps: GetGroupedAppsResponseApp[] }[] = [];
     groups: GetAppGroupsResponseGroup[] = [];
     isGroupsFetched: boolean = false;
-    groupsCount: number = 0;
-    appsCount: number = 0;
+    groupCount: number = 0;
+    appCount: number = 0;
     appsFetched: boolean = false;
     queryParams: ({
         searchTerm: string | null;
@@ -116,7 +116,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
                 return;
             }
 
-            if(this.isProvider){
+            if (this.isProvider) {
                 this.queryParams.searchTerm = this.searchTermInput!.nativeElement.value = searchTerm;
                 this.queryParams.groupId = this.groupSelect!.value = groupId;
             }
@@ -207,8 +207,8 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.groupedApps = this.mapGroupedAppsToArray(response.data.groupNameToApps);
-                this.groupsCount = response.data.groupsCount;
-                this.appsCount = response.data.appsCount;
+                this.groupCount = response.data.groupCount;
+                this.appCount = response.data.appCount;
                 this.appsFetched = true;
             },
             error: () => {
@@ -303,11 +303,11 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        if(this.isProvider){
+        if (this.isProvider) {
             this.queryParams.groupId = this.groupSelect!.value = '';
             this.searchTermInput!.nativeElement.value = this.queryParams.searchTerm = '';
         }
-        
+
         this.loadData();
     }
 
@@ -439,7 +439,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
         }).afterClosed().subscribe((result: GetGroupedAppsResponseApp) => {
             if (result) {
 
-                this.appsCount++;
+                this.appCount++;
 
                 const group = result.group?.name ?? 'Ungrouped apps';
                 const groupIndex = this.groupedApps.findIndex(g => g.key === group);
@@ -457,7 +457,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.groupedApps[groupIndex].apps.push(result);
                 } else {
                     this.groupedApps.push({ key: group, apps: [result] });
-                    this.groupsCount++;
+                    this.groupCount++;
                 }
             }
 
@@ -506,7 +506,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.updateAppInGroup(model.client.id, result);
                 }
 
-                if(result.type === "Fetch Latest"){
+                if (result.type === "Fetch Latest") {
                     setTimeout(() => {
                         this.router.navigate([`./${model.slug}/update`], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     }, 500)
@@ -559,7 +559,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
             this.groupedApps[newGroupIndex].apps.push(app);
         } else {
             this.groupedApps.push({ key: newGroup, apps: [app] });
-            this.groupsCount++;
+            this.groupCount++;
             if (updatedApp.group.id !== "-1") {
                 this.groups.push({
                     id: updatedApp.group.id,
@@ -573,7 +573,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
         oldGroupApps.splice(appIndex, 1);
         if (oldGroupApps.length === 0) {
             this.groupedApps.splice(oldGroupIndex, 1);
-            this.groupsCount--;
+            this.groupCount--;
 
             const oldGroupInGroups = this.groups.findIndex(g => g.name === oldGroupName);
 
@@ -618,7 +618,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
         }).afterClosed().subscribe(result => {
             if (result) {
                 const internalSubscription = this.appsService.deleteApp({ appId: app.id, rowVersion: app.rowVersion }).subscribe(() => {
-                    this.appsCount--;
+                    this.appCount--;
 
                     const groupName = app.group?.name ?? 'Ungrouped apps';
                     const groupIndex = this.groupedApps.findIndex(g => g.key === groupName);
@@ -629,7 +629,7 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.groupedApps[groupIndex].apps.splice(appIndex, 1);
                             if (this.groupedApps[groupIndex].apps.length === 0) {
                                 this.groupedApps.splice(groupIndex, 1);
-                                this.groupsCount--;
+                                this.groupCount--;
                             }
                         }
                     }
@@ -660,6 +660,12 @@ export class AppListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.subscriptions.add(subscription);
+    }
+
+    onImgBroken(event: Event) {
+        const img = event.target as HTMLImageElement;
+        img.removeAttribute('src');
+        img.onerror = null;
     }
 
     copyToClipboard(content: string) {

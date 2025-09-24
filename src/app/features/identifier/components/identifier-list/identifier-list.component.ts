@@ -242,8 +242,8 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
                     return;
                 }
 
-                this.minSortOrder = responseData.minSortOrder;
-                this.maxSortOrder = responseData.maxSortOrder;
+                this.minSortOrder = responseData.sortOrderRange.min;
+                this.maxSortOrder = responseData.sortOrderRange.max;
                 this.dataSource.data = responseData.identifiers;
                 this.paginator.pageIndex = responseData.pagingInfo.pageIndex - 1;
                 this.paginator.pageSize = responseData.pagingInfo.pageSize;
@@ -482,7 +482,7 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
     add() {
 
         const identifierEditComponentModel: IdentifierUpsertComponentModel = {
-            id: '0',
+            id: null,
             name: '',
             sortOrder: 0,
             rowVersion: ''

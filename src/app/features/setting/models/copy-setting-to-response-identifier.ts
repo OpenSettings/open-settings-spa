@@ -1,6 +1,7 @@
-export interface CopySettingToResponseIdentifier {
+export interface CopyAppSettingToResponseIdentifier {
     id: string;
     name: string;
+    slug: string;
     sortOrder: number;
-    mappingSortOrder: number;
+    appMappingSortOrder: number;
 }

@@ -1,4 +1,4 @@
 export interface UpdateAppRequestBodyTag {
-    id: string;
+    id: string | null;
     name: string;
 }

@@ -38,7 +38,7 @@ import { AppConfigurationService } from "../../../configuration/services/app-con
 export class AppViewComponent implements OnInit, OnDestroy {
 
     appData: GetGroupedAppDataResponse = {
-        identifierInfo: { minSortOrder: 0, maxSortOrder: 0, mappingMinSortOrder: 0, mappingMaxSortOrder: 0 },
+        identifierInfo: { sortOrderRange: { min: 0, max: 0 }, appMappingSortOrderRange: { min: 0, max: 0 } },
         identifierIdToIdentifier: {},
         identifierIdToConfiguration: {},
         identifierIdToSettings: {},
@@ -89,7 +89,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
         return this.sortIdentifiers(Object.values(this.appData.identifierIdToIdentifier));
     }
 
-    loadDefaultBehavior() {
+    loadDefaultBehavior(identifierIdOrSlug?: string) {
         const identifiers = this.identifiers;
 
         if (identifiers.length == 0) {
@@ -97,14 +97,13 @@ export class AppViewComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const identifierId = identifiers[0].id;
+        const identifier = identifiers.find(i => i.id == identifierIdOrSlug || i.slug == identifierIdOrSlug) || identifiers[0];
 
         switch (this.tabIndex) {
             case ViewTab.Configuration:
 
-
                 setTimeout(() => {
-                    this.router.navigate(['./apps', this.data.appSlug, identifierId, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, this.getSlugForId(identifier.id), 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }, 150);
 
                 break;
@@ -112,7 +111,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
             case ViewTab.Instances:
 
                 setTimeout(() => {
-                    this.router.navigate(['./apps', this.data.appSlug, identifierId, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, this.getSlugForId(identifier.id), 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }, 150);
 
                 break;
@@ -120,13 +119,13 @@ export class AppViewComponent implements OnInit, OnDestroy {
             case ViewTab.Settings:
 
                 setTimeout(() => {
-                    this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, this.getSlugForId(identifier.id), 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }, 150);
 
                 break;
         }
 
-        this.changeIdentifier(identifierId);
+        this.changeIdentifier(identifier.id);
     }
 
     viewNewIdentifierMapping() {
@@ -141,9 +140,9 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
         const viewSettingUpdateParamSubscription = event.activatedRoute.paramMap.subscribe(params => {
 
-            const identifierId = params.get('identifierId');
+            const identifierSlug = params.get('identifierId');
 
-            if (!identifierId) {
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
@@ -152,13 +151,16 @@ export class AppViewComponent implements OnInit, OnDestroy {
             const settingId = params.get('settingId');
 
             if (!settingId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
 
             const observable = this.loadData$().pipe(tap(() => {
-                if (!(identifierId in this.appData.identifierIdToSettings)) {
-                    this.loadDefaultBehavior();
+
+                const identifierId = this.resolveIdentifierId(identifierSlug);
+
+                if (!identifierId || !(identifierId in this.appData.identifierIdToSettings)) {
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
 
@@ -170,7 +172,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                         settingViewType: 'viewSetting'
                     });
                 } else {
-                    this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }
 
                 this.changeIdentifier(identifierId);
@@ -185,17 +187,22 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewCreateSetting(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const observable = this.loadData$().pipe(tap(() => {
-                if (!(identifierId in this.appData.identifierIdToSettings)) {
-                    this.loadDefaultBehavior();
+                const identifierId = this.resolveIdentifierId(identifierSlug);
+
+                if (!identifierId || !(identifierId in this.appData.identifierIdToSettings)) {
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
+
                 this.appViewService.emitSettingView({
                     selectedSettingId: this.appViewService.settingView?.selectedSettingId,
                     settingViewType: 'viewCreateSetting'
@@ -210,21 +217,28 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewUpdateSetting(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const settingId = params.get('settingId');
+
             if (!settingId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const observable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
                 const settings = this.appData.identifierIdToSettings[identifierId];
+
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
 
@@ -241,7 +255,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                             this.changeIdentifier(identifierId);
                         }
                         else {
-                            this.loadDefaultBehavior();
+                            this.loadDefaultBehavior(identifierId);
                         }
                     });
 
@@ -264,23 +278,30 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewCopySettingTo(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const settingId = params.get('settingId');
             if (!settingId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const observable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
                 const settings = this.appData.identifierIdToSettings[identifierId];
+
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
+
                 let setting = settings.find(s => s.id === settingId);
                 if (!setting) {
                     const settingInDataList = this.settingListComponentData?.settingDataList.find(s => s.settingId === settingId);
@@ -305,7 +326,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                         };
                         settings.push(setting);
                     } else {
-                        this.loadDefaultBehavior();
+                        this.loadDefaultBehavior(identifierId);
                         return;
                     }
                 }
@@ -323,26 +344,31 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewSettingHistories(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
+
             const settingId = params.get('settingId');
             if (!settingId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
             const observable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
+
                 const settings = this.appData.identifierIdToSettings[identifierId];
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
                 const setting = settings.find(s => s.id === settingId);
                 if (!setting) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
                 this.appViewService.emitSettingView({
@@ -359,31 +385,35 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewSettingHistory(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
                 this.loadDefaultBehavior();
                 this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
             const settingId = params.get('settingId');
             if (!settingId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
             var historyId = params.get('historyId');
             if (!historyId) {
-                this.router.navigate(['./apps', this.data.appSlug, identifierId, 'settings', settingId, 'histories'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', settingId, 'histories'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
             const observable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
+
                 const settings = this.appData.identifierIdToSettings[identifierId];
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
                 const setting = settings.find(s => s.id === settingId);
                 if (!setting) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
                 this.appViewService.emitSettingView({
@@ -401,8 +431,10 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewInstance(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Instances;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
-            const identifierId = params.get('identifierId');
-            if (!identifierId) { // Fallback to route and subscribe then loaddefualt.
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) { // Fallback to route and subscribe then loaddefualt.
                 this.loadDefaultBehavior();
                 // this.router.navigate(['./apps', this.data.clientId, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
@@ -414,9 +446,10 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 return;
             }
             const viewSettingsObservable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
                 const settings = this.appData.identifierIdToSettings[identifierId];
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     return;
                 }
                 this.selectedInstanceId = instanceId;
@@ -432,16 +465,19 @@ export class AppViewComponent implements OnInit, OnDestroy {
     viewTabs(event: DummyComponentServiceModel, viewTab: ViewTab) {
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
             this.tabIndex = viewTab;
-            const identifierId = params.get('identifierId');
-            if (!identifierId) {
-                this.loadDefaultSubscription();
+
+            const identifierSlug = params.get('identifierId');
+
+            if (!identifierSlug) {
+                this.loadDefaultSubscription(identifierSlug);
                 // this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 return;
             }
             const viewSettingsObservable = this.loadData$().pipe(tap(() => {
+                const identifierId = this.resolveIdentifierId(identifierSlug)!;
                 const settings = this.appData.identifierIdToSettings[identifierId];
                 if (!settings) {
-                    this.loadDefaultBehavior();
+                    this.loadDefaultBehavior(identifierId);
                     this.router.navigate(['./apps', this.data.appSlug], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     return;
                 }
@@ -453,9 +489,12 @@ export class AppViewComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
     }
 
-    loadDefaultSubscription() {
+    loadDefaultSubscription(identifierSlug: string | null) {
         const subscription = this.loadData$().pipe(tap(() => {
-            this.loadDefaultBehavior();
+
+            const identifierId = this.resolveIdentifierId(identifierSlug);
+
+            this.loadDefaultBehavior(identifierId);
         })).subscribe();
         this.subscriptions.add(subscription);
     }
@@ -465,7 +504,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
             setTimeout(() => {
                 if (event === undefined) {
                     if (!this.isLoaded) {
-                        this.loadDefaultSubscription();
+                        this.loadDefaultSubscription(null);
                     }
                     return;
                 }
@@ -506,7 +545,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                         this.viewTabs(event, ViewTab.Configuration);
                         break;
                     default:
-                        this.loadDefaultSubscription();
+                        this.loadDefaultSubscription(null);
                         break;
                 }
             }, 0);
@@ -523,15 +562,18 @@ export class AppViewComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (event.isUserInput && this.selectedIdentifierId !== event.source.value) {
+        const identifierId = event.source.value;
+        const identifierSlug = this.getSlugForId(identifierId);
+
+        if (event.isUserInput && this.selectedIdentifierId !== identifierId) {
 
             this.appViewService.emitSettingView(undefined);
 
-            if (!(event.source.value in this.appData.identifierIdToSettings)) {
+            if (!(identifierId in this.appData.identifierIdToSettings)) {
                 return;
             }
 
-            this.changeIdentifier(event.source.value);
+            this.changeIdentifier(identifierId);
 
             const settingView = this.appViewService.settingView;
 
@@ -539,7 +581,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
                 switch (settingView.settingViewType) {
                     case 'viewCreateSetting':
-                        this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', 'new'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', 'new'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         return;
                 }
 
@@ -548,20 +590,20 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 if (selectedSettingId) {
                     switch (this.appViewService.settingView!.settingViewType) {
                         case 'viewUpdateSetting':
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', selectedSettingId, 'update'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId, 'update'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                             return;
                         case 'viewCopySettingTo':
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', selectedSettingId, 'copyTo'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId, 'copyTo'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                             return;
                         case 'viewSettingHistories':
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', selectedSettingId, 'histories'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId, 'histories'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                             return;
                         case 'viewSettingHistory':
                             const historyId = settingView.selectedHistoryId;
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', selectedSettingId, 'histories', historyId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId, 'histories', historyId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                             return;
                         default:
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                             return;
                     }
                 }
@@ -571,7 +613,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     case ViewTab.Configuration:
 
                         setTimeout(() => {
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         }, 0);
 
                         break;
@@ -579,7 +621,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     case ViewTab.Instances:
 
                         setTimeout(() => {
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         }, 0);
 
                         break;
@@ -587,7 +629,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     case ViewTab.Settings:
 
                         setTimeout(() => {
-                            this.router.navigate(['./apps', this.data.appSlug, event.source.value, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         }, 0);
 
                         break;
@@ -596,16 +638,16 @@ export class AppViewComponent implements OnInit, OnDestroy {
         }
     }
 
-    changeIdentifier(settingIdenfierId: string) {
-        this.selectedIdentifierId = settingIdenfierId;
+    changeIdentifier(identifierId: string) {
+        this.selectedIdentifierId = identifierId;
 
-        const settings = this.appData.identifierIdToSettings[settingIdenfierId];
-        const instances = this.appData.identifierIdToInstances[settingIdenfierId];
-        const configuration = this.appData.identifierIdToConfiguration[settingIdenfierId];
+        const settings = this.appData.identifierIdToSettings[identifierId];
+        const instances = this.appData.identifierIdToInstances[identifierId];
+        const configuration = this.appData.identifierIdToConfiguration[identifierId];
 
-        this.updateSettingData(settingIdenfierId, settings);
-        this.updateInstances(settingIdenfierId, instances);
-        this.updateConfiguration(settingIdenfierId, configuration);
+        this.updateSettingData(identifierId, settings);
+        this.updateInstances(identifierId, instances);
+        this.updateConfiguration(identifierId, configuration);
     }
 
     updateSettingData(identifierId: string, settings: GetGroupedAppDataResponseSetting[]) {
@@ -649,6 +691,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
             clientName: this.data.clientName,
             appId: this.data.appId,
             selectedAppIdentifierId: this.selectedIdentifierId,
+            selectedIdentifierSlug: this.getSlugForId(this.selectedIdentifierId),
             selectedAppIdentifierName: identifier.name,
             settingDataList: this.identifierIdToSettingsDataMap[this.selectedIdentifierId]
         };
@@ -717,6 +760,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
         this.tabIndex = index;
 
+        const identifierSlug = this.getSlugForId(this.selectedIdentifierId);
+
         switch (index) {
             case ViewTab.Settings:
 
@@ -728,7 +773,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     // todo: setting id - selected
 
                     setTimeout(() => {
-                        this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' })
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' })
                     }, 55);
                 }
 
@@ -742,9 +787,9 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
                 setTimeout(() => {
                     if (this.selectedInstanceId) {
-                        this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'instances', this.selectedInstanceId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'instances', this.selectedInstanceId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     } else {
-                        this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     }
                 }, 55);
 
@@ -757,7 +802,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 this.updateConfiguration(this.selectedIdentifierId, configuration);
 
                 setTimeout(() => {
-                    this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }, 55);
 
                 break;
@@ -814,17 +859,21 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 this.appData.identifierIdToInstances[identifierId] = responseData.instances
 
                 if (this.appData.identifierInfo) {
-                    this.appData.identifierInfo.minSortOrder = Math.min(this.appData.identifierInfo.minSortOrder, responseData.identifier.sortOrder);
-                    this.appData.identifierInfo.maxSortOrder = Math.max(this.appData.identifierInfo.maxSortOrder, responseData.identifier.sortOrder);
+                    this.appData.identifierInfo.sortOrderRange.min = Math.min(this.appData.identifierInfo.sortOrderRange.min, responseData.identifier.sortOrder);
+                    this.appData.identifierInfo.sortOrderRange.max = Math.max(this.appData.identifierInfo.sortOrderRange.max, responseData.identifier.sortOrder);
 
-                    this.appData.identifierInfo.mappingMinSortOrder = Math.min(this.appData.identifierInfo.mappingMinSortOrder, responseData.identifier.mappingSortOrder);
-                    this.appData.identifierInfo.mappingMaxSortOrder = Math.max(this.appData.identifierInfo.mappingMaxSortOrder, responseData.identifier.mappingSortOrder);
+                    this.appData.identifierInfo.appMappingSortOrderRange.min = Math.min(this.appData.identifierInfo.appMappingSortOrderRange.min, responseData.identifier.appMapping.sortOrder);
+                    this.appData.identifierInfo.appMappingSortOrderRange.max = Math.max(this.appData.identifierInfo.appMappingSortOrderRange.max, responseData.identifier.appMapping.sortOrder);
                 } else {
                     this.appData.identifierInfo = {
-                        minSortOrder: responseData.identifier.sortOrder,
-                        maxSortOrder: responseData.identifier.sortOrder,
-                        mappingMinSortOrder: responseData.identifier.mappingSortOrder,
-                        mappingMaxSortOrder: responseData.identifier.mappingSortOrder
+                        sortOrderRange: {
+                            min: responseData.identifier.sortOrder,
+                            max: responseData.identifier.sortOrder
+                        },
+                        appMappingSortOrderRange: {
+                            min: responseData.identifier.appMapping.sortOrder,
+                            max: responseData.identifier.appMapping.sortOrder
+                        }
                     };
                 }
 
@@ -860,7 +909,9 @@ export class AppViewComponent implements OnInit, OnDestroy {
                             break;
                     }
 
-                    this.router.navigate(['./apps', this.data.appSlug, result.identifierId, tabName], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    const identifierSlug = this.getSlugForId(result.identifierId);
+
+                    this.router.navigate(['./apps', this.data.appSlug, identifierSlug, tabName], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 });
 
                 this.subscriptions.add(secondSubscription);
@@ -871,17 +922,20 @@ export class AppViewComponent implements OnInit, OnDestroy {
             } else {
 
                 if (this.previousSelectedIdentifierId in this.identifiers) {
+
+                    const identifierSlug = this.getSlugForId(this.previousSelectedIdentifierId);
+
                     if (this.tabIndex === ViewTab.Settings) {
                         const selectedSettingId = this.appViewService.settingView?.selectedSettingId;
                         if (selectedSettingId) {
-                            this.router.navigate(['./apps', this.data.appSlug, this.previousSelectedIdentifierId, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         } else {
-                            this.router.navigate(['./apps', this.data.appSlug, this.previousSelectedIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         }
                     } else if (this.tabIndex === ViewTab.Instances) {
-                        this.router.navigate(['./apps', this.data.appSlug, this.previousSelectedIdentifierId, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'instances'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     } else {
-                        this.router.navigate(['./apps', this.data.appSlug, this.previousSelectedIdentifierId, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'configuration'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     }
 
                     this.changeIdentifier(this.previousSelectedIdentifierId);
@@ -1158,10 +1212,13 @@ export class AppViewComponent implements OnInit, OnDestroy {
             const selectedSettingId = result?.settingId ?? (emitData.isExpanded ? this.appViewService.settingView?.selectedSettingId : undefined);
 
             if (result === undefined) {
+
+                const identifierSlug = this.getSlugForId(this.selectedIdentifierId);
+
                 if (selectedSettingId) {
-                    this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 } else {
-                    this.router.navigate(['./apps', this.data.appSlug, this.selectedIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }
 
                 return;
@@ -1171,10 +1228,14 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 this.dialogRef.close();
 
                 setTimeout(() => {
+
+                    const identifierId = result?.identifierId ?? this.selectedIdentifierId;
+                    const identifierSlug = this.getSlugForId(identifierId);
+
                     if (selectedSettingId) {
-                        this.router.navigate(['./apps', result.appSlug, result?.identifierId ?? this.selectedIdentifierId, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', result.appSlug, identifierSlug, 'settings', selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     } else {
-                        this.router.navigate(['./apps', result.appSlug, result?.identifierId ?? this.selectedIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        this.router.navigate(['./apps', result.appSlug, identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                     }
                 }, 500);
 
@@ -1215,9 +1276,12 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 const identifier = {
                     id: result.identifierId,
                     name: result.identifierName,
+                    slug: result.identifierSlug,
                     sortOrder: result.identifierSortOrder,
-                    mappingSortOrder: result.identifierMappingSortOrder,
-                    mappingRowVersion: ''
+                    appMapping: {
+                        sortOrder: result.identifierMappingSortOrder,
+                        rowVersion: ''
+                    }
                 };
 
                 this.appData.identifierIdToSettings[result.identifierId] = [];
@@ -1284,9 +1348,9 @@ export class AppViewComponent implements OnInit, OnDestroy {
             });
 
             if (selectedSettingId) {
-                this.router.navigate(['./apps', this.data.appSlug, result.identifierId, 'settings', result.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings', result.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
             } else {
-                this.router.navigate(['./apps', this.data.appSlug, result.identifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
             }
         });
 
@@ -1312,7 +1376,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     const internalSubscription = this.appIdentifierMappingsService.deleteAppIdentifierMapping({
                         appId: this.data.appId,
                         identifierId: key,
-                        mappingRowVersion: identifier.mappingRowVersion
+                        mappingRowVersion: identifier.appMapping.rowVersion
                     }).subscribe(() => {
 
                         this.snackBar.open(`Deleted successfully!`, 'Close', {
@@ -1372,32 +1436,40 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
         if (values.length === 0) {
             this.appData.identifierInfo = {
-                minSortOrder: 0,
-                maxSortOrder: 0,
-                mappingMinSortOrder: 0,
-                mappingMaxSortOrder: 0
+                sortOrderRange: {
+                    min: 0,
+                    max: 0
+                },
+                appMappingSortOrderRange: {
+                    min: 0,
+                    max: 0
+                }
             };
             return;
         }
 
         var firstValue = values[0];
 
-        let minSortOrder = firstValue.sortOrder, maxSortOrder = firstValue.sortOrder, mappingMinOrder = firstValue.mappingSortOrder, mappingMaxOrder = firstValue.mappingSortOrder;
+        let minSortOrder = firstValue.sortOrder, maxSortOrder = firstValue.sortOrder, mappingMinOrder = firstValue.appMapping.sortOrder, mappingMaxOrder = firstValue.appMapping.sortOrder;
 
         values.forEach(value => {
 
             minSortOrder = Math.min(minSortOrder, value.sortOrder);
             maxSortOrder = Math.max(maxSortOrder, value.sortOrder);
 
-            mappingMinOrder = Math.min(mappingMinOrder, value.mappingSortOrder);
-            mappingMaxOrder = Math.max(mappingMaxOrder, value.mappingSortOrder);
+            mappingMinOrder = Math.min(mappingMinOrder, value.appMapping.sortOrder);
+            mappingMaxOrder = Math.max(mappingMaxOrder, value.appMapping.sortOrder);
         });
 
         this.appData.identifierInfo = {
-            minSortOrder: minSortOrder,
-            maxSortOrder: maxSortOrder,
-            mappingMinSortOrder: mappingMinOrder,
-            mappingMaxSortOrder: mappingMaxOrder
+            sortOrderRange: {
+                min: minSortOrder,
+                max: maxSortOrder
+            },
+            appMappingSortOrderRange: {
+                min: mappingMinOrder,
+                max: mappingMaxOrder
+            }
         };
     }
 
@@ -1416,10 +1488,14 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 }
 
                 this.appData.identifierInfo = {
-                    minSortOrder: responseData.minSortOrder,
-                    maxSortOrder: responseData.maxSortOrder,
-                    mappingMinSortOrder: responseData.mappingMinSortOrder,
-                    mappingMaxSortOrder: responseData.mappingMaxSortOrder
+                    sortOrderRange: {
+                        min: responseData.identifierSortOrderRange.min,
+                        max: responseData.identifierSortOrderRange.max
+                    },
+                    appMappingSortOrderRange: {
+                        min: responseData.appIdentifierMappingSortOrderRange.min,
+                        max: responseData.appIdentifierMappingSortOrderRange.max
+                    }
                 };
 
                 responseData.identifiers.forEach(item => {
@@ -1427,8 +1503,10 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     const identifier = this.appData.identifierIdToIdentifier[item.id];
 
                     if (identifier) {
-                        identifier.mappingSortOrder = item.mappingSortOrder;
-                        identifier.mappingRowVersion = item.mappingRowVersion;
+                        identifier.appMapping = {
+                            sortOrder: item.appMapping.sortOrder,
+                            rowVersion: item.appMapping.rowVersion
+                        };
                         identifier.sortOrder = item.sortOrder;
                     }
                 });
@@ -1442,7 +1520,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
             identifierId: identifierId,
             body: {
                 ascent: ascent,
-                rowVersion: identifier.mappingRowVersion
+                rowVersion: identifier.appMapping.rowVersion
             }
         }).subscribe({
             next: (resp) => {
@@ -1491,8 +1569,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
     sortIdentifiers(identifiers: GetGroupedAppDataResponseIdentifier[]) {
         return identifiers.sort((a, b) => {
-            if (a.mappingSortOrder !== b.mappingSortOrder) {
-                return a.mappingSortOrder - b.mappingSortOrder;
+            if (a.appMapping.sortOrder !== b.appMapping.sortOrder) {
+                return a.appMapping.sortOrder - b.appMapping.sortOrder;
             }
 
             if (a.sortOrder !== b.sortOrder) {
@@ -1519,6 +1597,23 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 }
             })
         );
+    }
+
+    private resolveIdentifierId(param: string | null): string | undefined {
+        if (!param) return undefined;
+        // already an id
+        if (param in this.appData.identifierIdToIdentifier) {
+            return param;
+        }
+        // search by slug
+        const found = Object.entries(this.appData.identifierIdToIdentifier)
+            .find(([, identifier]) => identifier.slug === param);
+        return found ? found[0] : undefined;
+    }
+
+    private getSlugForId(identifierId: string): string {
+        const identifier = this.appData.identifierIdToIdentifier[identifierId];
+        return identifier?.slug ?? identifierId;
     }
 }
 

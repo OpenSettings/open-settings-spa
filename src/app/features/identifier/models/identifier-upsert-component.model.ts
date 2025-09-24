@@ -1,6 +1,6 @@
 
 export interface IdentifierUpsertComponentModel {
-    id: string;
+    id: string | null;
     name: string;
     sortOrder: number;
     rowVersion: string;

@@ -242,8 +242,8 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
                     return;
                 }
 
-                this.minSortOrder = responseData.minSortOrder;
-                this.maxSortOrder = responseData.maxSortOrder;
+                this.minSortOrder = responseData.sortOrderRange.min;
+                this.maxSortOrder = responseData.sortOrderRange.max;
                 this.dataSource.data = responseData.appGroups;
                 this.paginator.pageIndex = responseData.pagingInfo.pageIndex - 1;
                 this.paginator.pageSize = responseData.pagingInfo.pageSize;
@@ -485,7 +485,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     add() {
 
         const groupEditComponentModel: AppGroupUpsertComponentModel = {
-            id: '0',
+            id: null,
             name: '',
             sortOrder: 0,
             rowVersion: ''

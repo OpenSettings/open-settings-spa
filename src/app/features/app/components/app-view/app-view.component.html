@@ -21,10 +21,10 @@
       <span class="spacer"></span>
       <span>
         <button mat-icon-button (click)="moveSortOrder(identifier.id, $event, false)"
-          *ngIf="appData.identifierInfo.mappingMinSortOrder !== identifier.mappingSortOrder" matTooltip="Up" matTooltipPosition="left"><mat-icon
+          *ngIf="appData.identifierInfo.appMappingSortOrderRange.min !== identifier.appMapping.sortOrder" matTooltip="Up" matTooltipPosition="left"><mat-icon
             fontIcon="arrow_upward"></mat-icon></button>
         <button mat-icon-button (click)="moveSortOrder(identifier.id, $event, true)" matTooltip="Down" matTooltipPosition="left"
-          *ngIf="appData.identifierInfo.mappingMaxSortOrder !== identifier.mappingSortOrder"><mat-icon fontIcon="arrow_downward"></mat-icon></button>
+          *ngIf="appData.identifierInfo.appMappingSortOrderRange.max !== identifier.appMapping.sortOrder"><mat-icon fontIcon="arrow_downward"></mat-icon></button>
       </span>
       <button color="warn" mat-icon-button matTooltip="Delete" matTooltipPosition="right"
         (click)="deleteIdentifier(identifier.id, $event)">

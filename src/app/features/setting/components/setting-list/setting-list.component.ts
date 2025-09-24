@@ -208,7 +208,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.selectedSettingId === data.settingId) {
             this.selectedSettingId = undefined;
             this.appViewService.emitSettingView(undefined);
-            this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+            this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
         }
     }
 
@@ -227,7 +227,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
                 settingViewType: 'viewSetting'
             });
 
-            this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings', this.selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+            this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings', this.selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
         }
 
         if (data.isDataFetched) {
@@ -462,13 +462,13 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
                         const isExpanded = panelArray[settingIndex].expanded;
 
                         if (isExpanded) {
-                            this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings', setting.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings', setting.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         } else {
                             this.appViewService.emitSettingView({
                                 settingViewType: 'viewSetting',
                                 selectedSettingId: undefined
                             });
-                            this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                            this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                         }
                     }
 
@@ -588,13 +588,13 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
                 const isExpanded = panelArray[settingIndex].expanded;
 
                 if (isExpanded) {
-                    this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings', model.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings', model.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 } else {
                     this.appViewService.emitSettingView({
                         settingViewType: 'viewSetting',
                         selectedSettingId: undefined
                     });
-                    this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 }
             }
         });
@@ -658,9 +658,9 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
             if (this.selectedSettingId) {
-                this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings', this.selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings', this.selectedSettingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
             } else {
-                this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
             }
         });
 
@@ -691,7 +691,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     this.settingDeleteEmitter.emit(model.settingId);
 
-                    this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                    this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
                 });
 
                 this.subscriptions.add(internalSubscription);
@@ -716,6 +716,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
             parsedData: model.parsedData!,
             currentSettingId: model.settingId,
             currentAppIdentifierId: this.data.selectedAppIdentifierId,
+            currentIdentifierSlug: this.data.selectedIdentifierSlug,
             currentAppIdentifierName: this.data.selectedAppIdentifierName,
             computedIdentifier: model.computedIdentifier,
             className: model.className,
@@ -742,7 +743,7 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
             const setting = this.data.settingDataList.find(s => s.settingId == settingId);
 
             if (setting) {
-                this.router.navigate(['./apps', this.data.slug, this.data.selectedAppIdentifierId, 'settings', settingId, 'update'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                this.router.navigate(['./apps', this.data.slug, this.data.selectedIdentifierSlug, 'settings', settingId, 'update'], { relativeTo: this.route, queryParamsHandling: 'merge' });
             }
         }, 1000)
     }

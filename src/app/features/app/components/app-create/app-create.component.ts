@@ -56,7 +56,7 @@ export class AppCreateComponent implements OnInit, OnDestroy {
             clientId: [uuidv4(), [Validators.required, CustomValidators.mustGuid]],
             clientSecret: [uuidv4(), [Validators.required, CustomValidators.mustGuid]],
             groupName: [''],
-            groupId: ['0'],
+            groupId: [null],
             description: [''],
             imageUrl: [''],
             wikiUrl: [''],
@@ -239,7 +239,7 @@ export class AppCreateComponent implements OnInit, OnDestroy {
 
         if (value && this.tags.findIndex(t => t.name.toLowerCase() === valueLowercase) === -1) {
 
-            const id = this.prefetchedAppTags.find(t => t.name.toLowerCase() === valueLowercase)?.id ?? '0';
+            const id = this.prefetchedAppTags.find(t => t.name.toLowerCase() === valueLowercase)?.id ?? null;
 
             this.tags.push({
                 id: id,

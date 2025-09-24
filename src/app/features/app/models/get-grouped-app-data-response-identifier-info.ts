@@ -1,6 +1,6 @@
+import { SortOrderRange } from "../../../shared/models/sort-order-range.model";
+
 export interface GetGroupedAppDataResponseIdentifierInfo {
-    minSortOrder: number;
-    maxSortOrder: number;
-    mappingMinSortOrder: number;
-    mappingMaxSortOrder: number;
+    sortOrderRange: SortOrderRange;
+    appMappingSortOrderRange: SortOrderRange;
 }

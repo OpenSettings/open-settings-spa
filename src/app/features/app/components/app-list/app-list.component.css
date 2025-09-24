@@ -39,7 +39,7 @@
 }
 
 .mat-mdc-card-avatar{
-    padding: 1px;
+    padding: 0px;
 }
 
 .card-subtitle-client-id {
@@ -57,3 +57,8 @@
     left: -11px;
   }
   
+
+.app-image{
+    border-radius: 100px;
+    width: inherit;
+}

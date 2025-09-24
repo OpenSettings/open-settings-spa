@@ -1,4 +1,4 @@
-export interface GetConfigurationByAppAndIdentifierRequest {
+export interface GetAppConfigurationByAppAndIdentifierRequest {
     appId: string;
     identifierId: string;
 }

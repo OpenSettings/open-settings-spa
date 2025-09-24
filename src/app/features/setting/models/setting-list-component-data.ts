@@ -7,5 +7,6 @@ export interface SettingListComponentData {
     appId: string;
     settingDataList: SettingData[];
     selectedAppIdentifierId: string;
+    selectedIdentifierSlug: string;
     selectedAppIdentifierName: string;
 }

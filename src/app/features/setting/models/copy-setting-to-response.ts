@@ -1,9 +1,9 @@
-import { CopySettingToResponseIdentifier } from "./copy-setting-to-response-identifier";
+import { CopyAppSettingToResponseIdentifier } from "./copy-setting-to-response-identifier";
 import { CopySettingToResponseSetting } from "./copy-setting-to-response-setting";
 
 export interface CopySettingToResponse {
     clientId: string;
     appSlug: string;
-    identifier: CopySettingToResponseIdentifier;
+    identifier: CopyAppSettingToResponseIdentifier;
     setting: CopySettingToResponseSetting
 }

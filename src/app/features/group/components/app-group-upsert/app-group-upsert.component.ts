@@ -31,9 +31,9 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
 
-        const id = this.model.id ?? '0';
+        const id = this.model.id ?? null;
 
-        if (id == '0') {
+        if (id === null) {
             this.title = 'Create a new group';
         } else {
             this.title = 'Update - Group'
@@ -67,7 +67,7 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
 
     update(formValue: any) {
 
-        if (formValue.id === '0') {
+        if (formValue.id === null) {
 
             const trimmedName = formValue.name.trim();
 

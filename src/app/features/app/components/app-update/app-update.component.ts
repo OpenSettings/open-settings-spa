@@ -291,12 +291,14 @@ export class AppUpdateComponent implements OnInit, OnDestroy {
 
         if (value && this.tags.findIndex(t => t.name.toLowerCase() === valueLowercase) === -1) {
 
-            const id = this.prefetchedAppTags.find(t => t.name.toLowerCase() === valueLowercase)?.id ?? '0';
+            const id = this.prefetchedAppTags.find(t => t.name.toLowerCase() === valueLowercase)?.id ?? null;
 
             this.tags.push({
                 id: id,
                 name: value
             });
+
+            this.myForm.get('tags')?.setValue([...this.tags]);
         }
 
         this.myForm.get('tagSearch')?.setValue('');

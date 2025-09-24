@@ -17,7 +17,7 @@ import { DeleteTagRequest } from "../models/delete-tag-request";
 import { UpdateTagSortOrderRequest } from "../models/update-tag-sort-order-request";
 import { SortDirection } from "../../../shared/models/sort-direction.enum";
 import { IResponse, IResponseAny } from "../../../shared/models/response";
-import { GetTagsResponse } from "../models/get-tags-response";
+import { GetAppTagsResponse } from "../models/get-tags-response";
 import { DeleteUnmappedItemsResponse } from "../../../shared/models/delete-unmapped-items-response";
 import { ReorderResponse } from "../../../shared/models/reorder-response";
 import { GetPaginatedTagsResponse } from "../models/get-paginated-tags-response";
@@ -51,7 +51,7 @@ export class AppTagService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    getAppTags(request: GetTagsRequest): Observable<IResponse<GetTagsResponse>> {
+    getAppTags(request: GetTagsRequest): Observable<IResponse<GetAppTagsResponse>> {
 
         let url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTags();
 
@@ -65,7 +65,7 @@ export class AppTagService implements OnDestroy {
             params = params.append("hasMappings", request.hasMappings);
         }
 
-        return this.httpClient.get<IResponse<GetTagsResponse>>(url, { headers: this.headers, params });
+        return this.httpClient.get<IResponse<GetAppTagsResponse>>(url, { headers: this.headers, params });
     }
 
     createAppTag(request: CreateTagRequest): Observable<IResponse<CreateTagResponse>> {

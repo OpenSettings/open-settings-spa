@@ -7,6 +7,7 @@ import { IResponse, IResponseAny } from "../models/response";
 import { CreateAppIdentifierMappingRequest } from "../../features/app/models/create-app-identifier-mapping-request";
 import { CreateAppIdentifierMappingResponse } from "../../features/app/models/create-app-identifier-mapping-response";
 import { OpenSettingsDefaults } from "../open-settings-defaults";
+import { SortOrderRange } from "../models/sort-order-range.model";
 
 @Injectable({
     providedIn: 'root'
@@ -72,7 +73,7 @@ export class AppIdentifierMappingService implements OnDestroy {
 
     deleteAppIdentifierMapping(request: DeleteAppIdentifierMappingRequest): Observable<IResponseAny> {
 
-        const url =  this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.deleteAppIdentifierMapping(request.appId, request.identifierId);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.deleteAppIdentifierMapping(request.appId, request.identifierId);
 
         let params = new HttpParams().append('rowVersion', request.mappingRowVersion);
 
@@ -81,7 +82,7 @@ export class AppIdentifierMappingService implements OnDestroy {
 
     updateAppIdentifierMappingSortOrder(request: UpdateAppIdentifierMappingSortOrderRequest): Observable<IResponse<UpdateAppIdentifierMappingSortOrderResponse>> {
 
-         const url =  this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.updateAppIdentifierMappingSortOrder(request.appId, request.identifierId);
+        const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.updateAppIdentifierMappingSortOrder(request.appId, request.identifierId);
 
         return this.httpClient.put<IResponse<UpdateAppIdentifierMappingSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
@@ -124,15 +125,17 @@ export interface GetAppIdentifierMappingsRequest {
 export interface GetAppIdentifierMappingsResponseIdentifier {
     id: string;
     sortOrder: number;
-    mappingSortOrder: number;
-    mappingRowVersion: string;
+    appMapping: GetAppIdentifierMappingsResponseIdentifierAppMapping;
+}
+
+export interface GetAppIdentifierMappingsResponseIdentifierAppMapping {
+    sortOrder: number;
+    rowVersion: string;
 }
 
 export interface GetAppIdentifierMappingsResponse {
-    minSortOrder: number;
-    maxSortOrder: number;
-    mappingMinSortOrder: number;
-    mappingMaxSortOrder: number;
+    identifierSortOrderRange: SortOrderRange;
+    appIdentifierMappingSortOrderRange: SortOrderRange;
     identifiers: GetAppIdentifierMappingsResponseIdentifier[];
 }
 
@@ -142,7 +145,7 @@ export interface GetAppIdentifierMappingByAppAndIdentifierRequest {
 }
 
 export interface GetAppIdentifierMappingByAppAndIdentifierResponse {
-    mappingSortOrder: number;
+    sortOrder: number;
     appId: string;
     identifier: GetAppIdentifierMappingByAppAndIdentifierResponseSettingIdentifer
 }

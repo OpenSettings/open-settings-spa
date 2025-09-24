@@ -56,7 +56,7 @@ export class SettingCopyToComponent implements OnInit, OnDestroy {
         this.myForm = this.formBuilder.group({
             targetAppId: [this.model.appId, [Validators.required, this.appClientValidator]],
             identifierName: ['', [Validators.required, this.identifierValidator]],
-            identifierId: ['0']
+            identifierId: [null]
         });
     }
 
@@ -259,8 +259,9 @@ export class SettingCopyToComponent implements OnInit, OnDestroy {
                     classId: responseData.setting.classId,
                     identifierId: responseData.identifier.id,
                     identifierName: responseData.identifier.name,
+                    identifierSlug: responseData.identifier.slug,
                     identifierSortOrder: responseData.identifier.sortOrder,
-                    identifierMappingSortOrder: responseData.identifier.mappingSortOrder
+                    identifierMappingSortOrder: responseData.identifier.appMappingSortOrder
                 };
 
                 this.snackBar.open(`Copied successfully!`, 'Close', {
@@ -300,6 +301,7 @@ export interface CopyAppSettingToComponentReturnModel {
     classId: string;
     identifierId: string;
     identifierName: string;
+    identifierSlug: string;
     identifierSortOrder: number;
     identifierMappingSortOrder: number;
 }

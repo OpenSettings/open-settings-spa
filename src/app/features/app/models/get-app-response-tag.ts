@@ -1,4 +1,4 @@
-export interface GetAppResponseTag{
+export interface GetAppResponseTag {
     id: string;
     name: string;
     sortOrder: number;

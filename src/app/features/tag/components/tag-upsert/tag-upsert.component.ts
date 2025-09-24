@@ -31,9 +31,9 @@ export class TagUpsertComponent implements OnInit {
 
     ngOnInit(): void {
 
-        const id = this.model.id ?? '0';
+        const id = this.model.id ?? null;
 
-        if (id == '0') {
+        if (id === null) {
             this.title = 'Create a new tag';
         } else {
             this.title = 'Update - Tag';
@@ -42,7 +42,7 @@ export class TagUpsertComponent implements OnInit {
         }
 
         this.myForm = this.formBuilder.group({
-            id: [this.model.id ?? '0'],
+            id: [id],
             name: [this.model.name, Validators.required],
             position: [this.defaultPosition],
             sortOrder: [this.model.sortOrder],
@@ -67,7 +67,7 @@ export class TagUpsertComponent implements OnInit {
 
     update(formValue: any) {
 
-        if (formValue.id === '0') {
+        if (formValue.id === null) {
 
             const trimmedName = formValue.name.trim();
 

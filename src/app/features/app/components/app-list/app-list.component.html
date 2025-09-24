@@ -15,7 +15,7 @@
         <mat-label>Search</mat-label>
         <input #searchTermInput matInput (keyup)="applyFilter($event)">
         <mat-icon matSuffix>search</mat-icon>
-        <mat-hint *ngIf="appsFetched">{{groupsCount}} groups, {{appsCount}} apps match</mat-hint>
+        <mat-hint *ngIf="appsFetched">{{groupCount}} groups, {{appCount}} apps match</mat-hint>
       </mat-form-field>
       <button class="mt-2" mat-stroked-button color="primary" (click)="clearSelection()"
         *ngIf="queryParams.searchTerm || this.queryParams.groupId">
@@ -40,7 +40,12 @@
         <mat-card [ngClass]="this.menuOpened ? 'card-item-two' : 'card-item-three'" *ngFor="let app of group.apps">
           <mat-card-header>
             <div mat-card-avatar class="mat-bg-primary">
-              <img class="app-icon bg-white">
+                <img
+                  [ngClass]="app.imageUrl ? 'app-image' : 'app-icon bg-white'"
+                  [attr.src]="app.imageUrl ? app.imageUrl : null"
+                  (error)="onImgBroken($event)"
+                  loading="lazy"
+                />        
             </div>
             <mat-card-title>{{app.displayName}}</mat-card-title>
             <mat-card-subtitle class="d-flex">

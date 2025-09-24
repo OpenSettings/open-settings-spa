@@ -1,3 +1,3 @@
 export interface DeleteUnmappedItemsResponse {
-    deletedItemsCount: number;
+    deletedItemCount: number;
 }

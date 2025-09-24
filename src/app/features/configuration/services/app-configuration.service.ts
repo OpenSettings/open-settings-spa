@@ -6,8 +6,8 @@ import { WindowService } from "../../../core/services/window.service";
 import { IResponse } from "../../../shared/models/response";
 import { PatchConfigurationRequest } from "../models/patch-configuration-request";
 import { PatchConfigurationResponse } from "../models/patch-configuration-response";
-import { GetConfigurationByAppAndIdentifierRequest } from "../../instance/models/get-configuration-by-app-and-identifier-request";
-import { GetConfigurationByAppAndIdentifierResponse } from "../../instance/models/get-configuration-by-app-and-identifier-response";
+import { GetAppConfigurationByAppAndIdentifierRequest } from "../../instance/models/get-configuration-by-app-and-identifier-request";
+import { GetAppConfigurationByAppAndIdentifierResponse } from "../../instance/models/get-configuration-by-app-and-identifier-response";
 import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
 @Injectable({
@@ -37,11 +37,11 @@ export class AppConfigurationService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    getAppConfigurationByAppAndIdentifier(request: GetConfigurationByAppAndIdentifierRequest): Observable<IResponse<GetConfigurationByAppAndIdentifierResponse>> {
+    getAppConfigurationByAppAndIdentifier(request: GetAppConfigurationByAppAndIdentifierRequest): Observable<IResponse<GetAppConfigurationByAppAndIdentifierResponse>> {
 
         let url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppConfigurationByAppIdAndIdentifierId(request.appId, request.identifierId);
 
-        return this.httpClient.get<IResponse<GetConfigurationByAppAndIdentifierResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetAppConfigurationByAppAndIdentifierResponse>>(url, { headers: this.headers });
     }
 
     patchAppConfiguration(request: PatchConfigurationRequest): Observable<IResponse<PatchConfigurationResponse>> {

@@ -242,8 +242,8 @@ export class TagListComponent implements OnInit, AfterViewInit {
                     return;
                 }
 
-                this.minSortOrder = responseData.minSortOrder;
-                this.maxSortOrder = responseData.maxSortOrder;
+                this.minSortOrder = responseData.sortOrderRange.min;
+                this.maxSortOrder = responseData.sortOrderRange.max;
                 this.dataSource.data = responseData.tags;
                 this.paginator.pageIndex = responseData.pagingInfo.pageIndex - 1;
                 this.paginator.pageSize = responseData.pagingInfo.pageSize;
@@ -481,7 +481,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
     add() {
 
         const tagEditComponentModel: TagUpsertComponentModel = {
-            id: '0',
+            id: null,
             name: '',
             sortOrder: 0,
             rowVersion: ''

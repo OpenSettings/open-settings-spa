@@ -1,5 +1,5 @@
 export interface GetTagsResponseTag {
-    id: string;
+    id: string | null;
     name: string;
     sortOrder: number;
     rowVersion: string;
