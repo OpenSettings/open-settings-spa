@@ -3,4 +3,5 @@ export interface GetSettingsByIdentifierIdResponseDataSettingClass {
     name: string;
     namespace: string;
     fullName: string;
+    rowVersion: string;
 }

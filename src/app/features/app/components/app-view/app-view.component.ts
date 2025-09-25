@@ -66,7 +66,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
         @Inject(MAT_DIALOG_DATA) public data: AppViewComponentModel,
         private appsService: AppService,
         private configurationsService: AppConfigurationService,
-        private settingsService: AppSettingService,
+        private appSettingsService: AppSettingService,
         private appIdentifierMappingsService: AppIdentifierMappingService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
@@ -185,6 +185,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
         this.subscriptions.add(viewSettingUpdateParamSubscription);
     }
 
+    settingCreatedSubscription?: Subscription;
+
     viewCreateSetting(event: DummyComponentServiceModel) {
         this.tabIndex = ViewTab.Settings;
         const subscription = event.activatedRoute.paramMap.subscribe(params => {
@@ -208,6 +210,37 @@ export class AppViewComponent implements OnInit, OnDestroy {
                     selectedSettingId: this.appViewService.settingView?.selectedSettingId,
                     settingViewType: 'viewCreateSetting'
                 });
+
+                if (!this.settingCreatedSubscription) {
+                    const settingCreatedSubscription = this.appViewService.settingCreated$.subscribe(s => {
+
+                        if (!s) {
+                            return;
+                        }
+
+                        this.appData.identifierIdToSettings[identifierId].push({
+                            id: s.settingId,
+                            computedIdentifier: s.computedIdentifier,
+                            version: s.version,
+                            dataValidationDisabled: s.dataValidationEnabled,
+                            dataRestored: s.dataRestored,
+                            storeInSeparateFile: s.storeInSeparateFile,
+                            ignoreOnFileChange: s.ignoreOnFileChange,
+                            registrationMode: s.registrationMode,
+                            class: {
+                                id: s.classId,
+                                name: s.className,
+                                namespace: s.classNamespace,
+                                fullName: s.classFullName,
+                                rowVersion: s.classRowVersion
+                            },
+                            rowVersion: s.settingRowVersion
+                        });
+                    });
+
+                    this.subscriptions.add(settingCreatedSubscription);
+                }
+
                 this.changeIdentifier(identifierId);
             }));
             this.subscriptions.add(observable.subscribe());
@@ -1048,7 +1081,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
         let setting = settings.find(i => i.id === settingId)
 
-        return this.settingsService.getAppSettingById({ settingId }).pipe(switchMap((response) => {
+        return this.appSettingsService.getAppSettingById({ settingId }).pipe(switchMap((response) => {
 
             if (!response.data || response.data.identifierId !== this.selectedIdentifierId) {
                 return of(null);
@@ -1242,6 +1275,8 @@ export class AppViewComponent implements OnInit, OnDestroy {
 
                 return;
             } else {
+
+
                 const configurationSubscription = this.configurationsService.getAppConfigurationByAppAndIdentifier({
                     appId: this.data.appId,
                     identifierId: result.identifierId
@@ -1270,9 +1305,9 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 this.subscriptions.add(configurationSubscription);
             }
 
-            let groupedSetting = this.appData.identifierIdToSettings[result.identifierId];
+            let groupedSettings = this.appData.identifierIdToSettings[result.identifierId];
 
-            if (!groupedSetting) {
+            if (!groupedSettings) {
 
                 const identifier = {
                     id: result.identifierId,
@@ -1288,70 +1323,157 @@ export class AppViewComponent implements OnInit, OnDestroy {
                 this.appData.identifierIdToSettings[result.identifierId] = [];
                 this.appData.identifierIdToIdentifier[result.identifierId] = identifier;
 
-                groupedSetting = this.appData.identifierIdToSettings[result.identifierId];
+                groupedSettings = this.appData.identifierIdToSettings[result.identifierId];
 
                 this.sortIdentifiers(Object.values(this.appData.identifierIdToIdentifier));
+
+                const settingsSubscription = this.appSettingsService.getAppSettingsByAppIdAndIdentifierId({
+                    appIdOrSlug: this.data.appId,
+                    identifierIdOrSlug: result.identifierId
+                }).subscribe({
+                    next: (response) => {
+                        const responseData = response.data;
+
+                        if (!responseData) {
+                            return;
+                        }
+
+                        responseData.settings.forEach(s => {
+                            groupedSettings.push({
+                                id: s.id,
+                                computedIdentifier: s.computedIdentifier,
+                                version: s.version,
+                                dataValidationDisabled: s.dataValidationDisabled,
+                                dataRestored: s.dataRestored,
+                                storeInSeparateFile: s.storeInSeparateFile,
+                                ignoreOnFileChange: s.ignoreOnFileChange,
+                                registrationMode: s.registrationMode,
+                                class: {
+                                    id: s.class.id,
+                                    name: s.class.name,
+                                    namespace: s.class.namespace,
+                                    fullName: s.class.fullName,
+                                    rowVersion: s.class.rowVersion
+                                },
+                                rowVersion: s.rowVersion
+                            });
+                        });
+
+                        let model = this.identifierIdToSettingsDataMap[result.identifierId];
+
+                        this.updateSettingData(result.identifierId, groupedSettings);
+                        model = this.identifierIdToSettingsDataMap[result.identifierId];
+
+                        // responseData.settings.forEach(s => {
+                        //     if (model === undefined) {
+
+                        //     } else {
+                        //         model.push({
+                        //             slug: this.data.appSlug,
+                        //             clientId: this.data.clientId,
+                        //             settingId: s.id,
+                        //             className: s.class.name,
+                        //             classNamespace: s.class.namespace,
+                        //             classFullName: s.class.fullName,
+                        //             classId: s.class.id,
+                        //             computedIdentifier: s.computedIdentifier,
+                        //             version: s.version,
+                        //             isDataFetched: false,
+                        //             dataRestored: s.dataRestored,
+                        //             dataValidationEnabled: !s.dataValidationDisabled,
+                        //             rawData: '',
+                        //             parsedData: {},
+                        //             tempData: {},
+                        //             settingRowVersion: s.rowVersion,
+                        //             classRowVersion: s.class.rowVersion,
+                        //             storeInSeparateFile: s.storeInSeparateFile,
+                        //             ignoreOnFileChange: s.ignoreOnFileChange,
+                        //             registrationMode: s.registrationMode
+                        //         });
+                        //     }
+                        // });
+
+
+                        this.changeIdentifier(result.identifierId);
+
+                        this.appViewService.emitSettingView({
+                            selectedSettingId: result.settingId,
+                            settingViewType: 'viewSetting'
+                        });
+
+                        if (selectedSettingId) {
+                            this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings', result.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        } else {
+                            this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                        }
+                    }
+                })
+
+                this.subscriptions.add(settingsSubscription);
+
+                return;
             }
-
-            groupedSetting.push({
-                id: result.settingId,
-                version: '0',
-                dataValidationDisabled: !emitData.isDataValidationEnabled,
-                dataRestored: false,
-                computedIdentifier: emitData.computedIdentifier,
-                rowVersion: '',
-                class: {
-                    name: emitData.className,
-                    namespace: emitData.classNamespace,
-                    fullName: emitData.classFullName,
-                    id: result.classId,
-                    rowVersion: ''
-                },
-                storeInSeparateFile: emitData.storeInSeparateFile,
-                ignoreOnFileChange: emitData.ignoreOnFileChange,
-                registrationMode: emitData.registrationMode
-            });
-
-            let model = this.identifierIdToSettingsDataMap[result.identifierId];
-
-            if (model === undefined) {
-                this.updateSettingData(result.identifierId, groupedSetting);
-                model = this.identifierIdToSettingsDataMap[result.identifierId];
-            } else {
-                model.push({
-                    slug: this.data.appSlug,
-                    clientId: this.data.clientId,
-                    settingId: result.settingId,
-                    className: emitData.className,
-                    classNamespace: emitData.classNamespace,
-                    classFullName: emitData.classFullName,
-                    classId: result.classId,
-                    computedIdentifier: emitData.computedIdentifier,
+            else {
+                groupedSettings.push({
+                    id: result.settingId,
                     version: '0',
-                    isDataFetched: true,
+                    dataValidationDisabled: !emitData.isDataValidationEnabled,
                     dataRestored: false,
-                    dataValidationEnabled: emitData.isDataValidationEnabled,
-                    rawData: emitData.rawData,
-                    parsedData: emitData.parsedData,
-                    tempData: { ...emitData.parsedData },
-                    settingRowVersion: '',
-                    classRowVersion: '',
+                    computedIdentifier: emitData.computedIdentifier,
+                    rowVersion: '',
+                    class: {
+                        name: emitData.className,
+                        namespace: emitData.classNamespace,
+                        fullName: emitData.classFullName,
+                        id: result.classId,
+                        rowVersion: ''
+                    },
                     storeInSeparateFile: emitData.storeInSeparateFile,
                     ignoreOnFileChange: emitData.ignoreOnFileChange,
                     registrationMode: emitData.registrationMode
                 });
-            }
-            this.changeIdentifier(result.identifierId);
 
-            this.appViewService.emitSettingView({
-                selectedSettingId: result.settingId,
-                settingViewType: 'viewSetting'
-            });
+                let model = this.identifierIdToSettingsDataMap[result.identifierId];
 
-            if (selectedSettingId) {
-                this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings', result.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
-            } else {
-                this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                if (model === undefined) {
+                    this.updateSettingData(result.identifierId, groupedSettings);
+                    model = this.identifierIdToSettingsDataMap[result.identifierId];
+                } else {
+                    model.push({
+                        slug: this.data.appSlug,
+                        clientId: this.data.clientId,
+                        settingId: result.settingId,
+                        className: emitData.className,
+                        classNamespace: emitData.classNamespace,
+                        classFullName: emitData.classFullName,
+                        classId: result.classId,
+                        computedIdentifier: emitData.computedIdentifier,
+                        version: '0',
+                        isDataFetched: true,
+                        dataRestored: false,
+                        dataValidationEnabled: emitData.isDataValidationEnabled,
+                        rawData: emitData.rawData,
+                        parsedData: emitData.parsedData,
+                        tempData: { ...emitData.parsedData },
+                        settingRowVersion: '',
+                        classRowVersion: '',
+                        storeInSeparateFile: emitData.storeInSeparateFile,
+                        ignoreOnFileChange: emitData.ignoreOnFileChange,
+                        registrationMode: emitData.registrationMode
+                    });
+                }
+                this.changeIdentifier(result.identifierId);
+
+                this.appViewService.emitSettingView({
+                    selectedSettingId: result.settingId,
+                    settingViewType: 'viewSetting'
+                });
+
+                if (selectedSettingId) {
+                    this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings', result.settingId], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                } else {
+                    this.router.navigate(['./apps', this.data.appSlug, result.identifierSlug, 'settings'], { relativeTo: this.route, queryParamsHandling: 'merge' });
+                }
             }
         });
 

@@ -22,6 +22,7 @@ import { GetSettingsDataResponse } from '../models/get-settings-data-response';
 import { GetSettingsByIdentifierIdResponseData } from '../models/get-settings-by-identifier-id-response-data';
 import { GetSettingsByIdentifierIdRequest } from '../models/get-settings-by-identifier-id-request';
 import { OpenSettingsDefaults } from '../../../shared/open-settings-defaults';
+import { GetSettingsByIdentifierIdResponseDataSetting } from '../models/get-settings-by-identifier-id-response-data-setting';
 
 @Injectable({
     providedIn: 'root'
@@ -50,18 +51,18 @@ export class AppSettingService implements OnDestroy {
         this.destroy$.complete();
     }
 
-    getAppSettingsByAppIdAndIdentifierId(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
+    getAppSettingsByAppIdAndIdentifierId(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppSettingsByAppIdAndIdentifierId(request.appIdOrSlug, request.identifierIdOrSlug);
 
-        return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData[]>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData>>(url, { headers: this.headers });
     }
 
-    getAppSettingsByAppSlugAndIdentifierSlug(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData[]>> {
+    getAppSettingsByAppSlugAndIdentifierSlug(request: GetSettingsByIdentifierIdRequest): Observable<IResponse<GetSettingsByIdentifierIdResponseData>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppsEndpoints.getAppSettingsByAppSlugAndIdentifierSlug(request.appIdOrSlug, request.identifierIdOrSlug);
 
-        return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData[]>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetSettingsByIdentifierIdResponseData>>(url, { headers: this.headers });
     }
 
     getAppSettingsData(request: GetSettingsDataRequest): Observable<IResponse<GetSettingsDataResponse>> {

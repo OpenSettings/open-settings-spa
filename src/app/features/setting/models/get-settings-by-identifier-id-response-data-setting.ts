@@ -6,5 +6,9 @@ export interface GetSettingsByIdentifierIdResponseDataSetting {
     version: string;
     dataValidationDisabled: boolean;
     dataRestored: boolean;
-    class: GetSettingsByIdentifierIdResponseDataSettingClass
+    storeInSeparateFile: boolean;
+    ignoreOnFileChange: boolean | null;
+    registrationMode: number;
+    class: GetSettingsByIdentifierIdResponseDataSettingClass,
+    rowVersion: string;
 }

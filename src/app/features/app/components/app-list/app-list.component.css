@@ -61,4 +61,5 @@
 .app-image{
     border-radius: 100px;
     width: inherit;
+    height: inherit;
 }

@@ -647,6 +647,8 @@ export class SettingListComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.data.settingDataList.push(settingData);
 
+                this.appViewService.emitSettingCreated(settingData);
+
                 this.cdr.detectChanges();
 
                 this.selectedSettingId = result.id;
