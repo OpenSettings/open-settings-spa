@@ -20,7 +20,7 @@ import { GetIdentifierResponse } from "../models/get-identifier-response";
 import { GetIdentifiersRequest } from "../models/get-identifiers-request";
 import { UpdateIdentifierRequest } from "../models/update-identifier-request";
 import { UpdateIdentifierResponse } from "../models/update-identifier-response";
-import { UpdateIdentifierOrderRequest } from "../models/update-identifier-sort-order-request";
+import { UpdateIdentifierSortOrderRequest } from "../models/update-identifier-sort-order-request";
 import { GetIdentifiersResponse } from "../models/get-identifiers-response";
 import { OpenSettingsDefaults } from "../../../shared/open-settings-defaults";
 
@@ -167,13 +167,11 @@ export class IdentifierService implements OnDestroy {
         );
     }
 
-    updateIdentifierSortOrder(request: UpdateIdentifierOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
+    updateIdentifierSortOrder(request: UpdateIdentifierSortOrderRequest): Observable<IResponse<UpdateSortOrderResponse>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.updateIdentifierSortOrder(request.identifierId);
 
-        let params = new HttpParams().append('ascent', request.ascent).append('rowVersion', request.rowVersion);
-
-        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
+        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSortOrderResponse>);
@@ -188,9 +186,7 @@ export class IdentifierService implements OnDestroy {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.IdentifiersEndpoints.dragIdentifier(request.sourceId, request.targetId);
 
-        let params = new HttpParams().append('ascent', request.ascent).append('sourceRowVersion', request.sourceRowVersion);
-
-        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
+        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<DragItemSortOrderResponse>);

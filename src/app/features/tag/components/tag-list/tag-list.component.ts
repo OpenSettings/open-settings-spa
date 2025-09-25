@@ -21,12 +21,13 @@ import { UtilityService } from "../../../../shared/services/utility.service";
 import { ModelForPaginatedResponseData } from "../../../../shared/models/model-for-paginated-response-data";
 import { HttpErrorResponse } from "@angular/common/http";
 import { UserPreferencesService } from "../../../../shared/services/user-preferences.service";
+import { MoveDirection } from "../../../../shared/models/move-direction.model";
 
 @Component({
     templateUrl: './tag-list.component.html'
 })
 export class TagListComponent implements OnInit, AfterViewInit {
-    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingsCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
+    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
     dataSource: MatTableDataSource<ModelForPaginatedResponseData> = new MatTableDataSource();
     queryParams: QueryParams = {
         pageSize: 0,
@@ -403,8 +404,8 @@ export class TagListComponent implements OnInit, AfterViewInit {
         let message = `Are you sure you want to delete the "${model.name}" tag?`;
         let requireConfirmation = false;
 
-        if (model.mappingsCount > 0) {
-            message += ' The tag has ' + model.mappingsCount + ' mapping(s).'
+        if (model.mappingCount > 0) {
+            message += ' The tag has ' + model.mappingCount + ' mapping(s).'
             requireConfirmation = true;
         }
 
@@ -441,18 +442,20 @@ export class TagListComponent implements OnInit, AfterViewInit {
     }
 
     moveUpOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, false);
+        this.moveOrder(model, MoveDirection.Up);
     }
 
     moveDownOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, true);
+        this.moveOrder(model, MoveDirection.Down);
     }
 
-    moveOrder(model: ModelForPaginatedResponseData, ascent: boolean): void {
+    moveOrder(model: ModelForPaginatedResponseData, direction: MoveDirection): void {
         const subscription = this.tagsService.updateAppTagSortOrder({
             id: model.id,
-            ascent: ascent,
-            rowVersion: model.rowVersion
+            body: {
+                direction: direction,
+                rowVersion: model.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);
@@ -554,12 +557,12 @@ export class TagListComponent implements OnInit, AfterViewInit {
             return;
         }
 
-        const ascent = currentIndex > previousIndex;
+        const direction = currentIndex > previousIndex ? MoveDirection.Down : MoveDirection.Up;
         const source = this.dataSource.data[previousIndex];
 
         if (Math.abs(previousIndex - currentIndex) === 1) {
 
-            this.moveOrder(source, ascent);
+            this.moveOrder(source, direction);
             return;
         }
 
@@ -568,8 +571,10 @@ export class TagListComponent implements OnInit, AfterViewInit {
         const subscription = this.tagsService.dragAppTag({
             sourceId: source.id,
             targetId: target.id,
-            ascent: ascent,
-            sourceRowVersion: source.rowVersion
+            body: {
+                direction: direction,
+                sourceRowVersion: source.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);

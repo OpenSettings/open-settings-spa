@@ -30,6 +30,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { ConfigurationUpdateComponentData } from "../../../configuration/models/configuration-update-component-data";
 import { GetGroupedAppDataResponseConfiguration } from "../../models/get-grouped-app-data-response-configuration";
 import { AppConfigurationService } from "../../../configuration/services/app-configuration.service";
+import { MoveDirection } from "../../../../shared/models/move-direction.model";
 
 @Component({
     templateUrl: './app-view.component.html',
@@ -1473,9 +1474,11 @@ export class AppViewComponent implements OnInit, OnDestroy {
         };
     }
 
-    moveSortOrder(identifierId: string, event: Event, ascent: boolean): void {
+    moveSortOrder(identifierId: string, event: Event, moveDown: boolean): void {
 
         event.stopPropagation();
+
+        const direction = moveDown ? MoveDirection.Down : MoveDirection.Up;
 
         const identifier = this.appData.identifierIdToIdentifier[identifierId];
 
@@ -1519,7 +1522,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
             appId: this.data.appId,
             identifierId: identifierId,
             body: {
-                ascent: ascent,
+                direction: direction,
                 rowVersion: identifier.appMapping.rowVersion
             }
         }).subscribe({

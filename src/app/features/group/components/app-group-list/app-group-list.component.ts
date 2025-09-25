@@ -21,12 +21,13 @@ import { UtilityService } from "../../../../shared/services/utility.service";
 import { ModelForPaginatedResponseData } from "../../../../shared/models/model-for-paginated-response-data";
 import { HttpErrorResponse } from "@angular/common/http";
 import { UserPreferencesService } from "../../../../shared/services/user-preferences.service";
+import { MoveDirection } from "../../../../shared/models/move-direction.model";
 
 @Component({
     templateUrl: './app-group-list.component.html'
 })
 export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
-    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingsCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
+    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
     dataSource: MatTableDataSource<ModelForPaginatedResponseData> = new MatTableDataSource();
     queryParams: QueryParams = {
         pageSize: 0,
@@ -369,14 +370,14 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
                                     if (!responseData) {
                                         return;
                                     }
-    
+
                                     const editModel: AppGroupUpsertComponentModel = {
                                         id: slug,
                                         name: responseData.name,
                                         sortOrder: responseData.sortOrder,
                                         rowVersion: responseData.rowVersion
                                     };
-    
+
                                     this.update(editModel);
                                 },
                                 error: (err: HttpErrorResponse) => {
@@ -403,8 +404,8 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
 
         let requireConfirmation = false;
 
-        if (model.mappingsCount > 0) {
-            message += ' The group has ' + model.mappingsCount + ' mapping(s). When deleted, the mapped apps in this group will be moved to the "Ungrouped apps" group.';
+        if (model.mappingCount > 0) {
+            message += ' The group has ' + model.mappingCount + ' mapping(s). When deleted, the mapped apps in this group will be moved to the "Ungrouped apps" group.';
             requireConfirmation = true;
         }
 
@@ -445,18 +446,20 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     moveUpOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, false);
+        this.moveOrder(model, MoveDirection.Up);
     }
 
     moveDownOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, true);
+        this.moveOrder(model, MoveDirection.Down);
     }
 
-    moveOrder(model: ModelForPaginatedResponseData, ascent: boolean): void {
+    moveOrder(model: ModelForPaginatedResponseData, direction: MoveDirection): void {
         const subscription = this.groupsService.updateAppGroupSortOrder({
             id: model.id,
-            ascent: ascent,
-            rowVersion: model.rowVersion
+            body: {
+                direction,
+                rowVersion: model.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);
@@ -558,12 +561,12 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        const ascent = currentIndex > previousIndex;
+        const direction = currentIndex > previousIndex ? MoveDirection.Down : MoveDirection.Up;
         const source = this.dataSource.data[previousIndex];
 
         if (Math.abs(previousIndex - currentIndex) === 1) {
 
-            this.moveOrder(source, ascent);
+            this.moveOrder(source, direction);
             return;
         }
 
@@ -572,8 +575,10 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
         const subscription = this.groupsService.dragAppGroup({
             sourceId: source.id,
             targetId: target.id,
-            ascent: ascent,
-            sourceRowVersion: source.rowVersion
+            body: {
+                direction: direction,
+                sourceRowVersion: source.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);

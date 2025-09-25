@@ -3,7 +3,7 @@ export interface ModelForPaginatedResponseData {
     name: string;
     slug: string;
     sortOrder: number;
-    mappingsCount: number;
+    mappingCount: number;
     createdOn: string;
     updatedOn?: string;
     createdBy: string;

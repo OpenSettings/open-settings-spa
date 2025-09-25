@@ -9,7 +9,7 @@ import { GetSettingsDataRequest } from '../models/get-settings-data-request';
 import { UpdateSettingDataRequest } from '../models/update-setting-data-request';
 import { UpdateSettingDataResponse } from '../models/update-setting-data-response';
 import { GetSettingDataRequest } from '../models/get-setting-data-request';
-import { GetSettingDataResponse } from '../models/get-setting-data-response';
+import { GetAppSettingDataResponse } from '../models/get-app-setting-data-response';
 import { CopySettingToRequest } from '../models/copy-setting-to-request';
 import { CopySettingToResponse } from '../models/copy-setting-to-response';
 import { DeleteSettingRequest } from '../models/delete-setting-request';
@@ -88,11 +88,11 @@ export class AppSettingService implements OnDestroy {
         return this.httpClient.post<IResponse<CopySettingToResponse>>(url, request.body, { headers: this.headers });
     }
 
-    getAppSettingData(request: GetSettingDataRequest): Observable<IResponse<GetSettingDataResponse>> {
+    getAppSettingData(request: GetSettingDataRequest): Observable<IResponse<GetAppSettingDataResponse>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppSettingsEndpoints.getAppSettingData(request.settingId);
 
-        return this.httpClient.get<IResponse<GetSettingDataResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetAppSettingDataResponse>>(url, { headers: this.headers });
     }
 
     deleteAppSetting(request: DeleteSettingRequest): Observable<IResponseAny> {

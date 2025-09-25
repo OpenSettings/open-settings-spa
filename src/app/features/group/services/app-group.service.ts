@@ -145,9 +145,7 @@ export class AppGroupService implements OnDestroy {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.updateAppGroupSortOrder(request.id);
 
-        let params = new HttpParams().append('ascent', request.ascent).append('rowVersion', request.rowVersion);
-
-        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
+        return this.httpClient.post<IResponse<UpdateSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<UpdateSortOrderResponse>);
@@ -162,9 +160,7 @@ export class AppGroupService implements OnDestroy {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppGroupsEndpoints.dragAppGroup(request.sourceId, request.targetId);
 
-        let params = new HttpParams().append('ascent', request.ascent).append('sourceRowVersion', request.sourceRowVersion);
-
-        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, null, { headers: this.headers, params }).pipe(
+        return this.httpClient.post<IResponse<DragItemSortOrderResponse>>(url, request.body, { headers: this.headers }).pipe(
             catchError((response: HttpErrorResponse) => {
                 if (response.status === 409) {
                     return of(response.error as IResponse<DragItemSortOrderResponse>);

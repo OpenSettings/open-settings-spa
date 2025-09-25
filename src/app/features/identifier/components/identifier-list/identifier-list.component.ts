@@ -21,12 +21,13 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { UserPreferencesService } from "../../../../shared/services/user-preferences.service";
 import { IdentifierUpsertComponentModel } from "../../models/identifier-upsert-component.model";
 import { IdentifierUpsertComponent } from "../identifier-upsert/identifier-upsert.component";
+import { MoveDirection } from "../../../../shared/models/move-direction.model";
 
 @Component({
     templateUrl: './identifier-list.component.html'
 })
 export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy {
-    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingsCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
+    displayedColumns: string[] = ['id', 'name', 'sortOrder', 'mappingCount', 'createdOn', 'createdBy', 'updatedOn', 'updatedBy', 'edit'];
     dataSource: MatTableDataSource<ModelForPaginatedResponseData> = new MatTableDataSource();
     queryParams: QueryParams = {
         pageSize: 0,
@@ -400,8 +401,8 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
 
         let requireConfirmation: boolean = false;
 
-        if (model.mappingsCount > 0) {
-            message += ' The identifier has ' + model.mappingsCount + ' mapping(s) and all mapped settings and its histories will be deleted along with the identifier.'
+        if (model.mappingCount > 0) {
+            message += ' The identifier has ' + model.mappingCount + ' mapping(s) and all mapped settings and its histories will be deleted along with the identifier.'
             requireConfirmation = true;
         }
 
@@ -442,18 +443,20 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     moveUpOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, false);
+        this.moveOrder(model, MoveDirection.Up);
     }
 
     moveDownOrder(model: ModelForPaginatedResponseData): void {
-        this.moveOrder(model, true);
+        this.moveOrder(model, MoveDirection.Down);
     }
 
-    moveOrder(model: ModelForPaginatedResponseData, ascent: boolean): void {
+    moveOrder(model: ModelForPaginatedResponseData, direction: MoveDirection): void {
         const subscription = this.identifiersService.updateIdentifierSortOrder({
             identifierId: model.id,
-            ascent: ascent,
-            rowVersion: model.rowVersion
+            body: {
+                direction: direction,
+                rowVersion: model.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);
@@ -555,12 +558,12 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
             return;
         }
 
-        const ascent = currentIndex > previousIndex;
+        const direction = currentIndex > previousIndex ? MoveDirection.Down : MoveDirection.Up;
         const source = this.dataSource.data[previousIndex];
 
         if (Math.abs(previousIndex - currentIndex) === 1) {
 
-            this.moveOrder(source, ascent);
+            this.moveOrder(source, direction);
             return;
         }
 
@@ -569,8 +572,10 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
         const subscription = this.identifiersService.dragIdentifier({
             sourceId: source.id,
             targetId: target.id,
-            ascent: ascent,
-            sourceRowVersion: source.rowVersion
+            body: {
+                direction: direction,
+                sourceRowVersion: source.rowVersion
+            }
         }).subscribe((response) => {
             if (response.status === 409 && response.errors) {
                 this.utilityService.error(response.errors, 3500);

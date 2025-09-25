@@ -8,6 +8,7 @@ import { CreateAppIdentifierMappingRequest } from "../../features/app/models/cre
 import { CreateAppIdentifierMappingResponse } from "../../features/app/models/create-app-identifier-mapping-response";
 import { OpenSettingsDefaults } from "../open-settings-defaults";
 import { SortOrderRange } from "../models/sort-order-range.model";
+import { UpdateSortOrderRequestBody } from "../models/update-sort-order-request-body";
 
 @Injectable({
     providedIn: 'root'
@@ -105,12 +106,7 @@ export interface DeleteAppIdentifierMappingRequest {
 export interface UpdateAppIdentifierMappingSortOrderRequest {
     appId: string;
     identifierId: string;
-    body: UpdateAppIdentifierMappingSortOrderRequestBody;
-}
-
-export interface UpdateAppIdentifierMappingSortOrderRequestBody {
-    ascent: boolean;
-    rowVersion: string;
+    body: UpdateSortOrderRequestBody;
 }
 
 export interface UpdateAppIdentifierMappingSortOrderResponse {

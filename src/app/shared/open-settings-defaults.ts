@@ -128,7 +128,7 @@ export const OpenSettingsDefaults = {
                 getPaginatedLicenses: () => _LicensesBase + '/paginated',
                 getCurrentLicense: () => _LicensesBase + '/current',
                 saveLicense: () => _LicensesBase,
-                deleteLicense: (referenceId: string | number) => _LicensesBase + `/${referenceId}`
+                deleteLicense: (referenceId: string | number) => _LicensesBase + `/${encodeURIComponent(referenceId)}`
             },
             LocalSettingsEndpoints: {
                 base: () => _LocalSettingsBase,

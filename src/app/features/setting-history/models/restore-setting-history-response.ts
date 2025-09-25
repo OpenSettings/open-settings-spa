@@ -2,6 +2,6 @@ import { RestoreSettingHistoryResponseSetting } from "./restore-setting-history-
 
 export interface RestoreSettingHistoryResponse {
     clientId: string;
+    identifierName: string;
     setting: RestoreSettingHistoryResponseSetting;
-    historyRowVersion: string;
 }
