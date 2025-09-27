@@ -10,7 +10,7 @@ import { GetTagsRequest } from "../models/get-tags-request";
 import { CreateTagResponse } from "../models/create-tag-response";
 import { CreateTagRequest } from "../models/create-tag-request";
 import { GetTagRequest } from "../models/get-tag-request";
-import { GetTagResponse } from "../models/get-tag-response";
+import { GetAppTagResponse } from "../models/get-tag-response";
 import { UpdateTagRequest } from "../models/update-tag-request";
 import { UpdateTagResponse } from "../models/update-tag-response";
 import { DeleteTagRequest } from "../models/delete-tag-request";
@@ -116,18 +116,18 @@ export class AppTagService implements OnDestroy {
         return this.httpClient.delete<IResponse<DeleteUnmappedItemsResponse>>(url, { headers: this.headers });
     }
 
-    getAppTagById(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
+    getAppTagById(request: GetTagRequest): Observable<IResponse<GetAppTagResponse>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTagById(request.tagIdOrSlug);
 
-        return this.httpClient.get<IResponse<GetTagResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetAppTagResponse>>(url, { headers: this.headers });
     }
 
-    getAppTagBySlug(request: GetTagRequest): Observable<IResponse<GetTagResponse>> {
+    getAppTagBySlug(request: GetTagRequest): Observable<IResponse<GetAppTagResponse>> {
 
         const url = this.route + OpenSettingsDefaults.Routes.V1.AppTagsEndpoints.getAppTagBySlug(request.tagIdOrSlug);
 
-        return this.httpClient.get<IResponse<GetTagResponse>>(url, { headers: this.headers });
+        return this.httpClient.get<IResponse<GetAppTagResponse>>(url, { headers: this.headers });
     }
 
     updateAppTag(request: UpdateTagRequest): Observable<IResponse<UpdateTagResponse>> {

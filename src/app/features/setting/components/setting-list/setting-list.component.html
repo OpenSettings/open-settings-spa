@@ -7,7 +7,7 @@
     </div>
     <mat-slide-toggle class="d-flex ml-2" [(ngModel)]="multiSelectionEnabled" (change)="onToggleMultiSelection($event)">Multi selection</mat-slide-toggle>
     <span class="spacer"></span>
-    <button mat-icon-button matTooltip="Add setting" matTooltipPosition="above" [routerLink]="['./apps', data.slug, data.selectedIdentifierSlug, 'settings', 'new']" queryParamsHandling="merge"
+    <button mat-icon-button matTooltip="Add setting" matTooltipPosition="above" [routerLink]="['./apps', data.appSlug, data.selectedIdentifierSlug, 'settings', 'new']" queryParamsHandling="merge"
         [disabled]="!data.selectedAppIdentifierId">
         <mat-icon>add</mat-icon>
     </button>

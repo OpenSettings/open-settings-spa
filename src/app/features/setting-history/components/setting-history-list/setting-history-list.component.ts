@@ -15,8 +15,10 @@ import { IResponse } from "../../../../shared/models/response";
 import { RestoreSettingHistoryResponse } from "../../models/restore-setting-history-response";
 import { ConflictResolverDialogComponent, ConflictResolverReturnType } from "../../../../shared/components/conflict-resolver-dialog/conflict-resolver-dialog.component";
 import { WindowService } from "../../../../core/services/window.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 export interface SettingHistoryListComponentModel {
+    appSlug: string;
     clientName: string;
     clientId: string;
     settingId: string;
@@ -24,6 +26,7 @@ export interface SettingHistoryListComponentModel {
     classFullName: string;
     computedIdentifier: string;
     identifierName: string;
+    identifierSlug: string;
     currentVersion: string;
     tempData: object;
     currentRawData: string;
@@ -54,7 +57,9 @@ export class SettingHistoryListComponent implements AfterViewInit, OnDestroy {
         private utilityService: UtilityService,
         private windowService: WindowService,
         private snackBar: MatSnackBar,
-        private themeService: ThemeService) {
+        private themeService: ThemeService,
+        private route: ActivatedRoute,
+        private router: Router) {
 
         this.theme = this.themeService.isDarkTheme() ? 'vs-dark' : 'vs-light';
         this.isConnectionSecure = this.windowService.isConnectionSecure;

@@ -372,7 +372,7 @@ export class AppGroupListComponent implements OnInit, AfterViewInit, OnDestroy {
                                     }
 
                                     const editModel: AppGroupUpsertComponentModel = {
-                                        id: slug,
+                                        id: responseData.id,
                                         name: responseData.name,
                                         sortOrder: responseData.sortOrder,
                                         rowVersion: responseData.rowVersion

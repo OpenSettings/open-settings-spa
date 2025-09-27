@@ -372,7 +372,7 @@ export class TagListComponent implements OnInit, AfterViewInit {
                                     }
 
                                     const editModel: TagUpsertComponentModel = {
-                                        id: slug,
+                                        id: responseData.id,
                                         name: responseData.name,
                                         sortOrder: responseData.sortOrder,
                                         rowVersion: responseData.rowVersion

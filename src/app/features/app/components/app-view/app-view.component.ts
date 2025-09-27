@@ -720,7 +720,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
         }
 
         this.settingListComponentData = {
-            slug: this.data.appSlug,
+            appSlug: this.data.appSlug,
             clientId: this.data.clientId,
             clientName: this.data.clientName,
             appId: this.data.appId,
@@ -939,6 +939,7 @@ export class AppViewComponent implements OnInit, OnDestroy {
                             tabName = 'instances';
                             break;
                         case ViewTab.Settings:
+                        default:
                             tabName = 'settings';
                             break;
                     }

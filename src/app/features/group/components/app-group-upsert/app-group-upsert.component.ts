@@ -8,6 +8,7 @@ import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { AppGroupUpsertComponentModel } from "../../models/app-group-upsert-component.model";
 import { AppGroupUpsertComponentReturnModel } from "../../models/app-group-upsert-component-return.model";
 import { ConflictResolverDialogComponent, ConflictResolverReturnType } from "../../../../shared/components/conflict-resolver-dialog/conflict-resolver-dialog.component";
+import { IResponseAny } from "../../../../shared/models/response";
 
 @Component({
     selector: 'app-group-upsert',
@@ -175,11 +176,15 @@ export class AppGroupUpsertComponent implements OnInit, OnDestroy {
                 }),
                 catchError(err => {
 
-                    this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
-                        horizontalPosition: 'right',
-                        verticalPosition: 'top',
-                        duration: 5000
-                    });
+                    const response = err.error as IResponseAny;
+
+                    if (!response) {
+                        this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'top',
+                            duration: 5000
+                        });
+                    }
 
                     return err;
                 })

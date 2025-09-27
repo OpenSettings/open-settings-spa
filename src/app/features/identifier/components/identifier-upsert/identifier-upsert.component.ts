@@ -8,6 +8,7 @@ import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { ConflictResolverDialogComponent, ConflictResolverReturnType } from "../../../../shared/components/conflict-resolver-dialog/conflict-resolver-dialog.component";
 import { IdentifierUpsertComponentReturnModel } from "../../models/identifier-upsert-component-return.model";
 import { IdentifierUpsertComponentModel } from "../../models/identifier-upsert-component.model";
+import { IResponseAny } from "../../../../shared/models/response";
 
 @Component({
     selector: 'app-identifier-upsert',
@@ -31,7 +32,7 @@ export class IdentifierUpsertComponent implements OnInit, OnDestroy {
         @Inject(MAT_DIALOG_DATA) public model: IdentifierUpsertComponentModel) { }
 
     ngOnInit(): void {
-        
+
         const id = this.model.id ?? null;
 
         if (id === null) {
@@ -177,11 +178,15 @@ export class IdentifierUpsertComponent implements OnInit, OnDestroy {
                 }),
                 catchError(err => {
 
-                    this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
-                        horizontalPosition: 'right',
-                        verticalPosition: 'top',
-                        duration: 5000
-                    });
+                    const response = err.error as IResponseAny;
+
+                    if (!response) {
+                        this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'top',
+                            duration: 5000
+                        });
+                    }
 
                     return err;
                 })

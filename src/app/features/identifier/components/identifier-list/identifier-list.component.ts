@@ -371,7 +371,7 @@ export class IdentifierListComponent implements OnInit, AfterViewInit, OnDestroy
                                     }
 
                                     const editModel: IdentifierUpsertComponentModel = {
-                                        id: slug,
+                                        id: responseData.id,
                                         name: responseData.name,
                                         sortOrder: responseData.sortOrder,
                                         rowVersion: responseData.rowVersion

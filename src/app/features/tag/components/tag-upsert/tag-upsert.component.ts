@@ -8,6 +8,7 @@ import { catchError, Observable, of, Subscription, switchMap } from "rxjs";
 import { TagUpsertComponentModel } from "../../models/tag-upsert-component.model";
 import { ConflictResolverDialogComponent, ConflictResolverReturnType } from "../../../../shared/components/conflict-resolver-dialog/conflict-resolver-dialog.component";
 import { TagUpsertComponentReturnModel } from "../../models/tag-upsert-component-return.model";
+import { IResponseAny } from "../../../../shared/models/response";
 
 @Component({
     templateUrl: './tag-upsert.component.html'
@@ -176,11 +177,15 @@ export class TagUpsertComponent implements OnInit {
                 }),
                 catchError(err => {
 
-                    this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
-                        horizontalPosition: 'right',
-                        verticalPosition: 'top',
-                        duration: 5000
-                    });
+                    const response = err.error as IResponseAny;
+
+                    if (!response) {
+                        this.snackBar.open(`An error occurred or action not completed.`, 'Close', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'top',
+                            duration: 5000
+                        });
+                    }
 
                     return err;
                 })

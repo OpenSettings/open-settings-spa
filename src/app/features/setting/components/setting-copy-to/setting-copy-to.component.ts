@@ -277,7 +277,7 @@ export class SettingCopyToComponent implements OnInit, OnDestroy {
         this.subscriptions.add(subscription);
     }
 
-    close(){
+    close() {
         this.dialogRef.close();
     }
 }
